@@ -153,6 +153,7 @@
     <ClCompile Include="src\GraphicsAPI\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Core\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\Input.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\Script.h" />
     <ClInclude Include="src\TriangleTest.h" />
+    <ClInclude Include="src\Core\Time.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
