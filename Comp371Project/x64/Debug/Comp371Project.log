@@ -1,3 +1,19 @@
 ﻿  Main.cpp
-C:\Users\hanac\Desktop\School\Concordia\Concordia Summer 2021\Comp 371\Comp371Project\Comp371Project\src\TriangleTest.h(31,13): warning C4101: 'm': unreferenced local variable
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\xmemory(228,1): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\memory(1563): message : see reference to function template instantiation 'void std::_Construct_in_place<_Ty,float(&)[9],unsigned __int64>(_Ty &,float (&)[9],unsigned __int64 &&) noexcept(false)' being compiled
+          with
+          [
+              _Ty=OpenGLVertexBuffer
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\memory(2207): message : see reference to function template instantiation 'std::_Ref_count_obj2<_Ty>::_Ref_count_obj2<float(&)[9],unsigned __int64>(float (&)[9],unsigned __int64 &&)' being compiled
+          with
+          [
+              _Ty=OpenGLVertexBuffer
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\memory(2208): message : see reference to function template instantiation 'std::_Ref_count_obj2<_Ty>::_Ref_count_obj2<float(&)[9],unsigned __int64>(float (&)[9],unsigned __int64 &&)' being compiled
+          with
+          [
+              _Ty=OpenGLVertexBuffer
+          ]
+C:\Users\hanac\Desktop\School\Concordia\Concordia Summer 2021\Comp 371\Comp371Project\Comp371Project\src\TriangleTest.h(23): message : see reference to function template instantiation 'std::shared_ptr<OpenGLVertexBuffer> std::make_shared<OpenGLVertexBuffer,float(&)[9],size_t>(float (&)[9],size_t &&)' being compiled
   Comp371Project.vcxproj -> C:\Users\hanac\Desktop\School\Concordia\Concordia Summer 2021\Comp 371\Comp371Project\x64\Debug\Comp371Project.exe

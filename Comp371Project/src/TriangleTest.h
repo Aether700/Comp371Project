@@ -2,6 +2,8 @@
 #include "Core/Script.h"
 #include "Dependencies/glew-2.1.0/include/GL/glew.h"
 #include "Dependencies/glm-0.9.9.8/glm/mat3x3.hpp"
+#include "GraphicsAPI/OpenGLBuffer.h"
+#include "GraphicsAPI/OpenGLVertexArray.h"
 
 class TriangleTest : public Script
 {
@@ -9,24 +11,19 @@ public:
 	void OnStart()
 	{
 		//create vertex array
-		glCreateVertexArrays(1, &m_vao);
-		glBindVertexArray(m_vao);
-
-		glEnableVertexAttribArray(0);
-
-		//create vertex buffer and pass it our data
-		glCreateBuffers(1, &m_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-
+		m_vao = std::make_shared<OpenGLVertexArray>();
 		
+
 		float pos[] = {
 			 0.0f,  0.5f, 0.0f,
 			 0.5f, -0.5f, 0.0f,
 			-0.5f, -0.5f, 0.0f
 		};
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(pos), pos, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		m_vbo = std::make_shared<OpenGLVertexBuffer>(pos, sizeof(pos));
+		m_vbo->SetLayout({ { ShaderDataType::Float3, "position" } });
+
+		m_vao->AddVertexBuffer(m_vbo);
 
 		unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertexShader, 1, &m_vertexShaderSrc, nullptr);
@@ -47,15 +44,15 @@ public:
 		//bind vertex array and vertex buffer before drawing since 
 		//other stuff might have been bound before this is called
 		glUseProgram(m_shaderProgram);
-		glBindVertexArray(m_vao);
-		glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+		m_vao->Bind();
+		m_vbo->Bind();
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 
 private:
-	unsigned int m_vao;
-	unsigned int m_vbo;
+	std::shared_ptr<OpenGLVertexArray> m_vao;
+	std::shared_ptr<OpenGLVertexBuffer> m_vbo;
 	unsigned int m_shaderProgram;
 	const char* m_vertexShaderSrc = 
 		"#version 400\n"

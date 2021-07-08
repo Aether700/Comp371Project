@@ -147,10 +147,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\Input.cpp" />
+    <ClCompile Include="src\GraphicsAPI\OpenGLShader.cpp" />
+    <ClCompile Include="src\GraphicsAPI\OpenGLVertexArray.cpp" />
+    <ClCompile Include="src\GraphicsAPI\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\Input.h" />
+    <ClInclude Include="src\GraphicsAPI\OpenGLShader.h" />
+    <ClInclude Include="src\GraphicsAPI\OpenGLVertexArray.h" />
+    <ClInclude Include="src\GraphicsAPI\OpenGLBuffer.h" />
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\Script.h" />
     <ClInclude Include="src\TriangleTest.h" />

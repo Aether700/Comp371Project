@@ -31,6 +31,7 @@ void Application::Run()
 	while (app.m_isRunning && !glfwWindowShouldClose(app.m_window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(app.m_backgroundColor.r, app.m_backgroundColor.g, app.m_backgroundColor.b, app.m_backgroundColor.a);
 		app.CallOnRenderScripts();
 
 		glfwPollEvents();
