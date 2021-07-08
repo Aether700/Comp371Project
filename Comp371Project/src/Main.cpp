@@ -7,7 +7,7 @@ int main()
 {
 	Application::Init();
 
-	//Add Scripts here
+	//Add Scripts here   
 	Application::AddScript(new TriangleTest());
 	///////////////////
 
