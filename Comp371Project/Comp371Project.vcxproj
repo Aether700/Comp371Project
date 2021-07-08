@@ -147,6 +147,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GraphicsAPI\OpenGLTexture2D.cpp" />
+    <ClCompile Include="src\Rendering\Camera.cpp" />
     <ClCompile Include="src\Core\Input.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLShader.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLVertexArray.cpp" />
@@ -154,14 +156,19 @@
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Core\Time.cpp" />
+    <ClCompile Include="src\Rendering\Renderer3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\GraphicsAPI\OpenGLTexture2D.h" />
+    <ClInclude Include="src\Rendering\Camera.h" />
     <ClInclude Include="src\Core\Input.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLShader.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLVertexArray.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLBuffer.h" />
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\Script.h" />
+    <ClInclude Include="src\Rendering\Renderer3D.h" />
+    <ClInclude Include="src\Rendering\Transform.h" />
     <ClInclude Include="src\TriangleTest.h" />
     <ClInclude Include="src\Core\Time.h" />
   </ItemGroup>

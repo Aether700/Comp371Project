@@ -3,6 +3,7 @@
 #include <vector>
 #include "../Dependencies/glfw-3.3.4/include/GLFW/glfw3.h"
 #include "../Dependencies/glm-0.9.9.8/glm/glm.hpp"
+#include "../Rendering/Camera.h"
 
 class Script;
 
@@ -31,6 +32,7 @@ public:
 
 	//returns the window of the application
 	static GLFWwindow* GetWindow() { return GetApplication().m_window; }
+	static std::shared_ptr<Camera> GetCamera() { return GetApplication().m_camera; }
 
 	//add and remove scripts from the application, all application must be heap allocated
 	static void AddScript(Script* s);
@@ -53,4 +55,5 @@ private:
 	std::vector<Script*> m_scripts;
 	GLFWwindow* m_window;
 	glm::vec4 m_backgroundColor = glm::vec4(0, 0, 0, 1);
+	std::shared_ptr<Camera> m_camera;
 };
