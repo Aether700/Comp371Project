@@ -1,4 +1,5 @@
 #include "../Dependencies/glew-2.1.0/include/GL/glew.h"
+#include "../Rendering/Renderer3D.h"
 #include "Application.h"
 #include "Script.h"
 #include "Time.h"
@@ -91,6 +92,8 @@ Application::Application()
 		glfwTerminate();
 		throw "GLEW could not be initialized\n";
 	}
+
+	Renderer3D::Init();
 }
 
 Application::~Application()

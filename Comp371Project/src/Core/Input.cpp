@@ -2,13 +2,6 @@
 #include "Application.h"
 #include "../Dependencies/glfw-3.3.4/include/GLFW/glfw3.h"
 
-bool Input::IsKeyPressed(int key)
-{
-	GLFWwindow* window = Application::GetWindow();
-	int state = glfwGetKey(window, static_cast<int32_t>(key));
-	return state == GLFW_PRESS || state == GLFW_REPEAT;
-}
-
 bool Input::IsKeyPressed(int keyCode)
 {
 	GLFWwindow* window = Application::GetWindow();

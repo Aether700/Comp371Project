@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GraphicsAPI\OpenGLCubeMap.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLTexture2D.cpp" />
     <ClCompile Include="src\Rendering\Camera.cpp" />
     <ClCompile Include="src\Core\Input.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="src\Rendering\Renderer3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\GraphicsAPI\OpenGLCubeMap.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLTexture2D.h" />
     <ClInclude Include="src\Rendering\Camera.h" />
     <ClInclude Include="src\Core\Input.h" />

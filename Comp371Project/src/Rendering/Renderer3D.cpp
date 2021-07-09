@@ -11,8 +11,8 @@
 struct VertexData
 {
 	glm::vec3 position;
+	glm::vec3 texCoord;
 	glm::vec4 color;
-	glm::vec2 texCoord;
 	float textureIndex;
 	float tillingFactor;
 };
@@ -20,9 +20,9 @@ struct VertexData
 struct Renderer3DData
 {
 	static const unsigned int maxQuads = 20000;//10000;
-	static const unsigned int maxVertices = maxQuads * 4;
-	static const unsigned int maxIndices = maxQuads * 6;
-	static const unsigned int maxTextureSlots = 32; //to do: query the gpu to get capabilities
+	static const unsigned int maxVertices = maxQuads * 8;
+	static const unsigned int maxIndices = maxQuads * 6 * 6; //6 faces with 6 indices each
+	static const unsigned int maxTextureSlots = 32; 
 
 	std::shared_ptr<OpenGLVertexArray> quadVertexArray;
 	std::shared_ptr<OpenGLVertexBuffer> quadVertexBuffer;
@@ -38,10 +38,12 @@ struct Renderer3DData
 
 	glm::vec4 voxelVertexPositions[8];
 
-	Renderer3D::Statistic stats;
+	Renderer3DStatistics stats;
 };
 
 static Renderer3DData s_data = Renderer3DData();
+
+
 
 void Renderer3D::Init()
 {
@@ -50,8 +52,8 @@ void Renderer3D::Init()
 	s_data.quadVertexBuffer = std::make_shared<OpenGLVertexArray>(s_data.maxVertices * sizeof(VertexData));
 	s_data.quadVertexBuffer->SetLayout({
 		{ ShaderDataType::Float3, "a_position" },
+		{ ShaderDataType::Float3, "a_texCoord" },
 		{ ShaderDataType::Float4, "a_color" },
-		{ ShaderDataType::Float2, "a_texCoord" },
 		{ ShaderDataType::Float, "a_texIndex" },
 		{ ShaderDataType::Float, "a_tillingFactor" }
 		});
@@ -59,8 +61,11 @@ void Renderer3D::Init()
 
 	s_data.quadVertexBufferBase = new VertexData[s_data.maxVertices];
 
+
+	//the index data used by the index buffer to reduce the number of vertices used
 	unsigned int* quadIndices = new unsigned int[s_data.maxIndices];
 
+	need to fix offsets and such
 	int offset = 0;
 	for (int i = 0; i < s_data.maxIndices; i += 6)
 	{
@@ -89,7 +94,7 @@ void Renderer3D::Init()
 		samplers[i] = i;
 	}
 
-	s_data.shader2D = std::make_shared<OpenGLShader>("assets/shaders/Shader2D.glsl");
+	s_data.shader2D = std::make_shared<OpenGLShader>("Resources/Shaders/Shader3D.glsl");
 	s_data.shader2D->Bind();
 	s_data.shader2D->SetIntArray("u_texture", samplers, s_data.maxTextureSlots);
 
@@ -144,9 +149,36 @@ void Renderer3D::Flush()
 	s_data.stats.numDrawCalls++;
 }
 
-void Renderer3D::DrawVoxel(const glm::vec3& pos, const glm::vec3& rotation, const glm::vec3& scale, const glm::vec4& color)
+void Renderer3D::DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture, 
+	float tileFactor, const glm::vec4& tintColor)
 {
+	CheckBatchCapacity();
 
+	const glm::vec3 texCoord[] = {
+		{  1.0f,  0.0f,  0.0f },
+		{ -1.0f,  0.0f,  0.0f },
+		{  0.0f,  1.0f,  0.0f },
+		{  0.0f, -1.0f,  0.0f },
+		{  0.0f,  0.0f,  1.0f },
+		{  0.0f,  0.0f, -1.0f },
+	};
+
+	float textureIndex = GetTextureIndex(texture);
+
+	for (size_t i = 0; i < 8; i++)
+	{
+		s_data.quadVertexBufferPtr->position = transform * s_data.voxelVertexPositions[i];
+		s_data.quadVertexBufferPtr->color = tintColor;
+		s_data.quadVertexBufferPtr->texCoord = texCoord[i ];
+		s_data.quadVertexBufferPtr->textureIndex = textureIndex;
+		s_data.quadVertexBufferPtr->tillingFactor = tileFactor;
+		s_data.quadVertexBufferPtr++;
+	}
+
+	s_data.quadIndexCount += 6 * 6;
+
+	s_data.stats.numIndices += 6 * 6;
+	s_data.stats.numVertices += 8;
 }
 
 void Renderer3D::FlushAndReset()
@@ -158,7 +190,75 @@ void Renderer3D::FlushAndReset()
 	s_data.textureSlotIndex = 1;
 }
 
-Renderer3D::Statistic Renderer3D::GetStats()
+const Renderer3DStatistics& Renderer3D::GetStats()
 {
 	return s_data.stats;
+}
+
+void Renderer3D::ResetStats()
+{
+	s_data.stats.Reset();
+}
+
+void Renderer3D::UploadVoxel(const glm::vec3& position, const glm::vec3 rotation, const glm::vec3& size, float textureIndex,
+	float tileFactor, const glm::vec4& tintColor, const glm::vec3* textureCoords)
+{
+	//position and normal data of a basic cube
+	float positions[] = {
+	};
+
+	float cubeVertices[] = {
+		     // positions          // normals
+
+		//back face 
+		//index order 0, 1, 2, 2, 3, 0
+		-0.5f, -0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,
+		 0.5f, -0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,
+		 //0.5f,  0.5f, -0.5f,	 0.0f,  0.0f, -1.0f, //duplicated
+		-0.5f,  0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,
+		//-0.5f, -0.5f, -0.5f,	 0.0f,  0.0f, -1.0f, //duplicated
+
+		//front face
+		-0.5f, -0.5f,  0.5f,	 0.0f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,	 0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,	 0.0f,  0.0f, 1.0f,
+		 //0.5f,  0.5f,  0.5f,	 0.0f,  0.0f, 1.0f, //duplicated
+		-0.5f,  0.5f,  0.5f,	 0.0f,  0.0f, 1.0f,
+		//-0.5f, -0.5f,  0.5f,	 0.0f,  0.0f, 1.0f, //duplicated
+
+		//left face
+		-0.5f,  0.5f,  0.5f,	-1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,	-1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,	-1.0f,  0.0f,  0.0f,
+		//-0.5f, -0.5f, -0.5f,	-1.0f,  0.0f,  0.0f, //duplicated
+		-0.5f, -0.5f,  0.5f,	-1.0f,  0.0f,  0.0f,
+		//-0.5f,  0.5f,  0.5f,	-1.0f,  0.0f,  0.0f, //duplicated
+
+		//right face
+		 0.5f,  0.5f,  0.5f,	 1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,	 1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,	 1.0f,  0.0f,  0.0f,
+		 //0.5f, -0.5f, -0.5f,	 1.0f,  0.0f,  0.0f, //duplicated
+		 0.5f, -0.5f,  0.5f,	 1.0f,  0.0f,  0.0f,
+		 //0.5f,  0.5f,  0.5f,	 1.0f,  0.0f,  0.0f, //duplicated
+
+		 //down face
+		-0.5f, -0.5f, -0.5f,	 0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,	 0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,	 0.0f, -1.0f,  0.0f,
+		 //0.5f, -0.5f,  0.5f,	 0.0f, -1.0f,  0.0f, //duplicated
+		-0.5f, -0.5f,  0.5f,	 0.0f, -1.0f,  0.0f,
+		//-0.5f, -0.5f, -0.5f,	 0.0f, -1.0f,  0.0f, //duplicated
+
+		//up face
+		-0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f,
+		 //0.5f,  0.5f,  0.5f,	 0.0f,  1.0f,  0.0f, //duplicated
+		 0.5f,  0.5f,  0.5f,	 0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,	 0.0f,  1.0f,  0.0f,
+		//-0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f //duplicated
+	};
+
+
 }

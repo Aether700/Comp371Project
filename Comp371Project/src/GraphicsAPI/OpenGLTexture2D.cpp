@@ -23,10 +23,8 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_path(path)
 {
 	int width, height, channels;
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char* data;
-	{
-		data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-	}
+	unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+
 	if (data == nullptr)
 	{
 		std::cout << "Failed to load image\n";
@@ -35,16 +33,20 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_path(path)
 	m_width = width;
 	m_height = height;
 
-	m_internalFormat = 0;
-	if (channels == 4)
+	switch (channels)
 	{
-		m_internalFormat = GL_RGBA8;
-		m_dataFormat = GL_RGBA;
-	}
-	else if (channels == 3)
-	{
+	case 3:
 		m_internalFormat = GL_RGB8;
 		m_dataFormat = GL_RGB;
+		break;
+
+	case 4:
+		m_internalFormat = GL_RGBA8;
+		m_dataFormat = GL_RGBA;
+		break;
+
+	default:
+		std::cerr << "The Format provided for the texture '" << path << "' is not supported\n";
 	}
 
 	if (m_internalFormat == 0)

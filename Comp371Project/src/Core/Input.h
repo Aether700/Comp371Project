@@ -4,7 +4,6 @@
 class Input
 {
 public:
-	static bool IsKeyPressed(int key);
 	static bool IsKeyPressed(int keyCode);
 	static bool IsMouseButtonPressed(int button);
 	static glm::vec2 GetMousePosition();
