@@ -1,3 +1,4 @@
+#define GLEW_STATIC
 #include "OpenGLCubeMap.h"
 #include "../Dependencies/glew-2.1.0/include/GL/glew.h"
 #include "../Dependencies/stb_image/stb_image.h"
@@ -112,12 +113,35 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 	stbi_image_free(data);
 }
 
+OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, void* data) 
+	: m_width(width), m_height(height)
+{
+	glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_rendererID);
+	m_internalFormat[0] = GL_RGB8;
+	m_dataFormat[0] = GL_RGB;
+
+	for (size_t i = 0; i < 6; i++)
+	{
+		m_internalFormat[i] = m_internalFormat[0];
+		m_dataFormat[i] = m_dataFormat[0];
+
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_width, m_height,
+			0, m_dataFormat[i], GL_UNSIGNED_BYTE, data);
+	}
+
+	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_R, GL_REPEAT);
+}
+
 OpenGLCubeMap::~OpenGLCubeMap()
 {
 	glDeleteTextures(1, &m_rendererID);
 }
 
-void OpenGLCubeMap::Bind() const
+void OpenGLCubeMap::Bind(unsigned int index) const
 {
-	glBindTexture(GL_TEXTURE_CUBE_MAP, m_rendererID);
+	glBindTextureUnit(index, m_rendererID);
 }

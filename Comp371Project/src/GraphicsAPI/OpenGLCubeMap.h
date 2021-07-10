@@ -1,11 +1,13 @@
 #pragma once
+#include "OpenGLTexture.h"
+
 #include <array>
 #include <string>
 
 //temp: https://learnopengl.com/Advanced-OpenGL/Cubemaps
 
 //cube map used to generate textures for the voxels produced by the batch renderer
-class OpenGLCubeMap
+class OpenGLCubeMap : public OpenGLTexture
 {
 public:
 
@@ -24,10 +26,22 @@ public:
 	//will apply the same texture to every face
 	OpenGLCubeMap(const std::string& faceTextures);
 
+	OpenGLCubeMap(unsigned int width, unsigned int height, void* data);
 
 	~OpenGLCubeMap();
 
-	void Bind() const;
+	virtual void Bind(unsigned int index = 0) const override;
+
+	virtual bool operator==(const OpenGLTexture& other) const override
+	{
+		const OpenGLCubeMap* ptr = dynamic_cast<const OpenGLCubeMap*>(&other);
+
+		if (ptr == nullptr)
+		{
+			return false;
+		}
+		return ptr->m_rendererID == m_rendererID;
+	}
 
 private:
 	unsigned int m_rendererID;

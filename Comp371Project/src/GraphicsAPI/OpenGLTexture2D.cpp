@@ -1,3 +1,4 @@
+#define GLEW_STATIC
 #include "OpenGLTexture2D.h"
 #include "../Dependencies/glew-2.1.0/include/GL/glew.h"
 #include "../Dependencies/stb_image/stb_image.h"

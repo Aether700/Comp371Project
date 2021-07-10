@@ -1,7 +1,9 @@
 #pragma once
+#include "OpenGLTexture.h"
+
 #include <string>
 
-class OpenGLTexture2D
+class OpenGLTexture2D : public OpenGLTexture
 {
 public:
 	OpenGLTexture2D(unsigned int width, unsigned int height);
@@ -15,16 +17,17 @@ public:
 
 	void SetData(void* data, unsigned int size);
 
-	void Bind(unsigned int slot = 0) const;
+	virtual void Bind(unsigned int slot = 0) const override;
 
-	bool operator==(const OpenGLTexture2D& other) const
+	virtual bool operator==(const OpenGLTexture& other) const override
 	{
-		return m_rendererID == other.m_rendererID;
-	}
+		const OpenGLTexture2D* ptr = dynamic_cast<const OpenGLTexture2D*>(&other);
 
-	bool operator!=(const OpenGLTexture2D& other) const
-	{
-		return !(*this == other);
+		if (ptr == nullptr)
+		{
+			return false;
+		}
+		return ptr->m_rendererID == m_rendererID;
 	}
 
 private:

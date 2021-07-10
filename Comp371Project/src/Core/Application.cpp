@@ -35,7 +35,10 @@ void Application::Run()
 		Time::UpdateTime();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(app.m_backgroundColor.r, app.m_backgroundColor.g, app.m_backgroundColor.b, app.m_backgroundColor.a);
+
+		Renderer3D::BeginScene();
 		app.CallOnRenderScripts();
+		Renderer3D::EndScene();
 
 		glfwPollEvents();
 		glfwSwapBuffers(app.m_window);
@@ -75,6 +78,7 @@ Application::Application()
 		throw "GLFW could not be initialized\n";
 	}
 
+	m_camera = std::make_shared<Camera>();
 	m_window = glfwCreateWindow(1300, 800, "Comp 371 Project", nullptr, nullptr);
 
 	if (m_window == nullptr)
