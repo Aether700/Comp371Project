@@ -1,10 +1,6 @@
 #include "Camera.h"
 #include "../Dependencies/glm-0.9.9.8/glm/gtc/matrix_transform.hpp"
-
-Camera::Camera()
-{
-	RecalculateProjection();
-}
+#include "../Core/Application.h"
 
 void Camera::SetOrthographic(float size, float nearClip, float farClip)
 {
@@ -30,6 +26,15 @@ void Camera::SetPerspective(float fov, float nearClip, float farClip)
 
 void Camera::SetViewportSize(unsigned int width, unsigned int height)
 {
+	m_aspectRatio = (float)width / (float)height;
+	RecalculateProjection();
+
+}
+
+void Camera::UpdateAspectRatio()
+{
+	int width, height;
+	glfwGetWindowSize(Application::GetWindow(), &width, &height);
 	m_aspectRatio = (float)width / (float)height;
 	RecalculateProjection();
 }

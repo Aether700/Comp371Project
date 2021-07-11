@@ -12,7 +12,7 @@ public:
 	{
 		//create vertex array
 		m_vao = std::make_shared<OpenGLVertexArray>();
-		
+
 
 		float pos[] = {
 			 0.0f,  0.5f, 0.0f,
@@ -54,7 +54,7 @@ private:
 	std::shared_ptr<OpenGLVertexArray> m_vao;
 	std::shared_ptr<OpenGLVertexBuffer> m_vbo;
 	unsigned int m_shaderProgram;
-	const char* m_vertexShaderSrc = 
+	const char* m_vertexShaderSrc =
 		"#version 400\n"
 		"in vec3 pos;"
 		"void main()"

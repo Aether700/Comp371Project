@@ -1,5 +1,6 @@
 #include "../Dependencies/glew-2.1.0/include/GL/glew.h"
 #include "../Rendering/Renderer3D.h"
+#include "../Rendering/CameraController.h"
 #include "Application.h"
 #include "Script.h"
 #include "Time.h"
@@ -13,9 +14,17 @@ void GlfwErrorCallbackHandler(int errCode, const char* message)
 	std::cout << "GLFW error: (" <<  errCode << ") " << message << "\n";
 }
 
-void Application::Init()
+void WindowResizeEvent(GLFWwindow* w, int width, int height)
 {
-	s_instance = new Application();
+	Application::GetCamera()->UpdateAspectRatio();
+	glViewport(0, 0, width, height);
+}
+
+void Application::Init(const std::string& windowName, unsigned int width, unsigned int height)
+{
+	s_instance = new Application(windowName, width, height);
+	s_instance->m_camera->UpdateAspectRatio();
+	AddScript(new CameraController());
 }
 
 void Application::Shutdown()
@@ -71,15 +80,14 @@ void Application::RemoveScript(Script* s)
 	}
 }
 
-Application::Application()
+Application::Application(const std::string& windowName, unsigned int width, unsigned int height)
 {
 	if (glfwInit() == GLFW_FALSE)
 	{
 		throw "GLFW could not be initialized\n";
 	}
 
-	m_camera = std::make_shared<Camera>();
-	m_window = glfwCreateWindow(1300, 800, "Comp 371 Project", nullptr, nullptr);
+	m_window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
 
 	if (m_window == nullptr)
 	{
@@ -91,12 +99,15 @@ Application::Application()
 
 	glfwSetErrorCallback(&GlfwErrorCallbackHandler);
 
+	glfwSetWindowSizeCallback(m_window, &WindowResizeEvent);
+
 	if (glewInit() != GLEW_OK)
 	{
 		glfwTerminate();
 		throw "GLEW could not be initialized\n";
 	}
 
+	m_camera = std::make_shared<Camera>();
 	Renderer3D::Init();
 }
 

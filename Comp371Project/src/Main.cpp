@@ -1,6 +1,7 @@
 #define GLEW_STATIC
 #include "TriangleTest.h"
 #include "CubeRenderingTest.h"
+
 #include "Core/Application.h"
 #include "Core/Script.h"
 

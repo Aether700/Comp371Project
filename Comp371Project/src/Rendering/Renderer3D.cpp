@@ -1,4 +1,5 @@
 #include "Renderer3D.h"
+#include "../Core/Debug.h"
 #include "../Core/Application.h"
 #include "../GraphicsAPI/OpenGLBuffer.h"
 #include "../GraphicsAPI/OpenGLShader.h"
@@ -143,13 +144,19 @@ void Renderer3D::FlushBatch()
 {
 	unsigned int dataSize = (unsigned char*)s_data.quadVertexBufferPtr - (unsigned char*)s_data.quadVertexBufferBase;
 	s_data.quadVertexBuffer->SetData(s_data.quadVertexBufferBase, dataSize);
+	Debug::CheckOpenGLError();
 
 	for (unsigned int i = 0; i < s_data.textureSlotIndex; i++)
 	{
 		s_data.textureSlots[i]->Bind(i);
 	}
+	Debug::CheckOpenGLError();
+
+	s_data.quadVertexArray->GetIndexBuffer()->Bind();
 
 	glDrawElements(GL_TRIANGLES, s_data.quadIndexCount, GL_UNSIGNED_INT, nullptr);
+
+	Debug::CheckOpenGLError();
 	s_data.stats.numDrawCalls++;
 }
 
@@ -168,11 +175,6 @@ void Renderer3D::DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCub
 	float textureIndex = GetTextureIndex(texture);
 
 	UploadVoxel(transform, textureIndex, tileFactor, tintColor);
-
-	s_data.quadIndexCount += 6 * 6;
-
-	s_data.stats.numIndices += 6 * 6;
-	s_data.stats.numVertices += 8;
 }
 
 void Renderer3D::CheckBatchCapacity()
@@ -226,7 +228,6 @@ void Renderer3D::ResetStats()
 void Renderer3D::UploadVoxel(const glm::mat4& transform, float textureIndex,
 	float tileFactor, const glm::vec4& tintColor)
 {
-	
 	glm::vec3 cubePosAndNormals[] = {
 		     // positions                // normals
 
@@ -280,7 +281,6 @@ void Renderer3D::UploadVoxel(const glm::mat4& transform, float textureIndex,
 		//{ -0.5f,  0.5f, -0.5f },	{  0.0f,  1.0f,  0.0f } //duplicated
 	};
 
-	size_t offset = 0;
 	for (size_t i = 0; i < sizeof(cubePosAndNormals) / sizeof(glm::vec3); i += 2)
 	{
 		s_data.quadVertexBufferPtr->position = (glm::vec3)(transform * glm::vec4(cubePosAndNormals[i], 1));

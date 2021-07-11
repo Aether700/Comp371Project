@@ -143,5 +143,5 @@ OpenGLCubeMap::~OpenGLCubeMap()
 
 void OpenGLCubeMap::Bind(unsigned int index) const
 {
-	glBindTextureUnit(index, m_rendererID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, m_rendererID);
 }

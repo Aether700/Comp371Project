@@ -9,7 +9,7 @@ public:
 		Perspective = 0, Orthographic = 1
 	};
 
-	Camera();
+	Camera() { }
 	~Camera() { }
 
 	void SetPosition(const glm::vec3& pos)
@@ -51,6 +51,8 @@ public:
 	void SetProjectionType(ProjectionType type) { m_projectionType = type; RecalculateProjection(); }
 
 	const glm::mat4& GetProjectionMatrix() const { return m_projectionMatrix; }
+
+	void UpdateAspectRatio();
 
 private:
 	void RecalculateProjection();
