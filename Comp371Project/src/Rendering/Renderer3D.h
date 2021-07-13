@@ -79,7 +79,6 @@ private:
 
 	unsigned int* m_indicesArr;
 	unsigned int m_indicesIndex = 0;
-	unsigned int m_indexOffset = 0;
 
 	std::shared_ptr<OpenGLTexture>* m_textureSlots;
 	unsigned int m_textureIndex = 0;

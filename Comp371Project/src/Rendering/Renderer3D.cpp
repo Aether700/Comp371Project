@@ -62,13 +62,12 @@ void RenderingBatch::Add(VertexData* vertices, unsigned int numVertices, unsigne
 		VertexData& temp = vertices[i];
 		m_vertexDataArr[m_vertexDataIndex + i] = vertices[i];
 	}
-	m_vertexDataIndex += numVertices;
 
 	for (unsigned int i = 0; i < numIndices; i++)
 	{
-		m_indicesArr[m_indicesIndex + i] = m_indexOffset + indices[i];
+		m_indicesArr[m_indicesIndex + i] =  m_vertexDataIndex + indices[i];
 	}
-	m_indexOffset += numVertices;
+	m_vertexDataIndex += numVertices;
 	m_indicesIndex += numIndices;
 
 	Renderer3D::s_stats.numIndices += numIndices;
@@ -134,7 +133,7 @@ void RenderingBatch::CheckCapacity(VertexData* vertices, unsigned int numVertice
 	unsigned int numIndices, unsigned int renderTarget)
 {
 	if (s_maxVertices - m_vertexDataIndex < numVertices
-		|| s_maxIndices - m_indexOffset < numIndices)
+		|| s_maxIndices - m_indicesIndex < numIndices)
 	{
 		Draw(renderTarget);
 	}
@@ -143,7 +142,6 @@ void RenderingBatch::CheckCapacity(VertexData* vertices, unsigned int numVertice
 void RenderingBatch::ResetBatch()
 {
 	m_vertexDataIndex = 0;
-	m_indexOffset = 0;
 	m_indicesIndex = 0;
 	m_textureIndex = 0;
 }
