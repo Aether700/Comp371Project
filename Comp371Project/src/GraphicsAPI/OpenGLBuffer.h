@@ -131,11 +131,14 @@ private:
 class OpenGLIndexBuffer
 {
 public:
+	OpenGLIndexBuffer();
 	OpenGLIndexBuffer(unsigned int* indices, unsigned int count);
 	virtual ~OpenGLIndexBuffer();
 
 	void Bind() const;
 	void Unbind() const;
+
+	void SetData(unsigned int* indices, unsigned int count);
 
 	inline unsigned int GetCount() const { return m_count; }
 

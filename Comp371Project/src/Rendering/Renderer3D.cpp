@@ -8,19 +8,12 @@
 
 #include <array>
 
-/*struch which contains the data to 
-  send to the gpu for each vertex
+std::unordered_map<unsigned int, RenderingBatch> Renderer3D::s_renderingBatches;
 
-  the order of the fields is the layout to be sent to the gpu
-*/
-struct VertexData
-{
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec4 color;
-	float textureIndex;
-	float tillingFactor;
-};
+unsigned int RenderingBatch::s_maxVertices = 16000;
+unsigned int RenderingBatch::s_maxIndices = 72000;
+unsigned int RenderingBatch::s_maxTextureSlots = 32;
+
 
 struct Renderer3DData
 {
@@ -52,6 +45,7 @@ static Renderer3DData s_data = Renderer3DData();
 
 void Renderer3D::Init()
 {
+	/*
 	s_data.quadVertexArray = std::make_shared<OpenGLVertexArray>();
 
 	s_data.quadVertexBuffer = std::make_shared<OpenGLVertexBuffer>(s_data.maxVertices * sizeof(VertexData));
@@ -88,6 +82,7 @@ void Renderer3D::Init()
 	std::shared_ptr<OpenGLIndexBuffer> quadIB = std::make_shared<OpenGLIndexBuffer>(quadIndices, s_data.maxIndices);
 	s_data.quadVertexArray->SetIndexBuffer(quadIB);
 	delete[] quadIndices;
+	*/
 
 	unsigned int whiteTextureData = 0xffffffff;
 	s_data.whiteCubeMap = std::make_shared<OpenGLCubeMap>(1, 1, &whiteTextureData);
@@ -102,6 +97,8 @@ void Renderer3D::Init()
 	s_data.shader2D->Bind();
 	s_data.shader2D->SetIntArray("u_texture", samplers, s_data.maxTextureSlots);
 
+	
+	/*
 	s_data.textureSlots[0] = s_data.whiteCubeMap;
 
 	s_data.voxelVertexPositions[0] = { -0.5f, -0.5f, 0.5f, 1.0f };
@@ -112,6 +109,7 @@ void Renderer3D::Init()
 	s_data.voxelVertexPositions[5] = { 0.5f, -0.5f, -0.5f, 1.0f };
 	s_data.voxelVertexPositions[6] = { 0.5f,  0.5f, -0.5f, 1.0f };
 	s_data.voxelVertexPositions[7] = { -0.5f,  0.5f, -0.5f, 1.0f };
+	*/
 }
 
 void Renderer3D::Shutdown()
@@ -127,7 +125,7 @@ void Renderer3D::BeginScene()
 	s_data.shader2D->Bind();
 	s_data.shader2D->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
 
-	StartBatch();
+	//StartBatch();
 }
 
 void Renderer3D::EndScene()
@@ -142,22 +140,13 @@ std::shared_ptr<OpenGLCubeMap> Renderer3D::GetDefaultWhiteCubeMap()
 
 void Renderer3D::FlushBatch()
 {
-	unsigned int dataSize = (unsigned char*)s_data.quadVertexBufferPtr - (unsigned char*)s_data.quadVertexBufferBase;
-	s_data.quadVertexBuffer->SetData(s_data.quadVertexBufferBase, dataSize);
-	Debug::CheckOpenGLError();
-
-	for (unsigned int i = 0; i < s_data.textureSlotIndex; i++)
+	for (auto& pair : s_renderingBatches)
 	{
-		s_data.textureSlots[i]->Bind(i);
+		if (!pair.second.IsEmpty())
+		{
+			pair.second.Draw(pair.first);
+		}
 	}
-	Debug::CheckOpenGLError();
-
-	s_data.quadVertexArray->GetIndexBuffer()->Bind();
-
-	glDrawElements(GL_TRIANGLES, s_data.quadIndexCount, GL_UNSIGNED_INT, nullptr);
-
-	Debug::CheckOpenGLError();
-	s_data.stats.numDrawCalls++;
 }
 
 void Renderer3D::StartBatch()
@@ -168,13 +157,9 @@ void Renderer3D::StartBatch()
 }
 
 void Renderer3D::DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture, 
-	float tileFactor, const glm::vec4& tintColor)
+	unsigned int renderTraget, float tileFactor, const glm::vec4& tintColor)
 {
-	CheckBatchCapacity();
-
-	float textureIndex = GetTextureIndex(texture);
-
-	UploadVoxel(transform, textureIndex, tileFactor, tintColor);
+	UploadVoxel(transform, texture, tileFactor, tintColor, renderTraget);
 }
 
 void Renderer3D::CheckBatchCapacity()
@@ -225,71 +210,62 @@ void Renderer3D::ResetStats()
 	s_data.stats.Reset();
 }
 
-void Renderer3D::UploadVoxel(const glm::mat4& transform, float textureIndex,
-	float tileFactor, const glm::vec4& tintColor)
+void Renderer3D::UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+	float tileFactor, const glm::vec4& tintColor, unsigned int renderTarget)
 {
-	glm::vec3 cubePosAndNormals[] = {
-		     // positions                // normals
+	int textureIndex = s_renderingBatches[renderTarget].AddTexture(texture, renderTarget);
 
-		//back face 
-		//index order 0, 1, 2, 2, 3, 0
-		{ -0.5f, -0.5f, -0.5f },	{  0.0f,  0.0f, -1.0f },
-		{  0.5f, -0.5f, -0.5f },	{  0.0f,  0.0f, -1.0f },
-		{  0.5f,  0.5f, -0.5f },	{  0.0f,  0.0f, -1.0f },
-		//{ 0.5f,  0.5f, -0.5f },	{  0.0f,  0.0f, -1.0f }, //duplicated
-		{ -0.5f,  0.5f, -0.5f },	{  0.0f,  0.0f, -1.0f },
-		//{ -0.5f, -0.5f, -0.5f },	{  0.0f,  0.0f, -1.0f }, //duplicated
-														  
-		//front face				 					  
-		{ -0.5f, -0.5f,  0.5f },	{  0.0f,  0.0f,  1.0f },
-		{  0.5f, -0.5f,  0.5f },	{  0.0f,  0.0f,  1.0f },
-		{  0.5f,  0.5f,  0.5f },	{  0.0f,  0.0f,  1.0f },
-		//{ 0.5f,  0.5f,  0.5f },	{  0.0f,  0.0f,  1.0f }, //duplicated
-		{ -0.5f,  0.5f,  0.5f },	{  0.0f,  0.0f,  1.0f },
-		//{ -0.5f, -0.5f,  0.5f },	{  0.0f,  0.0f,  1.0f }, //duplicated
-		 					  		 					  
-		//left face			  		 					  
-		{ -0.5f,  0.5f,  0.5f },	{ -1.0f,  0.0f,  0.0f },
-		{ -0.5f,  0.5f, -0.5f },	{ -1.0f,  0.0f,  0.0f },
-		{ -0.5f, -0.5f, -0.5f },	{ -1.0f,  0.0f,  0.0f },
-		//{ -0.5f, -0.5f, -0.5f },	{ -1.0f,  0.0f,  0.0f }, //duplicated
-		{ -0.5f, -0.5f,  0.5f },	{ -1.0f,  0.0f,  0.0f },
-		//{ -0.5f,  0.5f,  0.5f },	{ -1.0f,  0.0f,  0.0f }, //duplicated
-		 					  		 					  
-		//right face		  		 					  
-		{  0.5f,  0.5f,  0.5f },	{  1.0f,  0.0f,  0.0f },
-		{  0.5f,  0.5f, -0.5f },	{  1.0f,  0.0f,  0.0f },
-		{  0.5f, -0.5f, -0.5f },	{  1.0f,  0.0f,  0.0f },
-		//{ 0.5f, -0.5f, -0.5f },	{  1.0f,  0.0f,  0.0f }, //duplicated
-		{  0.5f, -0.5f,  0.5f },	{  1.0f,  0.0f,  0.0f },
-		//{ 0.5f,  0.5f,  0.5f },	{  1.0f,  0.0f,  0.0f }, //duplicated
-		 					  		 					  
-		//down face					 					  
-		{ -0.5f, -0.5f, -0.5f },	{  0.0f, -1.0f,  0.0f },
-		{  0.5f, -0.5f, -0.5f },	{  0.0f, -1.0f,  0.0f },
-		{  0.5f, -0.5f,  0.5f },	{  0.0f, -1.0f,  0.0f },
-		//{ 0.5f, -0.5f,  0.5f },	{  0.0f, -1.0f,  0.0f }, //duplicated
-		{ -0.5f, -0.5f,  0.5f },	{  0.0f, -1.0f,  0.0f },
-		//{ -0.5f, -0.5f, -0.5f } ,	{  0.0f, -1.0f,  0.0f }, //duplicated
-		 					  		 					  
-		//up face					 					  
-		{ -0.5f,  0.5f, -0.5f },	{  0.0f,  1.0f,  0.0f },
-		{  0.5f,  0.5f, -0.5f },	{  0.0f,  1.0f,  0.0f },
-		//{ 0.5f,  0.5f,  0.5f },	{  0.0f,  1.0f,  0.0f }, //duplicated
-		{  0.5f,  0.5f,  0.5f },	{  0.0f,  1.0f,  0.0f },
-		{ -0.5f,  0.5f,  0.5f },	{  0.0f,  1.0f,  0.0f },
-		//{ -0.5f,  0.5f, -0.5f },	{  0.0f,  1.0f,  0.0f } //duplicated
+	glm::vec3 position[] = {
+		{ -0.5f, -0.5f, -0.5f },
+		{  0.5f, -0.5f, -0.5f },
+		{ -0.5f,  0.5f, -0.5f },
+		{  0.5f,  0.5f, -0.5f },
+		{ -0.5f, -0.5f,  0.5f },
+		{  0.5f, -0.5f,  0.5f },
+		{ -0.5f,  0.5f,  0.5f },
+		{  0.5f,  0.5f,  0.5f }
 	};
 
-	for (size_t i = 0; i < sizeof(cubePosAndNormals) / sizeof(glm::vec3); i += 2)
+	VertexData cubeVertices[8];
+	unsigned int index = 0;
+
+	for (int i = 0; i < sizeof(position)/sizeof(glm::vec3); i++)
 	{
-		s_data.quadVertexBufferPtr->position = (glm::vec3)(transform * glm::vec4(cubePosAndNormals[i], 1));
-		s_data.quadVertexBufferPtr->color = tintColor;
-		s_data.quadVertexBufferPtr->normal = cubePosAndNormals[i + 1];
-		s_data.quadVertexBufferPtr->textureIndex = textureIndex;
-		s_data.quadVertexBufferPtr->tillingFactor = tileFactor;
-		s_data.quadVertexBufferPtr++;
+		cubeVertices[i].position = (glm::vec3)(transform * glm::vec4(position[i], 1));
+		cubeVertices[i].color = tintColor;
+		cubeVertices[i].normal = position[i];
+		cubeVertices[i].textureIndex = textureIndex;
+		cubeVertices[i].tillingFactor = tileFactor;
 	}
+
+	unsigned int indices[] = {
+		//back face
+		1, 0, 2,
+		2, 3, 1,
+
+		//left face
+		0, 4, 6,
+		6, 2, 0,
+
+		//front face
+		4, 5, 7, 
+		7, 6, 4,
+
+		//right face
+		5, 1, 3,
+		3, 7, 5,
+
+		//top face
+		6, 7, 3, 
+		3, 2, 6,
+
+		//bottom face
+		4, 5, 1,
+		1, 0, 4
+	};
+
+	s_renderingBatches[renderTarget].Add(cubeVertices, sizeof(cubeVertices) / sizeof(VertexData), indices, 
+		sizeof(indices) / sizeof(unsigned int), renderTarget);
 
 	s_data.quadIndexCount += 6 * 6;
 	s_data.stats.numIndices += 6 * 6;

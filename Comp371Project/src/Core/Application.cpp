@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "Script.h"
 #include "Time.h"
+#include "Debug.h"
 
 #include <iostream>
 
@@ -23,6 +24,7 @@ void WindowResizeEvent(GLFWwindow* w, int width, int height)
 void Application::Init(const std::string& windowName, unsigned int width, unsigned int height)
 {
 	s_instance = new Application(windowName, width, height);
+	Debug::CheckOpenGLError();
 	s_instance->m_camera->UpdateAspectRatio();
 	AddScript(new CameraController());
 }
@@ -37,10 +39,12 @@ void Application::Run()
 	Application& app = GetApplication();
 	app.m_isRunning = true;
 
+	Debug::CheckOpenGLError();
 	app.CallOnStartScripts();
 
 	while (app.m_isRunning && !glfwWindowShouldClose(app.m_window))
 	{
+		Debug::CheckOpenGLError();
 		Time::UpdateTime();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(app.m_backgroundColor.r, app.m_backgroundColor.g, app.m_backgroundColor.b, app.m_backgroundColor.a);

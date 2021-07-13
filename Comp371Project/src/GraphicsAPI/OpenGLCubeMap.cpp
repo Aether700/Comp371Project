@@ -2,6 +2,7 @@
 #include "OpenGLCubeMap.h"
 #include "../Dependencies/glew-2.1.0/include/GL/glew.h"
 #include "../Dependencies/stb_image/stb_image.h"
+#include "../Core/Debug.h"
 
 #include <iostream>
 #include <assert.h>
@@ -9,6 +10,7 @@
 OpenGLCubeMap::OpenGLCubeMap(const std::array<std::string, 6>& faceTextures) : m_width(0), m_height(0)
 {
 	glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_rendererID);
+	Bind();
 
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, channels;
@@ -66,7 +68,7 @@ OpenGLCubeMap::OpenGLCubeMap(const std::array<std::string, 6>& faceTextures) : m
 OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 {
 	glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_rendererID);
-
+	Bind();
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, channels;
 	unsigned char* data = stbi_load(faceTexture.c_str(), &width, &height, &channels, 0);
@@ -116,9 +118,13 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, void* data) 
 	: m_width(width), m_height(height)
 {
+	assert(data != nullptr && width > 0 && height > 0);
+
 	glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_rendererID);
 	m_internalFormat[0] = GL_RGB8;
 	m_dataFormat[0] = GL_RGB;
+
+	Bind();
 
 	for (size_t i = 0; i < 6; i++)
 	{
