@@ -13,7 +13,7 @@ int main()
 
 	//Add Scripts here   
 	//Application::AddScript(new TriangleTest());
-	//Application::AddScript(new CubeRendereringTest());
+	Application::AddScript(new CubeRendereringTest());
 	Application::AddScript(new EmptySquareTest());
 	///////////////////
 
