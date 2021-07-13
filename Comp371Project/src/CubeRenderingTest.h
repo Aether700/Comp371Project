@@ -15,8 +15,6 @@
 #include <string>
 #include <assert.h>
 
-//https://github.com/PancakeAssassin/OpenGLTutorialRepository/blob/master/OpenGLTutorial2/main.cpp
-
 class CubeRendereringTest : public Script
 {
 public:
@@ -29,9 +27,10 @@ public:
 			color = { 0, 0, 1, 1 };
 		}
 		
-		Renderer3D::DrawVoxel(m_transform.GetTransformMatrix(), Renderer3D::GetDefaultWhiteCubeMap(), GL_TRIANGLES, 1, color);
+		Renderer3D::DrawQuad(m_transform.GetTransformMatrix(), GL_TRIANGLES, color);
+		Renderer3D::DrawVoxel({ 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1 });
 	}
 
 private:
-	Transform m_transform;
+	Transform m_transform = Transform(glm::vec3{3, 0, -2});
 };

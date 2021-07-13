@@ -7,6 +7,7 @@ class OpenGLTexture2D : public OpenGLTexture
 {
 public:
 	OpenGLTexture2D(unsigned int width, unsigned int height);
+	OpenGLTexture2D(unsigned int width, unsigned int height, void* data);
 	OpenGLTexture2D(const std::string& path);
 	~OpenGLTexture2D();
 

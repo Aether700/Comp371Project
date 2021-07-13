@@ -39,12 +39,13 @@ void Application::Run()
 	Application& app = GetApplication();
 	app.m_isRunning = true;
 
-	Debug::CheckOpenGLError();
 	app.CallOnStartScripts();
 
 	while (app.m_isRunning && !glfwWindowShouldClose(app.m_window))
 	{
-		Debug::CheckOpenGLError();
+		//reset stats for the frame
+		Renderer3D::ResetStats();
+
 		Time::UpdateTime();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(app.m_backgroundColor.r, app.m_backgroundColor.g, app.m_backgroundColor.b, app.m_backgroundColor.a);

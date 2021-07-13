@@ -20,6 +20,21 @@ OpenGLTexture2D::OpenGLTexture2D(unsigned int width, unsigned int height)
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
+OpenGLTexture2D::OpenGLTexture2D(unsigned int width, unsigned int height, void* data)
+	: m_internalFormat(GL_RGBA8), m_dataFormat(GL_RGBA), m_width(width), m_height(height)
+{
+	glCreateTextures(GL_TEXTURE_2D, 1, &m_rendererID);
+	glTextureStorage2D(m_rendererID, 1, m_internalFormat, m_width, m_height);
+
+	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);
+}
+
 OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_path(path)
 {
 	int width, height, channels;

@@ -4,11 +4,10 @@
 #include <array>
 #include <string>
 
-//temp: https://learnopengl.com/Advanced-OpenGL/Cubemaps
-
 //cube map used to generate textures for the voxels produced by the batch renderer
 class OpenGLCubeMap : public OpenGLTexture
 {
+	friend class Renderer3D;
 public:
 
 	/*pass the texture used for each face where each texture 
@@ -30,7 +29,7 @@ public:
 
 	~OpenGLCubeMap();
 
-	virtual void Bind(unsigned int index = 0) const override;
+	virtual void Bind(unsigned int slot = 0) const override;
 
 	virtual bool operator==(const OpenGLTexture& other) const override
 	{
@@ -44,6 +43,7 @@ public:
 	}
 
 private:
+
 	unsigned int m_rendererID;
 
 	//all textures need to have the same width and height

@@ -1,7 +1,6 @@
 #include "OpenGLVertexArray.h"
 #include "../Dependencies/glew-2.1.0/include/GL/glew.h"
 
-// temp function will change place later
 static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
 {
 	switch (type)

@@ -147,7 +147,7 @@ OpenGLCubeMap::~OpenGLCubeMap()
 	glDeleteTextures(1, &m_rendererID);
 }
 
-void OpenGLCubeMap::Bind(unsigned int index) const
+void OpenGLCubeMap::Bind(unsigned int slot) const
 {
-	glBindTexture(GL_TEXTURE_CUBE_MAP, m_rendererID);
+	glBindTextureUnit(slot, m_rendererID);
 }
