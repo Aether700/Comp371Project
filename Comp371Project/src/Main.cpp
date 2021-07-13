@@ -5,6 +5,7 @@
 #include "Core/Application.h"
 #include "Core/Script.h"
 
+
 int main()
 {
 	Application::Init();

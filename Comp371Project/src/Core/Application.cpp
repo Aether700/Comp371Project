@@ -109,6 +109,9 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 
 	m_camera = std::make_shared<Camera>();
 	Renderer3D::Init();
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 }
 
 Application::~Application()

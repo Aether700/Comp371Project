@@ -19,57 +19,61 @@ struct VertexCubeData
 	glm::vec3 pos;
 };
 
+//https://github.com/PancakeAssassin/OpenGLTutorialRepository/blob/master/OpenGLTutorial2/main.cpp
+
 class CubeRendereringTest : public Script
 {
 public:
 	
 	void OnStart()
 	{
-		float position[] = {
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
+		float cubeVertices[] =
+		{
+			 0.5f,  0.5f,  0.5f, //0
+			-0.5f,  0.5f,  0.5f, //1
+			-0.5f,  0.5f, -0.5f, //2
+			 0.5f,  0.5f, -0.5f, //3
+			 0.5f, -0.5f,  0.5f, //4
+			-0.5f, -0.5f,  0.5f, //5
+			-0.5f, -0.5f, -0.5f, //6
+			 0.5f, -0.5f, -0.5f  //7
 		};
 
 		m_vao = std::make_shared<OpenGLVertexArray>();
-		m_vbo = std::make_shared<OpenGLVertexBuffer>(position, sizeof(position));
+		m_vbo = std::make_shared<OpenGLVertexBuffer>(cubeVertices, sizeof(cubeVertices));
 
 		m_vbo->SetLayout({ { ShaderDataType::Float3, "position" } });
 
 		m_vao->AddVertexBuffer(m_vbo);
 
-		unsigned int indices[] = {
-			//back face
-			0, 1, 2,
-			2, 3, 0,
+		unsigned int indices[] =
+		{
+			//top face
+			0, 1, 3, 
+			3, 1, 2,
+
 
 			//front face
-			4, 5, 7,
-			7, 6, 4,
-
-			//left face
-			0, 4, 6,
-			6, 2, 0,
-
+			2, 6, 7, 
+			7, 3, 2,
+			
 			//bottom face
-			4, 5, 1,
-			1, 0, 4,
+			7, 6, 5, 
+			5, 4, 7,
+
+			//back face
+			5, 1, 4, 
+			4, 1, 0,
 
 			//right face
-			5, 1, 3,
-			3, 7, 5,
+			4, 3, 7, 
+			3, 4, 0,
 
-			//top face
-			6, 7, 3,
-			3, 2, 6
+			//left face
+			5, 6, 2,
+			5, 1, 2
 		};
-
-		m_ibo = std::make_shared<OpenGLIndexBuffer>(indices, sizeof(indices) / sizeof(indices));
+		m_ibo = std::make_shared<OpenGLIndexBuffer>(indices, sizeof(indices) / sizeof(unsigned int));
 		
 		m_shader = std::make_shared<OpenGLShader>("Resources/Shaders/CubeShader.glsl");
 
@@ -97,7 +101,6 @@ public:
 
 	void OnRender()
 	{
-		
 		glm::mat4 viewProjMatrix = Application::GetCamera()->GetProjectionMatrix()
 			* glm::inverse(Application::GetCamera()->GetTransform().GetTransformMatrix());
 
@@ -107,7 +110,7 @@ public:
 		
 		//bind vertex array and vertex buffer before drawing since 
 		//other stuff might have been bound before this is called
-		Renderer3D::GetDefaultWhiteCubeMap()->Bind();
+		//Renderer3D::GetDefaultWhiteCubeMap()->Bind();
 		m_vao->Bind();
 		m_vbo->Bind();
 		m_ibo->Bind();
