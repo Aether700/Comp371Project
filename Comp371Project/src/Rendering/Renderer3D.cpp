@@ -202,54 +202,65 @@ void Renderer3D::FlushBatch()
 	}
 }
 
-void Renderer3D::DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture, 
-	unsigned int renderTraget, float tileFactor, const glm::vec4& tintColor)
+void Renderer3D::DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
+	float tileFactor, const glm::vec4& tintColor)
 {
-	UploadVoxel(transform, texture, tileFactor, tintColor, renderTraget);
+	UploadVoxel(transform, texture, tileFactor, tintColor);
 }
 
 void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
-	std::shared_ptr<OpenGLCubeMap> texture, unsigned int renderTraget, float tileFactor, const glm::vec4& tintColor)
+	std::shared_ptr<OpenGLCubeMap> texture, float tileFactor, const glm::vec4& tintColor)
 {
 	Transform t = Transform(position, rotation, scale);
-	DrawVoxel(t.GetTransformMatrix(), texture, renderTraget, tileFactor, tintColor);
+	DrawVoxel(t.GetTransformMatrix(), texture, tileFactor, tintColor);
 }
 
-void Renderer3D::DrawVoxel(const glm::mat4& transform, unsigned int renderTraget,
-	const glm::vec4& tintColor)
+void Renderer3D::DrawVoxel(const glm::mat4& transform, const glm::vec4& color)
 {
-	DrawVoxel(transform, GetDefaultWhiteCubeMap(), renderTraget, 1, tintColor);
+	DrawVoxel(transform, GetDefaultWhiteCubeMap(), 1, color);
 }
 
 void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, 
-	const glm::vec3& scale, unsigned int renderTraget, const glm::vec4& tintColor)
+	const glm::vec3& scale, const glm::vec4& color)
 {
-	DrawVoxel(position, rotation, scale, GetDefaultWhiteCubeMap(), renderTraget, 1.0f, tintColor);
+	DrawVoxel(position, rotation, scale, GetDefaultWhiteCubeMap(), 1.0f, color);
 }
 
-void Renderer3D::DrawQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
-	unsigned int renderTraget, float tileFactor, const glm::vec4& tintColor)
+void Renderer3D::DrawQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture, 
+	float tileFactor, const glm::vec4& tintColor)
 {
-	UploadQuad(transform, texture, tileFactor, tintColor, renderTraget);
+	UploadQuad(transform, texture, tileFactor, tintColor);
 }
 
 void Renderer3D::DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
-	std::shared_ptr<OpenGLTexture2D> texture, unsigned int renderTraget, float tileFactor,
+	std::shared_ptr<OpenGLTexture2D> texture, float tileFactor,
 	const glm::vec4& tintColor)
 {
 	Transform t = Transform(position, rotation, scale);
-	DrawQuad(t.GetTransformMatrix(), texture, renderTraget, tileFactor, tintColor);
+	DrawQuad(t.GetTransformMatrix(), texture, tileFactor, tintColor);
 }
 
-void Renderer3D::DrawQuad(const glm::mat4& transform, unsigned int renderTraget, const glm::vec4& tintColor)
+void Renderer3D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
 {
-	DrawQuad(transform, GetDefaultWhiteTexture(), renderTraget, 1.0f, tintColor);
+	DrawQuad(transform, GetDefaultWhiteTexture(), 1.0f, color);
 }
 
-void Renderer3D::DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
-	unsigned int renderTraget, const glm::vec4& tintColor)
+void Renderer3D::DrawQuad(const glm::vec3& position, const glm::vec3& rotation, 
+	const glm::vec3& scale, const glm::vec4& color)
 {
-	DrawQuad(position, rotation, scale, GetDefaultWhiteTexture(), renderTraget, 1.0f, tintColor);
+	DrawQuad(position, rotation, scale, GetDefaultWhiteTexture(), 1.0f, color);
+}
+
+void Renderer3D::DrawWireSquare(const glm::mat4& transform, const glm::vec4& color)
+{
+	UploadWireSquare(transform, GetDefaultWhiteTexture(), 1, color);
+}
+
+void Renderer3D::DrawWireSquare(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const glm::vec4& color)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawWireSquare(t.GetTransformMatrix(), color);
 }
 
 const Renderer3DStatistics& Renderer3D::GetStats()
@@ -263,8 +274,9 @@ void Renderer3D::ResetStats()
 }
 
 void Renderer3D::UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
-	float tileFactor, const glm::vec4& tintColor, unsigned int renderTarget)
+	float tileFactor, const glm::vec4& tintColor)
 {
+	unsigned int renderTarget = GL_TRIANGLES;
 	int textureIndex = s_renderingBatches[renderTarget].AddTexture(texture, renderTarget);
 
 	glm::vec3 position[] = {
@@ -320,8 +332,9 @@ void Renderer3D::UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLT
 }
 
 void Renderer3D::UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
-	float tileFactor, const glm::vec4& tintColor, unsigned int renderTarget)
+	float tileFactor, const glm::vec4& tintColor)
 {
+	unsigned int renderTarget = GL_TRIANGLES;
 	int textureIndex = s_renderingBatches[renderTarget].AddTexture(texture, renderTarget);
 
 	glm::vec3 position[] = {
@@ -345,6 +358,41 @@ void Renderer3D::UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTe
 	unsigned int indices[] = {
 		0, 1, 2,
 		2, 3, 0
+	};
+
+	s_renderingBatches[renderTarget].Add(quadVertices, sizeof(quadVertices) / sizeof(VertexData), indices,
+		sizeof(indices) / sizeof(unsigned int), renderTarget);
+}
+
+void Renderer3D::UploadWireSquare(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+	float tileFactor, const glm::vec4& tintColor)
+{
+	unsigned int renderTarget = GL_LINES;
+	int textureIndex = s_renderingBatches[renderTarget].AddTexture(texture, renderTarget);
+
+	glm::vec3 position[] = {
+		{ -0.5f, -0.5f,  0.0f },
+		{  0.5f, -0.5f,  0.0f },
+		{  0.5f,  0.5f,  0.0f },
+		{ -0.5f,  0.5f,  0.0f }
+	};
+
+	VertexData quadVertices[4];
+
+	for (int i = 0; i < sizeof(position) / sizeof(glm::vec3); i++)
+	{
+		quadVertices[i].position = (glm::vec3)(transform * glm::vec4(position[i], 1));
+		quadVertices[i].color = tintColor;
+		quadVertices[i].normal = position[i];
+		quadVertices[i].textureIndex = textureIndex;
+		quadVertices[i].tillingFactor = tileFactor;
+	}
+
+	unsigned int indices[] = {
+		0, 1,
+		1, 2, 
+		2, 3, 
+		3, 0
 	};
 
 	s_renderingBatches[renderTarget].Add(quadVertices, sizeof(quadVertices) / sizeof(VertexData), indices,

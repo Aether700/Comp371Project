@@ -27,7 +27,7 @@ public:
 			color = { 0, 0, 1, 1 };
 		}
 		
-		Renderer3D::DrawQuad(m_transform.GetTransformMatrix(), GL_TRIANGLES, color);
+		Renderer3D::DrawQuad(m_transform.GetTransformMatrix(), color);
 		Renderer3D::DrawVoxel({ 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1 });
 	}
 

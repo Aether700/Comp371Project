@@ -164,6 +164,7 @@
     <ClInclude Include="src\Core\Debug.h" />
     <ClInclude Include="src\CubeRenderingTest.h" />
     <ClInclude Include="src\Dependencies\stb_image\stb_image.h" />
+    <ClInclude Include="src\EmptySquareTest.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLCubeMap.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLTexture2D.h" />
     <ClInclude Include="src\Rendering\Camera.h" />

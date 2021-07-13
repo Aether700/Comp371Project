@@ -106,34 +106,37 @@ public:
 	//primitives
 
 	//voxels/cubes
-	static void DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture, 
-		unsigned int renderTraget = GL_TRIANGLES, float tileFactor = 1.0f, 
+	static void DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture, float tileFactor = 1.0f, 
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
-		std::shared_ptr<OpenGLCubeMap> texture, unsigned int renderTraget = GL_TRIANGLES, float tileFactor = 1.0f,
+		std::shared_ptr<OpenGLCubeMap> texture, float tileFactor = 1.0f,
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
-	static void DrawVoxel(const glm::mat4& transform, unsigned int renderTraget = GL_TRIANGLES, 
+	static void DrawVoxel(const glm::mat4& transform, 
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
-		unsigned int renderTraget = GL_TRIANGLES, const glm::vec4& tintColor = { 1, 1, 1, 1 });
+		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	//squares
 	static void DrawQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
-		unsigned int renderTraget = GL_TRIANGLES, float tileFactor = 1.0f,
-		const glm::vec4& tintColor = { 1, 1, 1, 1 });
+		float tileFactor = 1.0f, const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	static void DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
-		std::shared_ptr<OpenGLTexture2D> texture, unsigned int renderTraget = GL_TRIANGLES, float tileFactor = 1.0f,
+		std::shared_ptr<OpenGLTexture2D> texture, float tileFactor = 1.0f,
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
-	static void DrawQuad(const glm::mat4& transform, unsigned int renderTraget = GL_TRIANGLES,
-		const glm::vec4& tintColor = { 1, 1, 1, 1 });
+	static void DrawQuad(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
 
-	static void DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
-		unsigned int renderTraget = GL_TRIANGLES, const glm::vec4& tintColor = { 1, 1, 1, 1 });
+	static void DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
+	//wired squares
+	static void DrawWireSquare(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawWireSquare(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const glm::vec4& color = { 1, 1, 1, 1 });
 
 private:
 	//draw to data passed to the renderer to the screen
@@ -145,11 +148,14 @@ private:
 
 	//helper function which loads a voxel into the data to pass to the gpu when the renderer flushes
 	static void UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,	
-		float tileFactor, const glm::vec4& tintColor, unsigned int renderTarget);
+		float tileFactor, const glm::vec4& tintColor);
 
+	//uploads a quad or filled in square into the renderer
 	static void UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
-		float tileFactor, const glm::vec4& tintColor, unsigned int renderTarget);
+		float tileFactor, const glm::vec4& tintColor);
 
+	static void UploadWireSquare(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+		float tileFactor, const glm::vec4& tintColor);
 
 	static Renderer3DStatistics s_stats;
 
