@@ -167,6 +167,7 @@
     <ClInclude Include="src\EmptySquareTest.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLCubeMap.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLTexture2D.h" />
+    <ClInclude Include="src\ParentTransformTest.h" />
     <ClInclude Include="src\Rendering\Camera.h" />
     <ClInclude Include="src\Core\Input.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLShader.h" />

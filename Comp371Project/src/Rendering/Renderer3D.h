@@ -113,10 +113,15 @@ public:
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	static void DrawVoxel(const glm::mat4& transform, 
-		const glm::vec4& tintColor = { 1, 1, 1, 1 });
+		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
+
+	static void DrawWireCube(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawWireCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	//squares
 	static void DrawQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
@@ -147,6 +152,9 @@ private:
 
 	//helper function which loads a voxel into the data to pass to the gpu when the renderer flushes
 	static void UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,	
+		float tileFactor, const glm::vec4& tintColor);
+
+	static void UploadWireCube(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
 	//uploads a quad or filled in square into the renderer

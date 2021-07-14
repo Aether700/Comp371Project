@@ -35,3 +35,9 @@ float Input::GetMouseY()
 {
 	return GetMousePosition().y;
 }
+
+void Input::SetLockCursor(bool value)
+{
+	unsigned int valueEnum = value ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL;
+	glfwSetInputMode(Application::GetWindow(), GLFW_CURSOR, valueEnum);
+}

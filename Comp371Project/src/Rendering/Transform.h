@@ -1,6 +1,7 @@
 #pragma once
 #include "../Dependencies/glm-0.9.9.8/glm/glm.hpp"
 #include "../Dependencies/glm-0.9.9.8/glm/gtc/matrix_transform.hpp"
+#include <memory>
 
 class Transform
 {
@@ -22,6 +23,26 @@ public:
 			* glm::rotate(glm::mat4(1.0f), rotation.y, { 0, 1, 0 })
 			* glm::rotate(glm::mat4(1.0f), rotation.z, { 0, 0, 1 });
 
-		return glm::translate(glm::mat4(1.0f), position) * rotationMatrix * glm::scale(glm::mat4(1.0f), scale);
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * rotationMatrix * glm::scale(glm::mat4(1.0f), scale);
+
+		if (m_parent != nullptr)
+		{
+			return m_parent->GetTransformMatrix() * transform;
+		}
+
+		return transform;
 	}
+
+	void SetParent(const std::shared_ptr<Transform>& parent)
+	{
+		m_parent = parent;
+	}
+
+	void SetParent(std::nullptr_t n)
+	{
+		m_parent = nullptr;
+	}
+
+private:
+	std::shared_ptr<Transform> m_parent = nullptr;
 };

@@ -224,6 +224,18 @@ void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation,
 	DrawVoxel(position, rotation, scale, GetDefaultWhiteCubeMap(), 1.0f, color);
 }
 
+void Renderer3D::DrawWireCube(const glm::mat4& transform, const glm::vec4& color)
+{
+	UploadWireCube(transform, GetDefaultWhiteCubeMap(), 1, color);
+}
+
+void Renderer3D::DrawWireCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const glm::vec4& color)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawWireCube(t.GetTransformMatrix(), color);
+}
+
 void Renderer3D::DrawQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture, 
 	float tileFactor, const glm::vec4& tintColor)
 {
@@ -326,6 +338,55 @@ void Renderer3D::UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLT
 	};
 
 	s_renderingBatches[renderTarget].Add(cubeVertices, sizeof(cubeVertices) / sizeof(VertexData), indices, 
+		sizeof(indices) / sizeof(unsigned int), renderTarget);
+}
+
+void Renderer3D::UploadWireCube(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+	float tileFactor, const glm::vec4& tintColor)
+{
+	unsigned int renderTarget = GL_LINES;
+	int textureIndex = s_renderingBatches[renderTarget].AddTexture(texture, renderTarget);
+
+	glm::vec3 position[] = {
+		{ -0.5f, -0.5f, -0.5f },
+		{  0.5f, -0.5f, -0.5f },
+		{ -0.5f,  0.5f, -0.5f },
+		{  0.5f,  0.5f, -0.5f },
+		{ -0.5f, -0.5f,  0.5f },
+		{  0.5f, -0.5f,  0.5f },
+		{ -0.5f,  0.5f,  0.5f },
+		{  0.5f,  0.5f,  0.5f }
+	};
+
+	VertexData cubeVertices[8];
+
+	for (int i = 0; i < sizeof(position) / sizeof(glm::vec3); i++)
+	{
+		cubeVertices[i].position = (glm::vec3)(transform * glm::vec4(position[i], 1));
+		cubeVertices[i].color = tintColor;
+		cubeVertices[i].normal = position[i];
+		cubeVertices[i].textureIndex = textureIndex;
+		cubeVertices[i].tillingFactor = tileFactor;
+	}
+
+	unsigned int indices[] = {
+		0, 1,
+		0, 2,
+		1, 3,
+		2, 3,
+
+		4, 5,
+		4, 6,
+		5, 7,
+		6, 7,
+
+		0, 4,
+		1, 5,
+		2, 6,
+		3, 7
+	};
+
+	s_renderingBatches[renderTarget].Add(cubeVertices, sizeof(cubeVertices) / sizeof(VertexData), indices,
 		sizeof(indices) / sizeof(unsigned int), renderTarget);
 }
 

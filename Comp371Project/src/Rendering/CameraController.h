@@ -10,10 +10,27 @@
 class CameraController : public Script
 {
 public:
+	void OnStart()
+	{
+		Input::SetLockCursor(true);
+	}
+
 	//handle camera input
 	void OnUpdate()
 	{
 		Transform& camTransform = Application::GetCamera()->GetTransform();
+
+		if (Input::IsKeyPressed(GLFW_KEY_ESCAPE))
+		{
+			Input::SetLockCursor(false);
+		}
+
+		if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+		{
+			Input::SetLockCursor(true);
+		}
+
+		//handle camera movement
 		if (Input::IsKeyPressed(GLFW_KEY_A))
 		{
 			camTransform.position.x -= m_cameraMoveSpeed * Time::GetDeltaTime();
@@ -34,64 +51,54 @@ public:
 			camTransform.position.z -= m_cameraMoveSpeed * Time::GetDeltaTime();
 		}
 
-		//handles the rotation from the arrow keys
-		if (Input::IsKeyPressed(GLFW_KEY_LEFT))
+		if (Input::IsKeyPressed(GLFW_KEY_SPACE))
 		{
-			camTransform.rotation.x += m_cameraRotationSpeed * Time::GetDeltaTime();
+			camTransform.position.y += m_cameraVerticalMoveSpeed * Time::GetDeltaTime();
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_RIGHT))
+		if (Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL))
 		{
-			camTransform.rotation.x -= m_cameraRotationSpeed * Time::GetDeltaTime();
+			camTransform.position.y -= m_cameraVerticalMoveSpeed * Time::GetDeltaTime();
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_UP))
-		{
-			camTransform.rotation.z += m_cameraRotationSpeed * Time::GetDeltaTime();
-		}
+		/*
+		//handle the camera orientation
+		glm::vec2 currMousePos = Input::GetMousePosition();
 
-		if (Input::IsKeyPressed(GLFW_KEY_DOWN))
+		if (m_lastMousePos != currMousePos)
 		{
-			camTransform.rotation.z -= m_cameraRotationSpeed * Time::GetDeltaTime();
-		}
+			glm::vec2 displacement = currMousePos - m_lastMousePos;
 
+			camTransform.rotation.y += displacement.x * m_cameraRotationSpeed * Time::GetDeltaTime();
+			camTransform.rotation.x += displacement.y * m_cameraRotationSpeed * Time::GetDeltaTime();
+
+			if (camTransform.rotation.x > m_verticalClamp)
+			{
+				camTransform.rotation.x = m_cameraVerticalMoveSpeed;
+			}
+			else if(camTransform.rotation.x < -m_verticalClamp)
+			{
+				camTransform.rotation.x = -m_cameraVerticalMoveSpeed;
+			}
+
+			m_lastMousePos = currMousePos;
+		}
+		*/
+		
 		//pressing the home key resets the 
 		//transform of the camera as specified in the assignment
 		if (Input::IsKeyPressed(GLFW_KEY_HOME))
 		{
 			camTransform = Transform();
 		}
-
-		//takes care of panning when right click is held
-		if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
-		{
-			glm::vec2 currMousePos = Input::GetMousePosition();
-			if (!m_rightClickPressed)
-			{
-				m_rightClickPressed = true;
-			}
-			else
-			{
-				glm::vec2 displacementVector = currMousePos - m_lastMousePos;
-				camTransform.position.x += displacementVector.x * m_panSpeed * Time::GetDeltaTime();
-			}
-
-			m_lastMousePos = currMousePos;
-		}
-		else
-		{
-			m_rightClickPressed = false;
-		}
-
-		//tilting here
 	}
 
 private:
 	float m_cameraMoveSpeed = 5.0f;
-	float m_cameraRotationSpeed = 3.0f;
+	float m_cameraVerticalMoveSpeed = m_cameraMoveSpeed;
+	float m_cameraRotationSpeed = 0.5f;
 
-	float m_panSpeed = 0.5f;
+	float m_verticalClamp = glm::radians(90.0f);
 
 	glm::vec2 m_lastMousePos;
-	bool m_rightClickPressed;
 };
