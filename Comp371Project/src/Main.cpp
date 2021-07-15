@@ -17,6 +17,7 @@ int main()
 	Application::Init();
 
 	//Add Scripts here   
+	//Application::AddScript(new EmptySquareTest());
 	Application::AddScript(new JamilHModel());
 	///////////////////
 

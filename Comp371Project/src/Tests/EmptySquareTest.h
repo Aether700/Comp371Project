@@ -22,6 +22,8 @@ public:
 				//1.5708rad= 90degree since size of the square is 1 and by rotating it 90 degree it will be at heigh (1,0.5,1) whihc is why the (x,-0.5, z)
 			}
 		}
+		
+		/*
 		glm::vec4 color = { 1, 0, 0, 1 };
 
 		if (Input::IsKeyPressed(GLFW_KEY_B))
@@ -31,6 +33,7 @@ public:
 
 		Renderer3D::DrawQuad(m_transform.GetTransformMatrix(), color);
 		Renderer3D::DrawVoxel({ 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1 });
+		*/
 	}
 
 private:

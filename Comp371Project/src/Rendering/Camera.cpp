@@ -24,21 +24,15 @@ void Camera::SetPerspective(float fov, float nearClip, float farClip)
 	RecalculateProjection();
 }
 
+//sets the viewport size of this camera and recalculates the projection matrix
 void Camera::SetViewportSize(unsigned int width, unsigned int height)
 {
 	m_aspectRatio = (float)width / (float)height;
 	RecalculateProjection();
-
 }
 
-void Camera::UpdateAspectRatio()
-{
-	int width, height;
-	glfwGetWindowSize(Application::GetWindow(), &width, &height);
-	m_aspectRatio = (float)width / (float)height;
-	RecalculateProjection();
-}
-
+//helper function which recalculates the projection matrix 
+//according to which projection type is being used
 void Camera::RecalculateProjection()
 {
 	if (m_projectionType == ProjectionType::Perspective)

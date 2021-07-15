@@ -5,22 +5,34 @@
 #include "Script.h"
 #include "Time.h"
 #include "Debug.h"
+#include "Random.h"
 
 #include <iostream>
 
 Application* Application::s_instance = nullptr;
 
+/*GLFW error callback handler which will display the error to 
+  the console and crash the program for debugging purposes
+
+  this function is set as a callback and is called by glfw in case of an error
+*/
 void GlfwErrorCallbackHandler(int errCode, const char* message)
 {
 	std::cout << "GLFW error: (" <<  errCode << ") " << message << "\n";
+	assert(false);
 }
 
+/* Callback called by glfw when the window is resized. 
+  this function will update the viewport and the aspect ratio of our camera
+*/
 void WindowResizeEvent(GLFWwindow* w, int width, int height)
 {
-	Application::GetCamera()->UpdateAspectRatio();
+	Application::GetCamera()->SetViewportSize(width, height);
 	glViewport(0, 0, width, height);
 }
 
+/* Initializes the application with the provided window name, width and height
+*/
 void Application::Init(const std::string& windowName, unsigned int width, unsigned int height)
 {
 	s_instance = new Application(windowName, width, height);
@@ -29,11 +41,17 @@ void Application::Init(const std::string& windowName, unsigned int width, unsign
 	AddScript(new CameraController());
 }
 
+//shuts down the application and clears the memory allocated on the heap
 void Application::Shutdown()
 {
 	delete s_instance;
 }
 
+/*main run function which will call the different functions of the scripts, 
+  run the Renderer3D::BeginScene and RendererEndScene functions as well as 
+  set the background color and clear the different buffers for opengl to 
+  work properly and call glfwPollEvents for input management
+*/
 void Application::Run()
 {
 	Application& app = GetApplication();
@@ -61,16 +79,21 @@ void Application::Run()
 	}
 }
 
+//provides a in code way to close the application
 void Application::Exit()
 {
 	GetApplication().m_isRunning = false;
 }
 
+//adds the provided script for the application to run. All scripts must be heap allocated
 void Application::AddScript(Script* s)
 {
 	GetApplication().m_scripts.push_back(s);
 }
 
+/*removes the provided script for the application 
+  to run if it can be found in the application
+*/
 void Application::RemoveScript(Script* s)
 {
 	Application& app = GetApplication();
@@ -85,12 +108,14 @@ void Application::RemoveScript(Script* s)
 	}
 }
 
+//sets the diameter of the points drawn by opengl
 void Application::SetPointSize(float diameter)
 {
 	assert(diameter > 0.0f);
 	glPointSize(diameter);
 }
 
+//Application constructor which takes a window name, width and heigh
 Application::Application(const std::string& windowName, unsigned int width, unsigned int height)
 {
 	if (glfwInit() == GLFW_FALSE)
@@ -118,8 +143,10 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 		throw "GLEW could not be initialized\n";
 	}
 
+	//we set a virtual camera in the world
 	m_camera = std::make_shared<Camera>();
 	Renderer3D::Init();
+	Random::Init();
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_PROGRAM_POINT_SIZE);
@@ -128,6 +155,7 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 	glPointSize(5.0f);
 }
 
+//Application destructor, will delete all the scripts the application contains
 Application::~Application()
 {
 	glfwTerminate();
@@ -138,11 +166,13 @@ Application::~Application()
 	}
 }
 
+//private helper function used to retrieve the application instance
 Application& Application::GetApplication()
 {
 	return *s_instance;
 }
 
+//helper function which calls OnStart on every script in the application
 void Application::CallOnStartScripts()
 {
 	for (Script* s : m_scripts)
@@ -151,6 +181,7 @@ void Application::CallOnStartScripts()
 	}
 }
 
+//helper function which calls OnRender on every script in the application
 void Application::CallOnRenderScripts()
 {
 	for (Script* s : m_scripts)
@@ -159,6 +190,7 @@ void Application::CallOnRenderScripts()
 	}
 }
 
+//helper function which calls OnUpdate on every script in the application
 void Application::CallOnUpdateScripts()
 {
 	for (Script* s : m_scripts)

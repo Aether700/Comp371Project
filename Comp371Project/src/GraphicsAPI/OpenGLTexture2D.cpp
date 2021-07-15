@@ -6,7 +6,7 @@
 #include <iostream>
 #include <assert.h>
 
-
+//defines an opengl 2D texture of the width and height provided without setting any texture data
 OpenGLTexture2D::OpenGLTexture2D(unsigned int width, unsigned int height)
 	: m_internalFormat(GL_RGBA8), m_dataFormat(GL_RGBA), m_width(width), m_height(height)
 {
@@ -20,6 +20,7 @@ OpenGLTexture2D::OpenGLTexture2D(unsigned int width, unsigned int height)
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
+//defines an opengl 2D texture of the width and height and texture data provided 
 OpenGLTexture2D::OpenGLTexture2D(unsigned int width, unsigned int height, void* data)
 	: m_internalFormat(GL_RGBA8), m_dataFormat(GL_RGBA), m_width(width), m_height(height)
 {
@@ -35,6 +36,7 @@ OpenGLTexture2D::OpenGLTexture2D(unsigned int width, unsigned int height, void* 
 	glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);
 }
 
+//reads the file at the file path provided and tries to create a 2D texture from it
 OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_path(path)
 {
 	int width, height, channels;
@@ -89,6 +91,7 @@ OpenGLTexture2D::~OpenGLTexture2D()
 	glDeleteTextures(1, &m_rendererID);
 }
 
+//sets the texture data of this texture object
 void OpenGLTexture2D::SetData(void* data, unsigned int size)
 {
 	unsigned int bytesPerChannel = m_dataFormat == GL_RGBA ? 4 : 3;

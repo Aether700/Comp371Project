@@ -25,12 +25,15 @@ public:
 	//will apply the same texture to every face
 	OpenGLCubeMap(const std::string& faceTextures);
 
+	//applies the texture data provided to all sides of the cube
 	OpenGLCubeMap(unsigned int width, unsigned int height, void* data);
 
 	~OpenGLCubeMap();
 
+	//binds the cubemap to the provided texture slot (defaults to slot 0)
 	virtual void Bind(unsigned int slot = 0) const override;
 
+	//check if this cubemap is equal to the provided texture
 	virtual bool operator==(const OpenGLTexture& other) const override
 	{
 		const OpenGLCubeMap* ptr = dynamic_cast<const OpenGLCubeMap*>(&other);

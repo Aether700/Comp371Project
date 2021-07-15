@@ -48,6 +48,9 @@ void OpenGLVertexArray::Unbind() const
 	glBindVertexArray(0);
 }
 
+/*adds a vertex buffer to this vertex array and will also specify the
+  layout of the provided vertex buffer to the gpu by using glVertexAttribPointer
+*/
 void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<OpenGLVertexBuffer>& vertexBuffer)
 {
 	//make sure vertex buffer has a layout specified
@@ -73,6 +76,7 @@ void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<OpenGLVertexBuffer
 	m_vertexBuffers.push_back(vertexBuffer);
 }
 
+//sets the index buffer of this vertex array to the provided index buffer
 void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<OpenGLIndexBuffer>& index)
 {
 	glBindVertexArray(m_rendererID);

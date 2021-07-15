@@ -7,6 +7,7 @@
 #include <fstream>
 #include <array>
 
+//helper function which returns the opengl macro value of the shader type matching the string provided
 static unsigned int ShaderTypeFromString(const std::string& type)
 {
 	if (type == "vertex")
@@ -23,6 +24,7 @@ static unsigned int ShaderTypeFromString(const std::string& type)
 	return 0;
 }
 
+//creates a shader object from the file found at the filepath
 OpenGLShader::OpenGLShader(const std::string& filepath)
 {
 	std::string src = ReadFile(filepath);
@@ -38,6 +40,7 @@ OpenGLShader::OpenGLShader(const std::string& filepath)
 	m_name = filepath.substr(lastSlash, count);
 }
 
+//creates a shader object with the name provided from the vertex and fragment shader source code provided
 OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 	: m_name(name)
 {
@@ -53,6 +56,7 @@ OpenGLShader::~OpenGLShader()
 	glDeleteProgram(rendererID);
 }
 
+//reads the file at the filepath provided and returns it in string form
 std::string OpenGLShader::ReadFile(const std::string& filepath)
 {
 	std::string result;
@@ -75,6 +79,17 @@ std::string OpenGLShader::ReadFile(const std::string& filepath)
 	return result;
 }
 
+/*preprocesses the file before compilation. this API allows multiple
+  shaders to be written in the same file.
+
+  To define each shader type in the file, just type "#type vertex\n" at the top of
+  your vertex shader code and type "#type fragment\n" or "#type pixel\n" at the
+  top of your fragment/pixel shader code
+
+  This class expects this kind of format and will fail to process any files
+  which does not follow this structure (the order of the vertex and fragment
+  shader code does not matter as long as the right "headers" are written above it)
+*/
 std::unordered_map<unsigned int, std::string> OpenGLShader::PreProcess(const std::string& src)
 {
 	std::unordered_map<unsigned int, std::string> shaderSrcs;
@@ -159,12 +174,6 @@ void OpenGLShader::UploadUniformFloat(const std::string& name, float value)
 	glUniform1f(location, value);
 }
 
-void OpenGLShader::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
-{
-	int location = GetUniformLocation(name);
-	glUniform2f(location, value.r, value.g);
-}
-
 void OpenGLShader::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
 {
 	int location = GetUniformLocation(name);
@@ -189,6 +198,7 @@ void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& m
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
+//compiles and links all the shaders into an opengl shader program
 void OpenGLShader::Compile(const std::unordered_map<unsigned int, std::string>& shaderSrcs)
 {
 	unsigned int program = glCreateProgram();
@@ -262,6 +272,11 @@ void OpenGLShader::Compile(const std::unordered_map<unsigned int, std::string>& 
 	}
 }
 
+/*retrieves the uniform location for the uniform name provided
+  or -1 if the uniform was not found in this shader.
+
+  if the uniform is not found a warning message will be written to the console indicating so
+*/
 int OpenGLShader::GetUniformLocation(const std::string& name)
 {
 	if (m_uniformLocations.find(name) != m_uniformLocations.end())

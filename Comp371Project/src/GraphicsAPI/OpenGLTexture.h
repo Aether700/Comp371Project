@@ -1,5 +1,9 @@
 #pragma once
 
+/*generic texture class which defines an interface which all textures 
+  should implement (note that this class is not an actual c++ interface 
+  as it defines a function)
+*/
 class OpenGLTexture
 {
 public:

@@ -1,5 +1,10 @@
 #pragma once
 
+/*basic class which contains functions to be called by the application. 
+  This class is meant to be inherited by other classes to be able to 
+  provide behavior to the application depending on what scripts are 
+  loaded into the application
+*/
 class Script
 {
 public:

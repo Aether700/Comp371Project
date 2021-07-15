@@ -3,6 +3,7 @@
 #include "../Dependencies/glm-0.9.9.8/glm/gtc/matrix_transform.hpp"
 #include <memory>
 
+//transform class which contains positional, rotational and scale data of an object
 class Transform
 {
 public:
@@ -16,7 +17,10 @@ public:
 	Transform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) 
 		: position(position), rotation(rotation), scale(scale) { }
 
-
+	/*builds the transform matrix of this transform object from the position, rotation and 
+	  scale vectors of this transform. will also apply the parent's transform matrix if 
+	  this object has a parent transform
+	*/
 	glm::mat4 GetTransformMatrix() const
 	{
 		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), rotation.x, { 1, 0, 0 })
@@ -33,6 +37,8 @@ public:
 		return transform;
 	}
 
+	//setter functions which allows the changing and removing of 
+	//the parent transform (set parent to nullptr to remove it)
 	void SetParent(const std::shared_ptr<Transform>& parent)
 	{
 		m_parent = parent;

@@ -7,6 +7,17 @@
 #include <iostream>
 #include <assert.h>
 
+
+/*pass the texture used for each face where each texture
+  is applied in this order
+
+  index 0 -> right face (positive X)
+  index 1 -> left face (negative X)
+  index 2 -> top face (positive Y)
+  index 3 -> bottom face (negative Y)
+  index 4 -> front face (positive Z)
+  index 5 -> back face (negative Z)
+*/
 OpenGLCubeMap::OpenGLCubeMap(const std::array<std::string, 6>& faceTextures) : m_width(0), m_height(0)
 {
 	glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_rendererID);
@@ -65,6 +76,7 @@ OpenGLCubeMap::OpenGLCubeMap(const std::array<std::string, 6>& faceTextures) : m
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }
 
+//will apply the same texture to every face
 OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 {
 	glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_rendererID);
@@ -115,6 +127,7 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 	stbi_image_free(data);
 }
 
+//applies the texture data provided to all sides of the cube
 OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, void* data) 
 	: m_width(width), m_height(height)
 {
@@ -147,6 +160,7 @@ OpenGLCubeMap::~OpenGLCubeMap()
 	glDeleteTextures(1, &m_rendererID);
 }
 
+//binds the cubemap to the provided texture slot (defaults to slot 0)
 void OpenGLCubeMap::Bind(unsigned int slot) const
 {
 	glBindTextureUnit(slot, m_rendererID);

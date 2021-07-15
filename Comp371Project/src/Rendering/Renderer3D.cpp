@@ -191,6 +191,7 @@ std::shared_ptr<OpenGLTexture2D> Renderer3D::GetDefaultWhiteTexture() { return s
 
 void Renderer3D::FlushBatch()
 {
+	s_shader->Bind();
 	for (auto& pair : s_renderingBatches)
 	{
 		if (!pair.second.IsEmpty())

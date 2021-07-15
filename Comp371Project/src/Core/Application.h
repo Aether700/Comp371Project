@@ -41,6 +41,7 @@ public:
 	static void AddScript(Script* s);
 	static void RemoveScript(Script* s);
 
+	//utils functions used to change opengl settings
 	static void SetBackgroundColor(glm::vec4 color) { GetApplication().m_backgroundColor = color; }
 	static void SetPointSize(float diameter);
 

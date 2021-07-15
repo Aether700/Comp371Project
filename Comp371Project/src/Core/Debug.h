@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <iostream>
 
+//class which contains all the debug functions of the program
 class Debug
 {
 public:

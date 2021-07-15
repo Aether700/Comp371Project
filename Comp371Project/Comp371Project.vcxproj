@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\Random.cpp" />
     <ClCompile Include="src\Dependencies\stb_image\stb_image.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLCubeMap.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLTexture2D.cpp" />
@@ -161,6 +162,7 @@
     <ClCompile Include="src\Rendering\Renderer3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\Random.h" />
     <ClInclude Include="src\JamilHModel.h" />
     <ClInclude Include="src\Tests\CameraControllerTestScene.h" />
     <ClInclude Include="src\Core\Debug.h" />

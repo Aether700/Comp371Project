@@ -26,6 +26,7 @@ struct VertexData
 	float tillingFactor;
 };
 
+//struct which contains the statistics of the renderer
 struct Renderer3DStatistics
 {
 	unsigned int numDrawCalls = 0;

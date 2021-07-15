@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <iostream>
 
+//enum class which represents the data types that can be passed to shaders
 enum class ShaderDataType
 {
 	None = 0,
@@ -13,6 +14,7 @@ enum class ShaderDataType
 	Bool
 };
 
+//helper function which returns the size in bytes for the provided ShaderDataType
 static unsigned int ShaderDataTypeSize(ShaderDataType type)
 {
 	switch (type)
@@ -35,6 +37,7 @@ static unsigned int ShaderDataTypeSize(ShaderDataType type)
 	return 0;
 }
 
+//struct which represents an element in the buffer layer of a vertex buffer 
 struct BufferElement
 {
 	std::string name;
@@ -48,6 +51,7 @@ struct BufferElement
 	BufferElement(ShaderDataType t, const std::string& n, bool nor = false) : name(n), type(t), offset(0),
 		size(ShaderDataTypeSize(t)), normalized(nor) { }
 
+	//returns the component count of the ShaderDataType stored in this buffer element
 	unsigned int GetComponentCount() const
 	{
 		switch (type)
@@ -71,6 +75,7 @@ struct BufferElement
 	}
 };
 
+//represents a buffer layout to be contained by the vertex buffer
 class BufferLayout
 {
 public:
@@ -81,9 +86,14 @@ public:
 		CalculateOffsetsAndStride();
 	}
 
+	//retrieve the strive of the layout
 	inline const unsigned int GetStride() const { return m_stride; }
+
+	//retrieve the list of buffer elements in the layout
 	inline const std::vector<BufferElement>& GetElements() const { return m_elements; }
 
+
+	//iterator functions for the buffer layout
 	std::vector<BufferElement>::iterator begin() { return m_elements.begin(); }
 	std::vector<BufferElement>::iterator end() { return m_elements.end(); }
 
@@ -92,6 +102,7 @@ public:
 
 private:
 
+	//helper function which calculates the offset and stride of the layout
 	void CalculateOffsetsAndStride()
 	{
 		unsigned int offset = 0;
@@ -111,16 +122,25 @@ private:
 class OpenGLVertexBuffer
 {
 public:
+	//creates an opengl vertex buffer and reserves the provided size on the gpu for future data
 	OpenGLVertexBuffer(unsigned int size);
+
+	//creates an opengl vertex buffer and passes the data provided to the gpu
 	OpenGLVertexBuffer(float* vertices, unsigned int size);
+	
+	//deletes the vertex buffer object
 	virtual ~OpenGLVertexBuffer();
 
 	void Bind() const;
 	void Unbind() const;
 
+	//set the provided data in the vertex buffer
 	void SetData(const void* data, unsigned int size);
 
+	//sets the layout of the vertex buffer
 	void SetLayout(const BufferLayout& l) { m_layout = l; }
+
+	//retrives the buffer layout of this vertex buffer
 	inline const BufferLayout& GetLayout() const { return m_layout; }
 
 private:
@@ -131,15 +151,20 @@ private:
 class OpenGLIndexBuffer
 {
 public:
+	//creates an opengl index buffer
 	OpenGLIndexBuffer();
+
+	//creates an opengl index buffer and passes the provided indices to it
 	OpenGLIndexBuffer(unsigned int* indices, unsigned int count);
 	virtual ~OpenGLIndexBuffer();
 
 	void Bind() const;
 	void Unbind() const;
 
+	//sets the indices provided to the index buffer
 	void SetData(unsigned int* indices, unsigned int count);
 
+	//retrieves the number of indices contained in the index buffer
 	inline unsigned int GetCount() const { return m_count; }
 
 private:

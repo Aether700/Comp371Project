@@ -7,12 +7,14 @@
 
 #include "../Dependencies/glfw-3.3.4/include/GLFW/glfw3.h"
 
+//camera controller script responsible for the movement and rotation of the camera
 class CameraController : public Script
 {
 public:
 	void OnStart()
 	{
 		Input::SetLockCursor(true);
+		m_lastMousePos = Input::GetMousePosition();
 	}
 
 	//handle camera input
@@ -86,21 +88,17 @@ public:
 			if (m_lastMousePos != currMousePos)
 			{
 				glm::vec2 displacement = currMousePos - m_lastMousePos;
-
-				float& rotation = camTransform.rotation.y;
-				float forwardZValue = -1.0f * glm::cos(camTransform.rotation.y);
-
-				float xRotationChange = displacement.y * m_cameraRotationSpeed * Time::GetDeltaTime();
-
-				//make sure the rotation of the camera is relative to it's look direction
-				if (forwardZValue < 0.0f)
-				{
-					xRotationChange *= -1.0f;
-				}
+				//glm::lookAt(glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f));
 
 				camTransform.rotation.y -= displacement.x * m_cameraRotationSpeed * Time::GetDeltaTime();
-				camTransform.rotation.x += xRotationChange;
+				
+				camTransform.rotation.x -= glm::cos(camTransform.rotation.y) * displacement.y 
+					* m_cameraRotationSpeed * Time::GetDeltaTime();
 
+				camTransform.rotation.z -= glm::sin(camTransform.rotation.y) * displacement.y
+					* m_cameraRotationSpeed * Time::GetDeltaTime();
+
+				/*
 				if (camTransform.rotation.x > m_verticalClamp)
 				{
 					camTransform.rotation.x = m_verticalClamp;
@@ -109,36 +107,29 @@ public:
 				{
 					camTransform.rotation.x = -m_verticalClamp;
 				}
+				
+				if (camTransform.rotation.z > m_verticalClamp)
+				{
+					camTransform.rotation.z = m_verticalClamp;
+				}
+				else if (camTransform.rotation.z < -m_verticalClamp)
+				{
+					camTransform.rotation.z = -m_verticalClamp;
+				}
+				*/
 
 				m_lastMousePos = currMousePos;
 			}
 		}
 		
-		//pressing the home key resets the 
-		//transform of the camera as specified in the assignment
-		if (Input::IsKeyPressed(GLFW_KEY_HOME))
+		//pressing the R key resets the transform of the camera
+		if (Input::IsKeyPressed(GLFW_KEY_R))
 		{
 			camTransform = Transform();
 		}
 	}
 
 private:
-	/*
-	//the components of direction should be either -1, 0 or 1
-	void MoveCamera(Transform& camTransform, const glm::vec3& direction)
-	{
-
-		float horizontal = glm::cos(camTransform.rotation.y) * m_cameraMoveSpeed;
-		camTransform.position.x += glm::cos(yaw) * horizontal * direction.x * Time::GetDeltaTime();
-		camTransform.position.z -= glm::sin(yaw) * horizontal * direction.z * Time::GetDeltaTime();
-		camTransform.position.y += glm::sin(camTransform.rotation.y) * m_cameraVerticalMoveSpeed * direction.y * Time::GetDeltaTime();
-		//if you wanted strafing, you need this
-		x -= glm::sin(camTransform.rotation.y) * m_cameraMoveSpeed;
-		z += glm::cos(camTransform.rotation.y) * m_cameraMoveSpeed;
-
-	}
-	*/
-
 	float m_cameraMoveSpeed = 5.0f;
 	float m_cameraVerticalMoveSpeed = m_cameraMoveSpeed;
 	float m_cameraRotationSpeed = 0.2f;
