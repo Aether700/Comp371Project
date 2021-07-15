@@ -6,7 +6,8 @@
 #include "Tests/CameraControllerTestScene.h"
 
 #include "JamilHModel.h"
-
+#include "Grid.h"
+#include "JeanModel.h"
 #include "Core/Application.h"
 #include "Core/Script.h"
 
@@ -17,7 +18,10 @@ int main()
 	Application::Init();
 
 	//Add Scripts here   
-	Application::AddScript(new JamilHModel());
+	//Application::AddScript(new JamilHModel());
+	Application::AddScript(new JeanModel());
+	Application::AddScript(new Grid());
+
 	///////////////////
 
 	Application::Run();
