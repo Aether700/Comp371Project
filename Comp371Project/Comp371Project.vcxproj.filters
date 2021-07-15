@@ -113,5 +113,8 @@
     <ClInclude Include="src\ParentTransformTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\CameraControllerTestScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

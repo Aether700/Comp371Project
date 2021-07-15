@@ -3,6 +3,7 @@
 #include "CubeRenderingTest.h"
 #include "EmptySquareTest.h"
 #include "ParentTransformTest.h"
+#include "CameraControllerTestScene.h"
 
 #include "Core/Application.h"
 #include "Core/Script.h"
@@ -17,7 +18,8 @@ int main()
 	//Application::AddScript(new TriangleTest());
 	//Application::AddScript(new CubeRendereringTest());
 	//Application::AddScript(new EmptySquareTest());
-	Application::AddScript(new ParentTransformTest());
+	//Application::AddScript(new ParentTransformTest());
+	Application::AddScript(new CameraControllerTestScene());
 	///////////////////
 
 	Application::Run();

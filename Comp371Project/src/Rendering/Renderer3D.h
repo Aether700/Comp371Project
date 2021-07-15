@@ -118,9 +118,16 @@ public:
 	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
+	//wire cube
 	static void DrawWireCube(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawWireCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
+	//point cube
+	static void DrawPointCube(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawPointCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	//squares
@@ -142,6 +149,7 @@ public:
 	static void DrawWireSquare(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
+
 private:
 	//draw to data passed to the renderer to the screen
 	static void FlushBatch();
@@ -157,6 +165,9 @@ private:
 	static void UploadWireCube(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
+	static void UploadPointCube(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+		float tileFactor, const glm::vec4& tintColor);
+
 	//uploads a quad or filled in square into the renderer
 	static void UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
 		float tileFactor, const glm::vec4& tintColor);
@@ -168,7 +179,7 @@ private:
 
 	static std::shared_ptr<OpenGLCubeMap> s_defaultWhiteCubeMap;
 	static std::shared_ptr<OpenGLTexture2D> s_defaultWhiteTexture;
+	static std::shared_ptr<OpenGLShader> s_shader;
 
 	static std::unordered_map<unsigned int, RenderingBatch> s_renderingBatches;
-	static std::shared_ptr<OpenGLShader> s_shader;
 };

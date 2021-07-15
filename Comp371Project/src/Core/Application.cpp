@@ -85,6 +85,12 @@ void Application::RemoveScript(Script* s)
 	}
 }
 
+void Application::SetPointSize(float diameter)
+{
+	assert(diameter > 0.0f);
+	glPointSize(diameter);
+}
+
 Application::Application(const std::string& windowName, unsigned int width, unsigned int height)
 {
 	if (glfwInit() == GLFW_FALSE)
@@ -116,7 +122,10 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 	Renderer3D::Init();
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_PROGRAM_POINT_SIZE);
 	glDepthFunc(GL_LESS);
+
+	glPointSize(5.0f);
 }
 
 Application::~Application()

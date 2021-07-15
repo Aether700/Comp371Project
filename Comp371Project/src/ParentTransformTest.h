@@ -23,7 +23,7 @@ public:
 	{
 		m_currRotation += m_rotationSpeed * Time::GetDeltaTime();
 		m_parent->rotation.z = m_currRotation;
-		Renderer3D::DrawWireCube(m_cube1->GetTransformMatrix(), {0.85f, 0.0f, 0.5f, 1.0f});
+		Renderer3D::DrawPointCube(m_cube1->GetTransformMatrix(), {0.85f, 0.0f, 0.5f, 1.0f});
 		Renderer3D::DrawWireCube(m_cube2->GetTransformMatrix());
 	}
 

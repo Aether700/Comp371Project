@@ -42,6 +42,7 @@ public:
 	static void RemoveScript(Script* s);
 
 	static void SetBackgroundColor(glm::vec4 color) { GetApplication().m_backgroundColor = color; }
+	static void SetPointSize(float diameter);
 
 private:
 	static Application* s_instance;

@@ -236,6 +236,18 @@ void Renderer3D::DrawWireCube(const glm::vec3& position, const glm::vec3& rotati
 	DrawWireCube(t.GetTransformMatrix(), color);
 }
 
+void Renderer3D::DrawPointCube(const glm::mat4& transform, const glm::vec4& color) 
+{
+	UploadPointCube(transform, GetDefaultWhiteCubeMap(), 1.0f, color);
+}
+
+void Renderer3D::DrawPointCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const glm::vec4& color)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawPointCube(t.GetTransformMatrix(), color);
+}
+
 void Renderer3D::DrawQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture, 
 	float tileFactor, const glm::vec4& tintColor)
 {
@@ -389,6 +401,43 @@ void Renderer3D::UploadWireCube(const glm::mat4& transform, std::shared_ptr<Open
 	s_renderingBatches[renderTarget].Add(cubeVertices, sizeof(cubeVertices) / sizeof(VertexData), indices,
 		sizeof(indices) / sizeof(unsigned int), renderTarget);
 }
+
+void Renderer3D::UploadPointCube(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+	float tileFactor, const glm::vec4& tintColor)
+{
+	unsigned int renderTarget = GL_POINTS;
+	int textureIndex = s_renderingBatches[renderTarget].AddTexture(texture, renderTarget);
+
+	glm::vec3 position[] = {
+		{ -0.5f, -0.5f, -0.5f },
+		{  0.5f, -0.5f, -0.5f },
+		{ -0.5f,  0.5f, -0.5f },
+		{  0.5f,  0.5f, -0.5f },
+		{ -0.5f, -0.5f,  0.5f },
+		{  0.5f, -0.5f,  0.5f },
+		{ -0.5f,  0.5f,  0.5f },
+		{  0.5f,  0.5f,  0.5f }
+	};
+
+	VertexData cubeVertices[8];
+
+	for (int i = 0; i < sizeof(position) / sizeof(glm::vec3); i++)
+	{
+		cubeVertices[i].position = (glm::vec3)(transform * glm::vec4(position[i], 1));
+		cubeVertices[i].color = tintColor;
+		cubeVertices[i].normal = position[i];
+		cubeVertices[i].textureIndex = textureIndex;
+		cubeVertices[i].tillingFactor = tileFactor;
+	}
+
+	unsigned int indices[] = {
+		0, 1, 2, 3, 4, 5, 6, 7
+	};
+
+	s_renderingBatches[renderTarget].Add(cubeVertices, sizeof(cubeVertices) / sizeof(VertexData), indices,
+		sizeof(indices) / sizeof(unsigned int), renderTarget);
+}
+
 
 void Renderer3D::UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
 	float tileFactor, const glm::vec4& tintColor)

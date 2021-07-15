@@ -161,6 +161,7 @@
     <ClCompile Include="src\Rendering\Renderer3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\CameraControllerTestScene.h" />
     <ClInclude Include="src\Core\Debug.h" />
     <ClInclude Include="src\CubeRenderingTest.h" />
     <ClInclude Include="src\Dependencies\stb_image\stb_image.h" />
