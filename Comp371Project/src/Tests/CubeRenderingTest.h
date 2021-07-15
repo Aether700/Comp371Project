@@ -1,14 +1,14 @@
 #pragma once
 #define GLEW_STATIC
-#include "Core/Script.h" 
-#include "Core/Application.h" 
-#include "Rendering/Renderer3D.h"
-#include "GraphicsAPI/OpenGLTexture2D.h"
-#include "Dependencies/glew-2.1.0/include/GL/glew.h"
-#include "Dependencies/glm-0.9.9.8/glm/glm.hpp"
-#include "GraphicsAPI/OpenGLShader.h"
-#include "Core/Debug.h"
-#include "Core/Input.h"
+#include "../Core/Script.h" 
+#include "../Core/Application.h" 
+#include "../Rendering/Renderer3D.h"
+#include "../GraphicsAPI/OpenGLTexture2D.h"
+#include "../Dependencies/glew-2.1.0/include/GL/glew.h"
+#include "../Dependencies/glm-0.9.9.8/glm/glm.hpp"
+#include "../GraphicsAPI/OpenGLShader.h"
+#include "../Core/Debug.h"
+#include "../Core/Input.h"
 
 
 #include <sstream>

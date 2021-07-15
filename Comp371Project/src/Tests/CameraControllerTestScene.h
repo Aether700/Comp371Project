@@ -1,6 +1,6 @@
 #pragma once
-#include "Core/Script.h"
-#include "Rendering/Renderer3D.h"
+#include "../Core/Script.h"
+#include "../Rendering/Renderer3D.h"
 
 class CameraControllerTestScene : public Script
 {

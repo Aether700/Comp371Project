@@ -1,9 +1,11 @@
 #pragma once
-#include "Dependencies/glew-2.1.0/include/GL/glew.h"
-#include "Core/Application.h"
-#include "Core/Script.h"
-#include "GraphicsAPI/OpenGLVertexArray.h"
-#include "GraphicsAPI/OpenGLBuffer.h"
+#include "../Dependencies/glew-2.1.0/include/GL/glew.h"
+#include "../Core/Application.h"
+#include "../Core/Input.h"
+#include "../Core/Script.h"
+#include "../Rendering/Renderer3D.h"
+#include "../GraphicsAPI/OpenGLVertexArray.h"
+#include "../GraphicsAPI/OpenGLBuffer.h"
 
 #include <memory>
 

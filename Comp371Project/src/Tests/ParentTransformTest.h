@@ -1,8 +1,8 @@
 #pragma once
-#include "Core/Script.h"
-#include "Core/Time.h"
-#include "Rendering/Transform.h"
-#include "Rendering/Renderer3D.h"
+#include "../Core/Script.h"
+#include "../Core/Time.h"
+#include "../Rendering/Transform.h"
+#include "../Rendering/Renderer3D.h"
 
 class ParentTransformTest : public Script
 {

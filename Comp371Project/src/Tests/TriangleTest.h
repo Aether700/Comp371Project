@@ -1,9 +1,9 @@
 #pragma once
-#include "Core/Script.h"
-#include "Dependencies/glew-2.1.0/include/GL/glew.h"
-#include "Dependencies/glm-0.9.9.8/glm/mat3x3.hpp"
-#include "GraphicsAPI/OpenGLBuffer.h"
-#include "GraphicsAPI/OpenGLVertexArray.h"
+#include "../Core/Script.h"
+#include "../Dependencies/glew-2.1.0/include/GL/glew.h"
+#include "../Dependencies/glm-0.9.9.8/glm/mat3x3.hpp"
+#include "../GraphicsAPI/OpenGLBuffer.h"
+#include "../GraphicsAPI/OpenGLVertexArray.h"
 
 class TriangleTest : public Script
 {

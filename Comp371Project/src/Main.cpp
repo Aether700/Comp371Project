@@ -1,9 +1,11 @@
 #define GLEW_STATIC
-#include "TriangleTest.h"
-#include "CubeRenderingTest.h"
-#include "EmptySquareTest.h"
-#include "ParentTransformTest.h"
-#include "CameraControllerTestScene.h"
+#include "Tests/TriangleTest.h"
+#include "Tests/CubeRenderingTest.h"
+#include "Tests/EmptySquareTest.h"
+#include "Tests/ParentTransformTest.h"
+#include "Tests/CameraControllerTestScene.h"
+
+#include "JamilHModel.h"
 
 #include "Core/Application.h"
 #include "Core/Script.h"
@@ -15,11 +17,7 @@ int main()
 	Application::Init();
 
 	//Add Scripts here   
-	//Application::AddScript(new TriangleTest());
-	//Application::AddScript(new CubeRendereringTest());
-	//Application::AddScript(new EmptySquareTest());
-	//Application::AddScript(new ParentTransformTest());
-	Application::AddScript(new CameraControllerTestScene());
+	Application::AddScript(new JamilHModel());
 	///////////////////
 
 	Application::Run();
