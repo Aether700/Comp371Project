@@ -150,6 +150,26 @@ public:
 	static void DrawWireSquare(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
+	//Lines
+	static void DrawLine(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawLine(const glm::mat4& transform, const glm::vec3& point1, const glm::vec3& point2, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
+		const glm::vec3& point1, const glm::vec3& point2, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	//draw generic Vertex Data
+	static void DrawVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
+		unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture> texture,
+		float tileFactor, const glm::vec4& tintColor);
+
+	static void DrawVertexData(unsigned int renderTarget, const glm::vec3& position, const glm::vec3& rotation, 
+		const glm::vec3& scale, const glm::vec3* vertices, unsigned int numVertices, unsigned int* indices, 
+		unsigned int indexCount, std::shared_ptr<OpenGLTexture> texture, float tileFactor, const glm::vec4& tintColor);
 
 private:
 	//draw to data passed to the renderer to the screen
@@ -174,6 +194,14 @@ private:
 		float tileFactor, const glm::vec4& tintColor);
 
 	static void UploadWireSquare(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+		float tileFactor, const glm::vec4& tintColor);
+
+	static void UploadLine(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+		float tileFactor, const glm::vec4& tintColor);
+
+	//helper function which allows to pass any
+	static void UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
+		unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture> texture, 
 		float tileFactor, const glm::vec4& tintColor);
 
 	static Renderer3DStatistics s_stats;

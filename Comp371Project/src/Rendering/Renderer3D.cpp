@@ -286,6 +286,50 @@ void Renderer3D::DrawWireSquare(const glm::vec3& position, const glm::vec3& rota
 	DrawWireSquare(t.GetTransformMatrix(), color);
 }
 
+void Renderer3D::DrawLine(const glm::mat4& transform, const glm::vec4& color)
+{
+	UploadLine(transform, GetDefaultWhiteTexture(), 1, color);
+}
+
+void Renderer3D::DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const glm::vec4& color)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawLine(t.GetTransformMatrix(), color);
+}
+
+void Renderer3D::DrawLine(const glm::mat4& transform, const glm::vec3& point1, const glm::vec3& point2,
+	const glm::vec4& color)
+{
+	glm::vec3 points[] = { point1, point2 };
+	unsigned int indices[] = { 0, 1 };
+
+	UploadVertexData(GL_LINES, transform, points, 2, indices, 2, GetDefaultWhiteTexture(), 1, color);
+}
+
+void Renderer3D::DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const glm::vec3& point1, const glm::vec3& point2, const glm::vec4& color)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawLine(t.GetTransformMatrix(), point1, point2, color);
+}
+
+void Renderer3D::DrawVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
+	unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture> texture,
+	float tileFactor, const glm::vec4& tintColor)
+{
+	UploadVertexData(renderTarget, transform, vertices, numVertices, indices, indexCount, texture, tileFactor, tintColor);
+}
+
+void Renderer3D::DrawVertexData(unsigned int renderTarget, const glm::vec3& position, const glm::vec3& rotation,
+	const glm::vec3& scale, const glm::vec3* vertices, unsigned int numVertices, unsigned int* indices,
+	unsigned int indexCount, std::shared_ptr<OpenGLTexture> texture, float tileFactor, const glm::vec4& tintColor)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawVertexData(renderTarget, t.GetTransformMatrix(), vertices, numVertices, 
+		indices, indexCount, texture, tileFactor, tintColor);
+}
+
 const Renderer3DStatistics& Renderer3D::GetStats()
 {
 	return s_stats;
@@ -506,4 +550,55 @@ void Renderer3D::UploadWireSquare(const glm::mat4& transform, std::shared_ptr<Op
 
 	s_renderingBatches[renderTarget].Add(quadVertices, sizeof(quadVertices) / sizeof(VertexData), indices,
 		sizeof(indices) / sizeof(unsigned int), renderTarget);
+}
+
+void Renderer3D::UploadLine(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+	float tileFactor, const glm::vec4& tintColor)
+{
+	unsigned int renderTarget = GL_LINES;
+	int textureIndex = s_renderingBatches[renderTarget].AddTexture(texture, renderTarget);
+
+	glm::vec3 position[] = { 
+		{  0.5f, 0.0f, 0.0f },
+		{ -0.5f, 0.0f, 0.0f }
+	};
+
+	VertexData vertexData[2];
+
+	for (int i = 0; i < sizeof(position) / sizeof(glm::vec3); i++)
+	{
+		vertexData[i].position = (glm::vec3)(transform * glm::vec4(position[i], 1));
+		vertexData[i].color = tintColor;
+		vertexData[i].normal = position[i];
+		vertexData[i].textureIndex = textureIndex;
+		vertexData[i].tillingFactor = tileFactor;
+	}
+
+	unsigned int indices[] = { 0, 1 };
+
+	s_renderingBatches[renderTarget].Add(vertexData, sizeof(vertexData) / sizeof(VertexData), indices,
+		sizeof(indices) / sizeof(unsigned int), renderTarget);
+}
+
+void Renderer3D::UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
+	unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture> texture,
+	float tileFactor, const glm::vec4& tintColor)
+{
+	int textureIndex = s_renderingBatches[renderTarget].AddTexture(texture, renderTarget);
+
+	VertexData* vertexData = new VertexData[numVertices];
+
+	for (int i = 0; i < numVertices; i++)
+	{
+		vertexData[i].position = (glm::vec3) (transform * glm::vec4(vertices[i], 1));
+		vertexData[i].color = tintColor;
+		vertexData[i].normal = vertices[i];
+		vertexData[i].textureIndex = textureIndex;
+		vertexData[i].tillingFactor = tileFactor;
+	}
+
+	s_renderingBatches[renderTarget].Add(vertexData, numVertices, indices,
+		indexCount, renderTarget);
+
+	delete[] vertexData;
 }
