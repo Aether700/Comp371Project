@@ -37,7 +37,7 @@ void Application::Init(const std::string& windowName, unsigned int width, unsign
 {
 	s_instance = new Application(windowName, width, height);
 	Debug::CheckOpenGLError();
-	s_instance->m_camera->UpdateAspectRatio();
+	s_instance->m_camera->SetViewportSize(width, height);
 	AddScript(new CameraController());
 }
 

@@ -163,7 +163,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\Random.h" />
+    <ClInclude Include="src\Grid.h" />
     <ClInclude Include="src\JamilHModel.h" />
+    <ClInclude Include="src\JeanModel.h" />
     <ClInclude Include="src\Tests\CameraControllerTestScene.h" />
     <ClInclude Include="src\Core\Debug.h" />
     <ClInclude Include="src\Tests\CubeRenderingTest.h" />
