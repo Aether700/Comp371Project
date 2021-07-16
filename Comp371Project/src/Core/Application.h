@@ -56,6 +56,10 @@ private:
 	void CallOnRenderScripts();
 	void CallOnUpdateScripts();
 
+	//intermediate function which calls 
+	//Script::HandleScrollEvent on every script until one returns true
+	static void HandleScrollEvent(GLFWwindow* w, double xScroll, double yScroll);
+
 	bool m_isRunning;
 	std::vector<Script*> m_scripts;
 	GLFWwindow* m_window;

@@ -15,6 +15,8 @@ public:
 	{
 		Input::SetLockCursor(true);
 		m_lastMousePos = Input::GetMousePosition();
+
+		m_defaultVerticalFOV = Application::GetCamera()->GetPerspectiveVerticalFOV();
 	}
 
 	//handle camera input
@@ -125,11 +127,31 @@ public:
 		//pressing the R key resets the transform of the camera
 		if (Input::IsKeyPressed(GLFW_KEY_R))
 		{
-			camTransform = Transform();
+			ResetCamera();
 		}
 	}
 
+	//handles scroll events and zooms in and out depending on the input provided
+	virtual bool HandleScrollEvent(double xScroll, double yScroll) override
+	{
+		auto cam = Application::GetCamera();
+		//zoom for perspective else do nothing
+		if (cam->GetProjectionType() == Camera::ProjectionType::Perspective)
+		{
+			cam->SetPerspectiveVerticalFOV(yScroll * Time::GetDeltaTime() + cam->GetPerspectiveVerticalFOV());
+		}
+
+		return true;
+	}
+
 private:
+	void ResetCamera()
+	{
+		auto cam = Application::GetCamera();
+		cam->GetTransform() = Transform();
+		cam->SetPerspectiveVerticalFOV(m_defaultVerticalFOV);
+	}
+
 	float m_cameraMoveSpeed = 5.0f;
 	float m_cameraVerticalMoveSpeed = m_cameraMoveSpeed;
 	float m_cameraRotationSpeed = 0.2f;
@@ -139,4 +161,7 @@ private:
 	bool m_mouseIsLocked = true;
 
 	glm::vec2 m_lastMousePos;
+
+	//zoom default settings
+	float m_defaultVerticalFOV;
 };

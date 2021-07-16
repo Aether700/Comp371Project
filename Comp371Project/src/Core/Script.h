@@ -22,6 +22,9 @@ public:
 	//is called every frame for input management and such
 	virtual void OnUpdate() { }
 
+	//returns true if the event has been handled, false otherwise
+	virtual bool HandleScrollEvent(double xScroll, double yScroll) { return false; }
+
 protected:
 	Script() { OnAwake(); }
 };

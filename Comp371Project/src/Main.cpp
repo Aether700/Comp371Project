@@ -18,9 +18,9 @@ int main()
 	Application::Init();
 
 	//Add Scripts here   
-	//Application::AddScript(new JamilHModel());
-	Application::AddScript(new JeanModel());
-	Application::AddScript(new Grid());
+	Application::AddScript(new JamilHModel());
+	//Application::AddScript(new JeanModel());
+	//Application::AddScript(new Grid());
 	///////////////////
 
 	Application::Run();

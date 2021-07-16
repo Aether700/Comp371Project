@@ -36,11 +36,13 @@ public:
 	{
 		for (auto& transform : m_cubeArr)
 		{
-			RenderCube(transform->GetTransformMatrix());
+			RenderCube(transform->GetTransformMatrix(), color);
 		}
 	}
 
 
 private:
 	std::shared_ptr<Transform> m_cubeArr[14];
+
+	glm::vec4 color = { 1, 0, 0, 1 };
 };

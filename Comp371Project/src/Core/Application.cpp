@@ -133,9 +133,10 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 
 	glfwMakeContextCurrent(m_window);
 
+	//set callbacks
 	glfwSetErrorCallback(&GlfwErrorCallbackHandler);
-
 	glfwSetWindowSizeCallback(m_window, &WindowResizeEvent);
+	glfwSetScrollCallback(m_window, &Application::HandleScrollEvent);
 
 	if (glewInit() != GLEW_OK)
 	{
@@ -196,5 +197,16 @@ void Application::CallOnUpdateScripts()
 	for (Script* s : m_scripts)
 	{
 		s->OnUpdate();
+	}
+}
+
+void Application::HandleScrollEvent(GLFWwindow* w, double xScroll, double yScroll)
+{
+	for (Script* s : GetApplication().m_scripts)
+	{
+		if (s->HandleScrollEvent(xScroll, yScroll))
+		{
+			break;
+		}
 	}
 }
