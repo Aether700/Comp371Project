@@ -6,6 +6,7 @@
 #include "Tests/CameraControllerTestScene.h"
 
 #include "Grid.h"
+#include "Axes.h"
 #include "ModelManager.h"
 
 #include "Core/Application.h"
@@ -18,8 +19,13 @@ int main()
 	Application::Init();
 
 	//Add Scripts here   
+	//Application::AddScript(new JamilHModel());
+	//Application::AddScript(new JeanModel());
+	Application::AddScript(new AlecModel());
+	Application::AddScript(new Axes());
 	Application::AddScript(new Grid());
 	Application::AddScript(new ModelManager());
+
 	///////////////////
 
 	Application::Run();
