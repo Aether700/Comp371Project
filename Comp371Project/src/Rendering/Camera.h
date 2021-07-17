@@ -61,7 +61,8 @@ private:
 	glm::mat4 m_projectionMatrix = glm::mat4(1.0f);
 	Transform m_transform;
 
-	//default to 3D
+	//while the camera supports both perspective and orthographic 
+	//projection it defaults to projection as required by the assignment
 	ProjectionType m_projectionType = ProjectionType::Perspective; 
 
 	float m_orthographicSize = 10.0f;

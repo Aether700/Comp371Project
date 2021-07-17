@@ -123,6 +123,9 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 		throw "GLFW could not be initialized\n";
 	}
 
+	//we create a glfw window with the specified width and height (the default values are 
+	//specified in the header file for Application::Init and they correspond to the values 
+	//required by the assignment)
 	m_window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
 
 	if (m_window == nullptr)
@@ -144,7 +147,8 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 		throw "GLEW could not be initialized\n";
 	}
 
-	//we set a virtual camera in the world
+	//we set a virtual camera in the world which will render 
+	//the world using perspective view as required by the assignment
 	m_camera = std::make_shared<Camera>();
 	Renderer3D::Init();
 	Random::Init();
@@ -152,6 +156,10 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glDepthFunc(GL_LESS);
+
+	//enable backface culling
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	glPointSize(5.0f);
 }

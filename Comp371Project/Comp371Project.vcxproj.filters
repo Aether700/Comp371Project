@@ -134,5 +134,11 @@
     <ClInclude Include="src\JeanModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ModelManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MadelaineModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

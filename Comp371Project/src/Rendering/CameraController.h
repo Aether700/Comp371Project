@@ -19,7 +19,13 @@ public:
 		m_defaultVerticalFOV = Application::GetCamera()->GetPerspectiveVerticalFOV();
 	}
 
-	//handle camera input
+	/*handle camera input
+	  we can use the wasd keys to move around and 
+	  use the mouse to look around
+		
+	  the R key resets the camera transform and vertical FOV 
+	  as required by the assignment
+	*/
 	void OnUpdate()
 	{
 		Transform& camTransform = Application::GetCamera()->GetTransform();
@@ -124,18 +130,23 @@ public:
 			}
 		}
 		
-		//pressing the R key resets the transform of the camera
+		//pressing the R key resets the transform of the camera 
+		//and it's vertical FOV as required
 		if (Input::IsKeyPressed(GLFW_KEY_R))
 		{
 			ResetCamera();
 		}
 	}
 
-	//handles scroll events and zooms in and out depending on the input provided
+	/*handles scroll events and zooms in and out depending on the input provided
+	  
+	  allows the user to zoom in and out as required by the assignment
+	*/
 	virtual bool HandleScrollEvent(double xScroll, double yScroll) override
 	{
 		auto cam = Application::GetCamera();
-		//zoom for perspective else do nothing
+		//only change the FOV if currently using perspective projection (for the assignment 
+		//the camera will always remain in perspective projection)
 		if (cam->GetProjectionType() == Camera::ProjectionType::Perspective)
 		{
 			cam->SetPerspectiveVerticalFOV(yScroll * Time::GetDeltaTime() + cam->GetPerspectiveVerticalFOV());

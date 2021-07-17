@@ -390,8 +390,8 @@ void Renderer3D::UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLT
 		3, 2, 6,
 
 		//bottom face
-		4, 5, 1,
-		1, 0, 4
+		0, 1, 5,
+		5, 4, 0
 	};
 
 	s_renderingBatches[renderTarget].Add(cubeVertices, sizeof(cubeVertices) / sizeof(VertexData), indices, 
