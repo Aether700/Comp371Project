@@ -5,11 +5,10 @@
 #include "Tests/ParentTransformTest.h"
 #include "Tests/CameraControllerTestScene.h"
 
-#include "JamilHModel.h"
 #include "Grid.h"
-#include "JeanModel.h"
-#include "AlecModel.h"
 #include "Axes.h"
+#include "ModelManager.h"
+
 #include "Core/Application.h"
 #include "Core/Script.h"
 
@@ -24,7 +23,9 @@ int main()
 	//Application::AddScript(new JeanModel());
 	Application::AddScript(new AlecModel());
 	Application::AddScript(new Axes());
-	//Application::AddScript(new Grid());
+	Application::AddScript(new Grid());
+	Application::AddScript(new ModelManager());
+
 	///////////////////
 
 	Application::Run();
