@@ -8,6 +8,8 @@
 #include "JamilHModel.h"
 #include "Grid.h"
 #include "JeanModel.h"
+#include "AlecModel.h"
+#include "Axes.h"
 #include "Core/Application.h"
 #include "Core/Script.h"
 
@@ -18,8 +20,10 @@ int main()
 	Application::Init();
 
 	//Add Scripts here   
-	Application::AddScript(new JamilHModel());
+	//Application::AddScript(new JamilHModel());
 	//Application::AddScript(new JeanModel());
+	Application::AddScript(new AlecModel());
+	Application::AddScript(new Axes());
 	//Application::AddScript(new Grid());
 	///////////////////
 
