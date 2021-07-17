@@ -45,7 +45,7 @@ public:
 		
 		for (auto& transform : m_cubeArr)
 		{
-			RenderCube(transform->GetTransformMatrix());
+			RenderCube(transform->GetTransformMatrix(), color);
 		}
 		/*
 		Renderer3D::DrawWireSquare({ 0, 0, 0 }, {0, 0, 0 }, { 1, 1, 1 });
@@ -71,5 +71,7 @@ public:
 
 private:
 	std::shared_ptr<Transform> m_cubeArr[16];
+
+	glm::vec4 color = { 52.0f / 255.0f, 107.0f / 255.0f, 194.0f / 255.0f, 1 };
 
 };
