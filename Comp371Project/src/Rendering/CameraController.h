@@ -99,14 +99,21 @@ public:
 				//glm::lookAt(glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f));
 
 				camTransform.rotation.y -= displacement.x * m_cameraRotationSpeed * Time::GetDeltaTime();
-				
+
+				/*
+				camTransform.rotation.x -= CalculateXRotation(camTransform.rotation.y, displacement.y 
+					* m_cameraRotationSpeed * Time::GetDeltaTime());
+
+				camTransform.rotation.z += CalculateZRotation(camTransform.rotation.y, displacement.y
+					* m_cameraRotationSpeed * Time::GetDeltaTime());
+				*/
+
 				camTransform.rotation.x -= glm::cos(camTransform.rotation.y) * displacement.y 
 					* m_cameraRotationSpeed * Time::GetDeltaTime();
 
 				camTransform.rotation.z -= glm::sin(camTransform.rotation.y) * displacement.y
 					* m_cameraRotationSpeed * Time::GetDeltaTime();
 
-				/*
 				if (camTransform.rotation.x > m_verticalClamp)
 				{
 					camTransform.rotation.x = m_verticalClamp;
@@ -124,7 +131,6 @@ public:
 				{
 					camTransform.rotation.z = -m_verticalClamp;
 				}
-				*/
 
 				m_lastMousePos = currMousePos;
 			}
@@ -161,6 +167,23 @@ private:
 		auto cam = Application::GetCamera();
 		cam->GetTransform() = Transform();
 		cam->SetPerspectiveVerticalFOV(m_defaultVerticalFOV);
+	}
+
+	//theta is the rotation by which we look up or down for the given y rotation
+	float CalculateXRotation(float yRotation, float thetaRotation)
+	{
+		//returns cos^-1( (cos t + sin^2 y - cos t * sin^2 y)/cos y )
+		return glm::acos((glm::cos(thetaRotation) + glm::sin(yRotation) 
+			* glm::sin(yRotation) - glm::cos(thetaRotation) 
+			* glm::sin(yRotation)) / glm::cos(yRotation));
+	}
+
+	//theta is the rotation by which we look up or down for the given y rotation
+	float CalculateZRotation(float yRotation, float thetaRotation)
+	{
+		//returns cos^-1 ( (cos t / cos y) + cos y - cos t * cos y )
+		return glm::acos((glm::cos(thetaRotation) / glm::cos(yRotation)) + glm::cos(yRotation) 
+			- glm::cos(thetaRotation) * glm::cos(yRotation));
 	}
 
 	float m_cameraMoveSpeed = 5.0f;

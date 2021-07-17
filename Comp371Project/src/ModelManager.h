@@ -60,22 +60,50 @@ public:
 		//rotate the current model depending on the arrow key pressed
 		if (Input::IsKeyPressed(GLFW_KEY_LEFT))
 		{
-			m_models[m_currModel]->GetModelTransform()->rotation.y -= m_rotationSpeed * Time::GetDeltaTime();
+			if (m_currMovementMode == Movement::Rotation)
+			{
+				m_models[m_currModel]->GetModelTransform()->rotation.y -= m_rotationSpeed * Time::GetDeltaTime();
+			}
+			else
+			{
+				m_models[m_currModel]->GetModelTransform()->position.x -= m_translationSpeed * Time::GetDeltaTime();
+			}
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_RIGHT))
 		{
-			m_models[m_currModel]->GetModelTransform()->rotation.y += m_rotationSpeed * Time::GetDeltaTime();
+			if (m_currMovementMode == Movement::Rotation)
+			{
+				m_models[m_currModel]->GetModelTransform()->rotation.y += m_rotationSpeed * Time::GetDeltaTime();
+			}
+			else
+			{
+				m_models[m_currModel]->GetModelTransform()->position.x += m_translationSpeed * Time::GetDeltaTime();
+			}
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_UP))
 		{
-			m_models[m_currModel]->GetModelTransform()->rotation.x += m_rotationSpeed * Time::GetDeltaTime();
+			if (m_currMovementMode == Movement::Rotation)
+			{
+				m_models[m_currModel]->GetModelTransform()->rotation.x += m_rotationSpeed * Time::GetDeltaTime();
+			}
+			else
+			{
+				m_models[m_currModel]->GetModelTransform()->position.y += m_translationSpeed * Time::GetDeltaTime();
+			}
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_DOWN))
 		{
-			m_models[m_currModel]->GetModelTransform()->rotation.x -= m_rotationSpeed * Time::GetDeltaTime();
+			if (m_currMovementMode == Movement::Rotation)
+			{
+				m_models[m_currModel]->GetModelTransform()->rotation.x -= m_rotationSpeed * Time::GetDeltaTime();
+			}
+			else
+			{
+				m_models[m_currModel]->GetModelTransform()->position.y -= m_translationSpeed * Time::GetDeltaTime();
+			}
 		}
 
 		//pressing P, T or L changes the rendering primitive used to render the model
@@ -120,9 +148,37 @@ public:
 		{
 			m_currShuffle += Time::GetDeltaTime();
 		}
+
+		/*pressing the C key toggle between translation and 
+		  rotation mode which will change how the arrow keys behave
+		*/
+		if (m_currToggle >= m_toggleCooldown && Input::IsKeyPressed(GLFW_KEY_C))
+		{
+			if (m_currMovementMode == Movement::Rotation)
+			{
+				m_currMovementMode = Movement::Translation;
+			}
+			else
+			{
+				m_currMovementMode = Movement::Rotation;
+			}
+
+			m_currToggle = 0.0f;
+		}
+		else if (m_currToggle < m_toggleCooldown)
+		{
+			m_currToggle += Time::GetDeltaTime();
+		}
 	}
 
 private:
+
+	enum class Movement
+	{
+		Rotation,
+		Translation
+	};
+
 	void AddModel(Model* m) 
 	{ 
 		Application::AddScript(m);
@@ -166,8 +222,14 @@ private:
 	size_t m_currModel = 0;
 
 	float m_rotationSpeed = 2.0f;
+	float m_translationSpeed = 5.0f;
 	float m_scaleSpeed = 2.0f;
 
 	float m_shuffleCooldown = 0.2f;
 	float m_currShuffle = 0.0f;
+
+	float m_toggleCooldown = 0.2f;
+	float m_currToggle = 0.0f;
+
+	Movement m_currMovementMode = Movement::Rotation;
 };

@@ -2,6 +2,7 @@
 #include "Model.h"
 #include "Core/Random.h"
 
+//Jamil Hanachian's model (there are two Jamil H in the group)
 class JamilHModel : public Model
 {
 public:
