@@ -97,7 +97,7 @@ public:
 
 		for (auto& transform : m_wallArr)
 		{
-			RenderCube(transform->GetTransformMatrix(), color);
+			Renderer3D::DrawVoxel(transform->GetTransformMatrix());
 		}
 	}
 

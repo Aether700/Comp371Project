@@ -8,6 +8,7 @@
 #include "JamilHModel.h"
 #include "JeanModel.h"
 #include "MadelaineModel.h"
+#include "AlecModel.h"
 
 #include <vector>
 
@@ -20,6 +21,12 @@ public:
 		AddModel(new JamilHModel());
 		AddModel(new JeanModel());
 		AddModel(new MadelaineModel());
+		AddModel(new AlecModel());
+	}
+
+	void OnStart()
+	{
+		SetModelsPos();
 	}
 
 	void OnUpdate()
@@ -127,6 +134,31 @@ private:
 		if (newIndex < m_models.size())
 		{
 			m_currModel = newIndex;
+		}
+	}
+
+	void SetModelsPos()
+	{
+		glm::vec3 positions[] = {
+			{ -45, 10, -45 },
+			{ -45, 10,  45 },
+			{  45, 10, -45 },
+			{  45, 10,  45 },
+			{  0, 10,  0 },
+		};
+
+		glm::vec3 rotations[] = {
+			{ 0,  glm::radians(45.0f), 0 },
+			{ 0, -glm::radians(225.0f), 0 },
+			{ 0, -glm::radians(45.0f), 0 },
+			{ 0,  glm::radians(225.0f), 0 },
+			{ 0, 0, 0 },
+		};
+
+		for (int i = 0; i < m_models.size() && i < 5; i++)
+		{
+			m_models[i]->GetModelTransform()->position = positions[i];
+			m_models[i]->GetModelTransform()->rotation = rotations[i];
 		}
 	}
 

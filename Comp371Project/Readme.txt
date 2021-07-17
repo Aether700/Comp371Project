@@ -27,7 +27,6 @@ the renderer is flushed at the end of every frame.
 The models are color coded as following
 
 Jamil Hanchian: Red
-
 Jean Carlos Ng Lee: RGB:52, 107, 194(Denim)
-
 Madelaine: Pink
+Alec: Green

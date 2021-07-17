@@ -162,6 +162,8 @@
     <ClCompile Include="src\Rendering\Renderer3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\AlecModel.h" />
+    <ClInclude Include="src\Axes.h" />
     <ClInclude Include="src\Core\Random.h" />
     <ClInclude Include="src\Grid.h" />
     <ClInclude Include="src\JamilHModel.h" />

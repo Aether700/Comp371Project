@@ -21,7 +21,6 @@ int main()
 	//Add Scripts here   
 	//Application::AddScript(new JamilHModel());
 	//Application::AddScript(new JeanModel());
-	Application::AddScript(new AlecModel());
 	Application::AddScript(new Axes());
 	Application::AddScript(new Grid());
 	Application::AddScript(new ModelManager());

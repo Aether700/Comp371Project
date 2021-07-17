@@ -140,5 +140,11 @@
     <ClInclude Include="src\MadelaineModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\AlecModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Axes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
