@@ -16,8 +16,8 @@ public:
 	~Camera() { }
 
 	//retieves the transform object of this camera object
-	const Transform& GetTransform() const { return m_transform; }
-	Transform& GetTransform() { return m_transform; }
+	const glm::mat4& GetTransform() const { return m_transform; }
+	glm::mat4& GetTransform() { return m_transform; }
 
 	//sets the orthographic/perspective data for the camera, note that this will also change 
 	//the camera to that type of projection
@@ -59,7 +59,7 @@ private:
 	void RecalculateProjection();
 
 	glm::mat4 m_projectionMatrix = glm::mat4(1.0f);
-	Transform m_transform;
+	glm::mat4 m_transform = glm::mat4(1.0f);
 
 	//while the camera supports both perspective and orthographic 
 	//projection it defaults to projection as required by the assignment

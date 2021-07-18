@@ -175,7 +175,7 @@ void Renderer3D::Shutdown()
 void Renderer3D::BeginScene()
 {
 	std::shared_ptr<Camera> camera = Application::GetCamera();
-	glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * glm::inverse(camera->GetTransform().GetTransformMatrix());
+	glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camera->GetTransform();
 
 	s_shader->Bind();
 	s_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);

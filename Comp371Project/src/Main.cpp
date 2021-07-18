@@ -24,7 +24,6 @@ int main()
 	Application::AddScript(new Axes());
 	Application::AddScript(new Grid());
 	Application::AddScript(new ModelManager());
-
 	///////////////////
 
 	Application::Run();
