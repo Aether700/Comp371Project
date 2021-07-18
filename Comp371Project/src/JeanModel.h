@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Model.h"
-#include <stdlib.h>
-#include <time.h>
 
 class JeanModel : public Model
 {
@@ -27,7 +25,7 @@ public:
 	{
 		SetModelCubesTransform();
 		SetWallCubesTransform('f'); // s sideivew, f frontview to determing in which orientation will the model fit. base on the original cube not the shuffle version
-		centerModel(); // center it to the XYZ axis
+		//centerModel(); // center it to the XYZ axis
 	}
 
 	void OnRender()
@@ -45,6 +43,30 @@ public:
 		}
 	}
 
+	virtual void Shuffle() override
+	{
+		//  size of cube 5x4x4 but for simplisity let make it 5x5x5
+		// reset and shuffle given the original model
+		SetModelCubesTransform();
+		bool modelChange = true;
+		do
+		{
+			for (int cubeNum = 0; cubeNum < 16; cubeNum++)
+			{
+				int newX = (glm::abs(Random::GetInt()) % 5) + modelXOffset;
+				int newY = (glm::abs(Random::GetInt()) % 5) + modelYOffset;
+				int newZ = (glm::abs(Random::GetInt()) % 5) + modelZOffset;
+				if (!checkWallHolePlacement(newX, newY, 'f')) // check if the new cube position will still fit in the wall
+				{
+					if (checkCubeExist(newX, newY, newZ)) // to ensure that cube arent place on top of each other
+					{
+						m_cubeModel[cubeNum]->position = { newX, newY, newZ };
+						modelChange = false;
+					}
+				}
+			}
+		} while (modelChange);
+	}
 
 private:
 
@@ -53,30 +75,30 @@ private:
 	std::shared_ptr<Transform>  m_wallCubes[100];
 
 	// offset of center the model in the wall and easier change if needed
-	int modelYOffset = 3;
-	int modelXOffset = 3;
-	int modelZOffset = 5;
+	int modelXOffset = 6;
+	int modelYOffset = 6;
+	int modelZOffset = 6;
 
 
 	void SetModelCubesTransform()
 	{
 		//original cube
-		m_cubeModel[0]->position = { 0, 0, 0 };
-		m_cubeModel[1]->position = { 0, 0, -1 };
-		m_cubeModel[2]->position = { 0, 1, -1 };
-		m_cubeModel[3]->position = { 0, 1, -2 };
-		m_cubeModel[4]->position = { 1, 1, -2 };
-		m_cubeModel[5]->position = { 1, 2, -2 };
-		m_cubeModel[6]->position = { 2, 2, -2 };
-		m_cubeModel[7]->position = { 3, 2, -2 };
-		m_cubeModel[8]->position = { 3, 2, -3 };
-		m_cubeModel[9]->position = { 3, 3, -3 };
-		m_cubeModel[10]->position = { 3, 1, -2 };
-		m_cubeModel[11]->position = { 3, 1, -1 };
-		m_cubeModel[12]->position = { 3, 1, 0 };
-		m_cubeModel[13]->position = { 3, 0, 0 };
-		m_cubeModel[14]->position = { 3, 0, -2 };
-		m_cubeModel[15]->position = { 4, 1, 0 };
+		m_cubeModel[0]->position = { -3, -3, 0 };
+		m_cubeModel[1]->position = { -3, -3, -1 };
+		m_cubeModel[2]->position = { -3, -2, -1 };
+		m_cubeModel[3]->position = { -3, -2, -2 };
+		m_cubeModel[4]->position = { -2, -2, -2 };
+		m_cubeModel[5]->position = { -2, -1, -2 };
+		m_cubeModel[6]->position = { -1, -1, -2 };
+		m_cubeModel[7]->position = { 0, -1, -2 };
+		m_cubeModel[8]->position = { 0, -1, -3 };
+		m_cubeModel[9]->position = { 0, 0, -3 };
+		m_cubeModel[10]->position = { 0, -2, -2 };
+		m_cubeModel[11]->position = { 0, -2, -1 };
+		m_cubeModel[12]->position = { 0, -2, 0 };
+		m_cubeModel[13]->position = { 0, -2, 0 };
+		m_cubeModel[14]->position = { 0, -3, -2 };
+		m_cubeModel[15]->position = { 1, -2, 0 };
 
 		centerCubeWithWall();// inorder to center the cube in the wall
 	}
@@ -110,12 +132,14 @@ private:
 
 	bool checkWallHolePlacement(int axis1, int axis2, char orientation)
 	{
-		if(orientation == 'f')
-		for (auto& transform : m_cubeModel)
+		if (orientation == 'f')
 		{
-			if (transform->position.x == axis1 && transform->position.y == axis2)
+			for (auto& transform : m_cubeModel)
 			{
-				return false;
+				if (transform->position.x == axis1 && transform->position.y == axis2)
+				{
+					return false;
+				}
 			}
 		}
 		else if(orientation == 's')
@@ -131,36 +155,12 @@ private:
 		return true;
 	}
 
-	virtual void Shuffle() override
-	{
-		//  size of cube 5x4x4 but for simplisity let make it 5x5x5
-		srand(time(NULL));
-		bool modelChange = false;
-		do
-		{
-			for (int cubeNum = 0; cubeNum < 16; cubeNum++)
-			{
-				int newX = rand() % 5 + modelXOffset;
-				int newY = rand() % 5 + modelYOffset;
-				int newZ = rand() % 5 + modelZOffset;
-				int randVal = rand() % 2;
-				if (!checkWallHolePlacement(newX, newY, 'f'))
-				{
-					if (checkWallHolePlacement(newX, newY, newZ))
-					{
-						m_cubeModel[cubeNum]->position = { newX, newY, newZ };
-						modelChange = true;
-					}
-				}
-			}
-		} while (!modelChange);// just to ensure that something in the model did change hence a successfull shuffle
-	}
 
 	bool checkCubeExist(int x, int y, int z) // to ensure that there isnt more than one cube in a set location
 	{
 		for (auto& transform : m_cubeModel)
 		{
-			if (transform->position.y == x && transform->position.z == y && transform->position.z == z)
+			if (transform->position.x == x && transform->position.y == y && transform->position.z == z)
 			{
 				return false;
 			}
