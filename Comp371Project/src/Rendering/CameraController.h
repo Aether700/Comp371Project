@@ -89,16 +89,12 @@ public:
 		{
 			glm::vec3 currLeft = -1.0f * glm::vec3{ glm::sin(glm::radians(m_yRotation)), 0,
 				glm::cos(glm::radians(m_yRotation)) };
-			//glm::vec3 currLeft = { glm::sin(glm::radians(m_yRotation) - glm::radians(90.0f)), 0, 
-			//	glm::cos(glm::radians(m_yRotation) - glm::radians(90.0f)) };
 			m_camPos += currLeft * m_cameraMoveSpeed * Time::GetDeltaTime();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_D))
 		{
 			glm::vec3 currRight = { glm::sin(glm::radians(m_yRotation)), 0, glm::cos(glm::radians(m_yRotation)) };
-			//glm::vec3 currRight = { glm::sin(glm::radians(m_yRotation) + glm::radians(90.0f)), 0, 
-			//	glm::cos(glm::radians(m_yRotation) + glm::radians(90.0f)) };
 			m_camPos += currRight * m_cameraMoveSpeed * Time::GetDeltaTime();
 		}
 
@@ -106,7 +102,6 @@ public:
 		{
 			glm::vec3 currBackward = { glm::sin(glm::radians(m_yRotation) - glm::radians(90.0f)), 0,
 				glm::cos(glm::radians(m_yRotation) - glm::radians(90.0f)) };
-			//glm::vec3 currBackward = { glm::sin(glm::radians(m_yRotation)), 0, glm::cos(glm::radians(m_yRotation)) };
 			m_camPos += currBackward * m_cameraMoveSpeed * Time::GetDeltaTime();
 		}
 
@@ -114,8 +109,6 @@ public:
 		{
 			glm::vec3 currForward = { glm::sin(glm::radians(m_yRotation) + glm::radians(90.0f)), 0,
 				glm::cos(glm::radians(m_yRotation) + glm::radians(90.0f)) };
-			//glm::vec3 currForward = -1.0f * glm::vec3{ glm::sin(glm::radians(m_yRotation)), 0, 
-			//	glm::cos(glm::radians(m_yRotation)) };
 			m_camPos += currForward * m_cameraMoveSpeed * Time::GetDeltaTime();
 		}
 

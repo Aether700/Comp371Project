@@ -189,6 +189,7 @@
     <ClInclude Include="src\Rendering\CameraController.h" />
     <ClInclude Include="src\Rendering\Renderer3D.h" />
     <ClInclude Include="src\Rendering\Transform.h" />
+    <ClInclude Include="src\Tests\PointLightTest.h" />
     <ClInclude Include="src\Tests\TriangleTest.h" />
     <ClInclude Include="src\Core\Time.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLTexture.h" />

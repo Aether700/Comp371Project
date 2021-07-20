@@ -1,5 +1,6 @@
 #pragma once
-
+#include "Core/Script.h"
+#include "Rendering/Renderer3D.h"
 
 class Grid : public Script
 {

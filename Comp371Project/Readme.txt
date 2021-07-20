@@ -32,3 +32,11 @@ Jamil Hanchian: Red
 Jean Carlos Ng Lee: RGB:52, 107, 194(Denim)
 Madelaine: Pink
 Alec: Green
+
+The tasks have been seperated as following
+
+- Application/Script framework, camera + camera controller, batch renderer (Jamil Hanachian)
+- Coordinate axis (Alec, Jamil Hirsh)
+- Model Manager (Madelaine, Jamil Hanachian)
+- Grid (Jean)
+
