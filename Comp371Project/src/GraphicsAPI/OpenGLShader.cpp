@@ -53,7 +53,7 @@ OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc
 
 OpenGLShader::~OpenGLShader()
 {
-	glDeleteProgram(rendererID);
+	glDeleteProgram(m_rendererID);
 }
 
 //reads the file at the filepath provided and returns it in string form
@@ -119,7 +119,7 @@ std::unordered_map<unsigned int, std::string> OpenGLShader::PreProcess(const std
 
 void OpenGLShader::Bind() const
 {
-	glUseProgram(rendererID);
+	glUseProgram(m_rendererID);
 }
 
 void OpenGLShader::Unbind() const
@@ -239,7 +239,7 @@ void OpenGLShader::Compile(const std::unordered_map<unsigned int, std::string>& 
 		index++;
 	}
 
-	rendererID = program;
+	m_rendererID = program;
 
 	// Link our program
 	glLinkProgram(program);
@@ -284,7 +284,7 @@ int OpenGLShader::GetUniformLocation(const std::string& name)
 		return m_uniformLocations[name];
 	}
 
-	int location = glGetUniformLocation(rendererID, name.c_str());
+	int location = glGetUniformLocation(m_rendererID, name.c_str());
 
 	if (location == -1)
 	{

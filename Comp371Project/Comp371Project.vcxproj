@@ -167,6 +167,7 @@
     <ClInclude Include="src\Core\Random.h" />
     <ClInclude Include="src\Grid.h" />
     <ClInclude Include="src\JamilHModel.h" />
+    <ClInclude Include="src\JamilModel.h" />
     <ClInclude Include="src\JeanModel.h" />
     <ClInclude Include="src\MadelaineModel.h" />
     <ClInclude Include="src\ModelManager.h" />

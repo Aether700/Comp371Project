@@ -149,5 +149,8 @@
     <ClInclude Include="src\Tests\PointLightTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\JamilModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

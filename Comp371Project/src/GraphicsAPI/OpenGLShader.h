@@ -16,6 +16,7 @@ public:
 	void Bind() const;
 	void Unbind() const;
 
+	inline unsigned int GetRendererID() const { return m_rendererID; }
 	inline const std::string& GetName() const { return m_name; }
 
 	//sets different uniforms with the provided name and values
@@ -65,7 +66,7 @@ private:
 	*/
 	int GetUniformLocation(const std::string& name);
 
-	unsigned int rendererID;
+	unsigned int m_rendererID;
 	std::unordered_map<std::string, int> m_uniformLocations;
 	std::string m_name;
 };

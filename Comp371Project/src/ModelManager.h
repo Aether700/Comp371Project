@@ -6,6 +6,7 @@
 #include "Core/Time.h"
 
 #include "JamilHModel.h"
+#include "JamilModel.h"
 #include "JeanModel.h"
 #include "MadelaineModel.h"
 #include "AlecModel.h"
@@ -22,6 +23,7 @@ public:
 		AddModel(new JeanModel());
 		AddModel(new MadelaineModel());
 		AddModel(new AlecModel());
+		AddModel(new JamilModel());
 	}
 
 	void OnStart()
