@@ -6,7 +6,7 @@
 #include "../GraphicsAPI/OpenGLVertexArray.h"
 #include "../GraphicsAPI/OpenGLShader.h"
 
-//https://learnopengl.com/code_viewer_gh.php?code=src/2.lighting/2.1.basic_lighting_diffuse/basic_lighting_diffuse.cpp
+//https://learnopengl.com/code_viewer_gh.php?code=src/2.lighting/2.2.basic_lighting_specular/basic_lighting_specular.cpp
 
 class PointLightTest : public Script
 {
@@ -15,12 +15,12 @@ public:
 	{
 		PrepareCubeAndPlane();
 
-		/*
 		m_shader = std::make_shared<OpenGLShader>("Resources/Shaders/PointLightShader.glsl");
 		m_shader->Bind();
 		m_shader->SetFloat3("u_lightPos", m_lightPos);
-		*/
+		/*
 		m_shader = std::make_shared<OpenGLShader>("Resources/Shaders/TriangleInWorldSpace.glsl");
+		*/
 	}
 
 	void OnRender()
@@ -177,7 +177,7 @@ private:
 			}
 		}
 
-		m_ibo = std::make_shared<OpenGLIndexBuffer>(indices, sizeof(indices) / sizeof(unsigned int));
+		m_ibo = std::make_shared<OpenGLIndexBuffer>(indexData, sizeof(indexData) / sizeof(unsigned int));
 	}
 
 	std::shared_ptr<OpenGLVertexArray> m_vao;
@@ -186,7 +186,7 @@ private:
 	std::shared_ptr<OpenGLShader> m_shader;
 
 	Transform m_cube = Transform({0, 0, -3});
-	Transform m_plane = Transform({ 0, -3, -3 }, { 0, 0, 0 }, {10, 0.5, 10});
+	Transform m_plane = Transform({ 0, -3, -3 }, { 0, 0, 0 }, {10, 0.5f, 10});
 
-	glm::vec3 m_lightPos = {0, 3, -3};
+	glm::vec3 m_lightPos = {2, 3, -6};
 };

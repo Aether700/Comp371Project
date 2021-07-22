@@ -32,6 +32,7 @@ Jamil Hanchian: Red
 Jean Carlos Ng Lee: RGB:52, 107, 194(Denim)
 Madelaine: Pink
 Alec: Green
+Jamil Hirsh: light blue
 
 The tasks have been seperated as following
 
