@@ -6,7 +6,17 @@
 #include "../GraphicsAPI/OpenGLVertexArray.h"
 #include "../GraphicsAPI/OpenGLShader.h"
 
-//https://learnopengl.com/code_viewer_gh.php?code=src/2.lighting/2.2.basic_lighting_specular/basic_lighting_specular.cpp
+#include <sstream>
+
+//https://learnopengl.com/code_viewer_gh.php?code=src/2.lighting/6.multiple_lights/multiple_lights.cpp
+//https://learnopengl.com/code_viewer_gh.php?code=src/5.advanced_lighting/3.1.3.shadow_mapping/shadow_mapping.cpp
+
+struct LightVertexData
+{
+	glm::vec3 position;
+	glm::vec3 normal;
+	Material mat;
+};
 
 class PointLightTest : public Script
 {
@@ -15,12 +25,10 @@ public:
 	{
 		PrepareCubeAndPlane();
 
-		m_shader = std::make_shared<OpenGLShader>("Resources/Shaders/PointLightShader.glsl");
-		m_shader->Bind();
-		m_shader->SetFloat3("u_lightPos", m_lightPos);
-		/*
-		m_shader = std::make_shared<OpenGLShader>("Resources/Shaders/TriangleInWorldSpace.glsl");
-		*/
+		m_shader = std::make_shared<OpenGLShader>("Resources/Shaders/MultipleLight.glsl");
+		SetPointLight(m_shader, m_light.position, { 1, 1, 1, 1 }, 0);
+		//SetPointLight(m_shader, {0, 5, -2}, { 0.25f, 0.5f, 1, 1 }, 1);
+		m_shader->SetInt("u_numLights", 1);
 	}
 
 	void OnRender()
@@ -68,10 +76,10 @@ private:
 
 		glm::vec3 posAndNormals[] = {
 			//back face
-			{  0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f }, //0
-			{ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f },	//1
-			{ -0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f },	//2
-			{  0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f },	//3
+			{  0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f },
+			{ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f },
+			{ -0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f },
+			{  0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f },
 
 			//left face
 			{ -0.5f, -0.5f, -0.5f }, { -1.0f, 0.0f, 0.0f },
@@ -115,27 +123,43 @@ private:
 			*/
 		};
 
-		constexpr unsigned int numVectors = sizeof(posAndNormals) / sizeof(glm::vec3);
-		glm::vec3 cubePlanePos[2 * numVectors];
+		constexpr unsigned int numVertices = sizeof(posAndNormals) / (sizeof(glm::vec3) * 2);
+		LightVertexData cubePlanePos[3 * numVertices];
 
+		unsigned int index = 0;
 		//cube
-		for (int i = 0; i < numVectors; i+=2)
+		for (int i = 0; i < numVertices * 2; i+=2)
 		{
-			cubePlanePos[i] = m_cube.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
-			cubePlanePos[i + 1] = posAndNormals[i + 1];
+			cubePlanePos[index].position = m_cube.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
+			cubePlanePos[index].normal = posAndNormals[i + 1];
+			cubePlanePos[index].mat = m_testMat;
+			index++;
 		}
 
 		//plane
-		for (int i = 0; i < numVectors; i += 2)
+		for (int i = 0; i < numVertices * 2; i += 2)
 		{
-			cubePlanePos[numVectors + i] = m_plane.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
-			cubePlanePos[numVectors + i + 1] = posAndNormals[i + 1];
+			cubePlanePos[index].position = m_plane.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
+			cubePlanePos[index].normal = posAndNormals[i + 1];
+			cubePlanePos[index].mat = m_testMat;
+			index++;
 		}
 
-		m_vbo = std::make_shared<OpenGLVertexBuffer>(&(cubePlanePos[0].x), sizeof(cubePlanePos));
+		for (int i = 0; i < numVertices * 2; i += 2)
+		{
+			cubePlanePos[index].position = m_light.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
+			cubePlanePos[index].normal = posAndNormals[i + 1];
+			cubePlanePos[index].mat = m_defaultMat;
+			index++;
+		}
+		m_vbo = std::make_shared<OpenGLVertexBuffer>((float*)(void*)cubePlanePos, sizeof(cubePlanePos));
 		m_vbo->SetLayout({ 
 			{ShaderDataType::Float3, "position"}, 
 			{ShaderDataType::Float3, "normal"}, 
+			{ShaderDataType::Float3, "ambiant"}, 
+			{ShaderDataType::Float3, "diffuse"}, 
+			{ShaderDataType::Float3, "specular"}, 
+			{ShaderDataType::Float, "shininess"}
 		});
 
 		m_vao->AddVertexBuffer(m_vbo);
@@ -167,26 +191,40 @@ private:
 		};
 
 		constexpr unsigned int indicesCount = sizeof(indices) / sizeof(unsigned int);
-		unsigned int indexData[2 * indicesCount];
+		unsigned int indexData[3 * indicesCount];
 
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			for (int j = 0; j < indicesCount; j++)
 			{
-				indexData[i * indicesCount + j] = indices[j] + (i * (numVectors / 2));
+				indexData[i * indicesCount + j] = indices[j] + (i * numVertices);
 			}
 		}
 
 		m_ibo = std::make_shared<OpenGLIndexBuffer>(indexData, sizeof(indexData) / sizeof(unsigned int));
 	}
 
+	void SetPointLight(std::shared_ptr<OpenGLShader>& shader, glm::vec3 position, glm::vec4 color, int index)
+	{
+		shader->Bind();
+		std::stringstream ss;
+		ss << "u_pointLights[" << index << "].";
+		
+
+		shader->SetFloat3((ss.str() + "position").c_str(), position);
+		shader->SetFloat4((ss.str() + "color").c_str(), color);
+	}
+
 	std::shared_ptr<OpenGLVertexArray> m_vao;
 	std::shared_ptr<OpenGLVertexBuffer> m_vbo;
+	std::shared_ptr<OpenGLVertexBuffer> m_lights;
 	std::shared_ptr<OpenGLIndexBuffer> m_ibo;
 	std::shared_ptr<OpenGLShader> m_shader;
 
 	Transform m_cube = Transform({0, 0, -3});
 	Transform m_plane = Transform({ 0, -3, -3 }, { 0, 0, 0 }, {10, 0.5f, 10});
+	Transform m_light = Transform({ 2, 3, -6 }, { 0, 0, 0 }, {0.1f, 0.1f, 0.1f});
 
-	glm::vec3 m_lightPos = {2, 3, -6};
+	Material m_defaultMat = { {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {1, 1, 1}, 32 };
+	Material m_testMat = { {0.1f, 0.0f, 0.0f}, {0.5f, 0.0f, 0.0f}, {0.75f, 0, 0}, 32 };
 };

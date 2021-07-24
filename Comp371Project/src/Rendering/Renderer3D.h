@@ -12,6 +12,14 @@
 #include <unordered_map>
 #include <memory>
 
+struct Material
+{
+	glm::vec3 ambiant;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+	float shininess;
+};
+
 /*struch which contains the data to
   send to the gpu for each vertex
 

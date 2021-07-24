@@ -150,6 +150,7 @@
     <ClCompile Include="src\Core\Random.cpp" />
     <ClCompile Include="src\Dependencies\stb_image\stb_image.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLCubeMap.cpp" />
+    <ClCompile Include="src\GraphicsAPI\OpenGLFramebuffer.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLTexture2D.cpp" />
     <ClCompile Include="src\Rendering\Camera.cpp" />
     <ClCompile Include="src\Core\Input.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="src\AlecModel.h" />
     <ClInclude Include="src\Axes.h" />
     <ClInclude Include="src\Core\Random.h" />
+    <ClInclude Include="src\GraphicsAPI\OpenGLFramebuffer.h" />
     <ClInclude Include="src\Grid.h" />
     <ClInclude Include="src\JamilHModel.h" />
     <ClInclude Include="src\JamilModel.h" />
