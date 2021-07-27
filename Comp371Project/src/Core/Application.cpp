@@ -68,9 +68,9 @@ void Application::Run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(app.m_backgroundColor.r, app.m_backgroundColor.g, app.m_backgroundColor.b, app.m_backgroundColor.a);
 
-		//Renderer3D::BeginScene();
+		Renderer3D::BeginScene();
 		app.CallOnRenderScripts();
-		//Renderer3D::EndScene();
+		Renderer3D::EndScene();
 
 		glfwPollEvents();
 		glfwSwapBuffers(app.m_window);

@@ -16,7 +16,7 @@ public:
 		for (auto& transform : walls)
 		{
 			transform = std::make_shared<Transform>();
-			transform->SetParent(GetModelTransform());
+			transform->SetParent(GetWallTransform());
 		}
 	}
 

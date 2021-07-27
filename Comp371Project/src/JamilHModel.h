@@ -17,7 +17,7 @@ public:
 		for (auto& transform : m_wallCubes)
 		{
 			transform = std::make_shared<Transform>();
-			transform->SetParent(GetModelTransform());
+			transform->SetParent(GetWallTransform());
 		}
 	}
 
