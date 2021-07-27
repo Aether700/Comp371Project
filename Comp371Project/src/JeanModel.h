@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Model.h"
+#include "Core/Random.h"
 
 class JeanModel : public Model
 {
@@ -25,7 +26,6 @@ public:
 	{
 		SetModelCubesTransform();
 		SetWallCubesTransform('f'); // s sideivew, f frontview to determing in which orientation will the model fit. base on the original cube not the shuffle version
-		centerModel(); // center it to the XYZ axis
 	}
 
 	void OnRender()
