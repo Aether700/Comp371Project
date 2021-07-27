@@ -75,17 +75,8 @@ public:
 			}
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_M))
-		{
-			if (isOn == true)
-			{
-				isOn = false;
-			}
-			else
-			{
-				isOn = true;
-			}
-		}
+		//Don't move if M is held down, that's when ModelManager is using WASD to control model rotation/movement
+		isOn = !Input::IsKeyPressed(GLFW_KEY_M);
 
 		if(isOn)
 		{
