@@ -42,7 +42,7 @@ public:
 		m_shader->SetFloat3("lightPos", m_light.position);
 		m_shader->SetInt("shadows", 0);
 		m_shader->SetFloat("far_plane", Application::GetCamera()->GetPerspectiveFarClip());
-		m_shader->SetInt("depthMap", 0);
+		m_shader->SetInt("u_shadowMap", 0);
 		//SetupDebugger();
 	}
 
@@ -78,6 +78,18 @@ public:
 	}
 
 private:
+
+	void PrintMat4(const glm::mat4& m)
+	{
+		for (unsigned int i = 0; i < 4; i++)
+		{
+			for (unsigned int j = 0; j < 4; j++)
+			{
+				std::cout << m[j][i] << " ";
+			}
+			std::cout << "\n";
+		}
+	}
 
 	void PrepareCubeAndPlane()
 	{
@@ -164,16 +176,17 @@ private:
 		for (int i = 0; i < numVertices * 2; i+=2)
 		{
 			cubePlanePos[index].position = m_cube.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
-			cubePlanePos[index].normal = m_cube.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 1);
+			cubePlanePos[index].normal = glm::vec3(m_cube.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 0));
 			cubePlanePos[index].mat = m_testMat;
 			index++;
 		}
+
 
 		//plane
 		for (int i = 0; i < numVertices * 2; i += 2)
 		{
 			cubePlanePos[index].position = m_plane.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
-			cubePlanePos[index].normal = m_plane.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 1);
+			cubePlanePos[index].normal = glm::vec3(m_plane.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 0));
 			cubePlanePos[index].mat = m_testMat;
 			index++;
 		}
@@ -183,7 +196,7 @@ private:
 		for (int i = 0; i < numVertices * 2; i += 2)
 		{
 			cubePlanePos[index].position = m_light.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
-			cubePlanePos[index].normal = m_light.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 1);
+			cubePlanePos[index].normal = m_light.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 0);
 			cubePlanePos[index].mat = m_defaultMat;
 			index++;
 		}
@@ -255,131 +268,6 @@ private:
 	void GenerateShadowMap(std::shared_ptr<OpenGLShader>& shader,
 		std::shared_ptr<OpenGLFramebuffer>& framebuffer, glm::vec3 position)
 	{
-		/*
-		const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
-		unsigned int depthMapFBO;
-		glGenFramebuffers(1, &depthMapFBO);
-		// create depth cubemap texture
-		unsigned int depthCubemap;
-		glGenTextures(1, &depthCubemap);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
-		for (unsigned int i = 0; i < 6; ++i)
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-		// attach depth texture as FBO's depth buffer
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap, 0);
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		m_fbo = depthMapFBO;
-		m_cubemap = depthCubemap;
-
-		float near_plane = 1.0f;
-		float far_plane = 25.0f;
-		glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, near_plane, far_plane);
-		std::vector<glm::mat4> shadowTransforms;
-		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.position, m_light.position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.position, m_light.position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.position, m_light.position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.position, m_light.position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
-		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.position, m_light.position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.position, m_light.position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-
-		// 1. render scene to depth cubemap
-		// --------------------------------
-		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		m_shadowMapShader->Bind();
-		for (unsigned int i = 0; i < 6; ++i)
-			m_shadowMapShader->SetMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
-		m_shadowMapShader->SetFloat("far_plane", far_plane);
-		m_shadowMapShader->SetFloat3("lightPos", m_light.position);
-		//render scene
-		m_vao->Bind();
-		m_ibo->Bind();
-		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
-		////////////////////////
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		int windowWidth, windowHeight;
-		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
-		glViewport(0, 0, windowWidth, windowHeight);
-		*/
-
-		/*
-		*/
-		std::shared_ptr<OpenGLTexture> cubemap = std::make_shared<OpenGLCubeMap>(m_framebuffer->GetWidth(), 
-			m_framebuffer->GetHeight(), GL_DEPTH_COMPONENT, GL_FLOAT);
-
-		m_framebuffer->SetDepthAttachment(cubemap);
-
-
-		//to avoid peter panning we cull the front face when generating the 
-		//shadow map (works only for solid objects like cubes)
-		glCullFace(GL_FRONT);
-
-		//might need to change since currently calculating as a directional light
-		//m_lightSpaceMatrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f)
-		//	* glm::lookAt(position, m_cube.position, { 0, 1, 0 });
-
-	
-		cubemap->Bind();
-		glm::mat4 lightProjMatrix = glm::perspective(glm::radians(90.0f), 
-			(float)m_framebuffer->GetWidth() / (float)m_framebuffer->GetHeight(), 1.0f, 25.0f);
-
-		std::vector<glm::mat4> lightTransforms;
-		lightTransforms.push_back(lightProjMatrix * glm::lookAt(m_light.position, 
-			m_light.position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f))); 
-		lightTransforms.push_back(lightProjMatrix * glm::lookAt(m_light.position, 
-			m_light.position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-		lightTransforms.push_back(lightProjMatrix * glm::lookAt(m_light.position, 
-			m_light.position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-		lightTransforms.push_back(lightProjMatrix * glm::lookAt(m_light.position, 
-			m_light.position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
-		lightTransforms.push_back(lightProjMatrix * glm::lookAt(m_light.position, 
-			m_light.position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-		lightTransforms.push_back(lightProjMatrix * glm::lookAt(m_light.position, 
-				m_light.position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-
-		/*
-		m_shadowMapShader->Bind();
-		for (unsigned int i = 0; i < 6; i++)
-		{
-			m_shadowMapShader->SetMat4("u_shadowMatrices[" + std::to_string(i) + "]", lightTransforms[i]);
-		}
-		m_shadowMapShader->SetFloat("u_farPlane", Application::GetCamera()->GetPerspectiveFarClip());
-		m_shadowMapShader->SetFloat3("u_lightPos", m_light.position);
-
-		
-		//framebuffer->Bind();
-		//store the current window width and height and change the 
-		//viewport size to fit the whole shadow map texture
-		int windowWidth, windowHeight;
-		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
-		glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
-
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		//render the scene
-		m_vao->Bind();
-		m_ibo->Bind();
-		cubemap->Bind();
-		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
-		////////////////////
-
-		//revert the cull face settings and the viewport size to their previous values for the actual rendering
-		framebuffer->Unbind();
-		glViewport(0, 0, windowWidth, windowHeight);
-		glCullFace(GL_BACK);
-
-		/*
 		//to avoid peter panning we cull the front face when generating the 
 		//shadow map (works only for solid objects like cubes)
 		glCullFace(GL_FRONT);
@@ -412,7 +300,6 @@ private:
 		framebuffer->Unbind();
 		glViewport(0, 0, windowWidth, windowHeight);
 		glCullFace(GL_BACK);
-		*/
 	}
 
 	void SetupDebugger()
