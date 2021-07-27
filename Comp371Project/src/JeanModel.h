@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Model.h"
+#include "Core/Random.h"
 
 class JeanModel : public Model
 {
@@ -17,7 +18,7 @@ public:
 		for (auto& transform : m_wallCubes)
 		{
 			transform = std::make_shared<Transform>();
-			transform->SetParent(GetModelTransform());
+			transform->SetParent(GetWallTransform());
 		}
 	}
 
@@ -25,12 +26,12 @@ public:
 	{
 		SetModelCubesTransform();
 		SetWallCubesTransform('f'); // s sideivew, f frontview to determing in which orientation will the model fit. base on the original cube not the shuffle version
-		centerModel(); // center it to the XYZ axis
+		centerModel();
+		centerWall();
 	}
 
 	void OnRender()
 	{
-
 		for (auto& transform : m_cubeModel)
 		{
 			RenderCube(transform->GetTransformMatrix(), color);
@@ -66,6 +67,7 @@ public:
 				}
 			}
 		} while (modelChange);
+		centerModel();
 	}
 
 private:
@@ -174,8 +176,11 @@ private:
 		{
 			transform->position.x -= 3;
 			transform->position.y -= 3;
-		
 		}
+	}
+
+	void centerWall()
+	{
 		for (auto& transform : m_wallCubes)
 		{
 			transform->position.x += -3;

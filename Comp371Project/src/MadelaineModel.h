@@ -14,7 +14,7 @@ public:
 
 		for (Transform& t : m_wall)
 		{
-			t.SetParent(GetModelTransform());
+			t.SetParent(GetWallTransform());
 		}
 	}
 	

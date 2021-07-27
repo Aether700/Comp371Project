@@ -59,52 +59,77 @@ public:
 			ChangeIndex(4);
 		}
 
-		//rotate the current model depending on the arrow key pressed
-		if (Input::IsKeyPressed(GLFW_KEY_LEFT))
+		if (Input::IsKeyPressed(GLFW_KEY_M))
 		{
-			if (m_currMovementMode == Movement::Rotation)
+			if (isOn == true)
 			{
-				m_models[m_currModel]->GetModelTransform()->rotation.y -= m_rotationSpeed * Time::GetDeltaTime();
+				isOn = false;
 			}
 			else
 			{
-				m_models[m_currModel]->GetModelTransform()->position.x -= m_translationSpeed * Time::GetDeltaTime();
+				isOn = true;
 			}
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_RIGHT))
+		if (isOn)
 		{
-			if (m_currMovementMode == Movement::Rotation)
+			//rotate the current model depending on the arrow key pressed
+			if (Input::IsKeyPressed(GLFW_KEY_S))
 			{
-				m_models[m_currModel]->GetModelTransform()->rotation.y += m_rotationSpeed * Time::GetDeltaTime();
+				if (m_currMovementMode == Movement::Rotation)
+				{
+					m_models[m_currModel]->GetModelTransform()->rotation.y -= m_rotationSpeed * Time::GetDeltaTime();
+				}
+				else
+				{
+					m_models[m_currModel]->GetModelTransform()->position.x -= m_translationSpeed * Time::GetDeltaTime();
+				}
 			}
-			else
-			{
-				m_models[m_currModel]->GetModelTransform()->position.x += m_translationSpeed * Time::GetDeltaTime();
-			}
-		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_UP))
-		{
-			if (m_currMovementMode == Movement::Rotation)
+			if (Input::IsKeyPressed(GLFW_KEY_W))
 			{
-				m_models[m_currModel]->GetModelTransform()->rotation.x += m_rotationSpeed * Time::GetDeltaTime();
+				if (m_currMovementMode == Movement::Rotation)
+				{
+					m_models[m_currModel]->GetModelTransform()->rotation.y += m_rotationSpeed * Time::GetDeltaTime();
+				}
+				else
+				{
+					m_models[m_currModel]->GetModelTransform()->position.x += m_translationSpeed * Time::GetDeltaTime();
+				}
 			}
-			else
-			{
-				m_models[m_currModel]->GetModelTransform()->position.y += m_translationSpeed * Time::GetDeltaTime();
-			}
-		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_DOWN))
-		{
-			if (m_currMovementMode == Movement::Rotation)
+			if (Input::IsKeyPressed(GLFW_KEY_D))
 			{
-				m_models[m_currModel]->GetModelTransform()->rotation.x -= m_rotationSpeed * Time::GetDeltaTime();
+				if (m_currMovementMode == Movement::Rotation)
+				{
+					m_models[m_currModel]->GetModelTransform()->rotation.x += m_rotationSpeed * Time::GetDeltaTime();
+				}
+				else
+				{
+					m_models[m_currModel]->GetModelTransform()->position.y += m_translationSpeed * Time::GetDeltaTime();
+				}
 			}
-			else
+
+			if (Input::IsKeyPressed(GLFW_KEY_A))
 			{
-				m_models[m_currModel]->GetModelTransform()->position.y -= m_translationSpeed * Time::GetDeltaTime();
+				if (m_currMovementMode == Movement::Rotation)
+				{
+					m_models[m_currModel]->GetModelTransform()->rotation.x -= m_rotationSpeed * Time::GetDeltaTime();
+				}
+				else
+				{
+					m_models[m_currModel]->GetModelTransform()->position.y -= m_translationSpeed * Time::GetDeltaTime();
+				}
+			}
+
+			if (Input::IsKeyPressed(GLFW_KEY_Q))
+			{
+				m_models[m_currModel]->GetModelTransform()->rotation.z -= m_rotationSpeed * Time::GetDeltaTime();
+			}
+
+			if (Input::IsKeyPressed(GLFW_KEY_E))
+			{
+				m_models[m_currModel]->GetModelTransform()->rotation.z += m_rotationSpeed * Time::GetDeltaTime();
 			}
 		}
 
@@ -129,11 +154,14 @@ public:
 		{
 			m_models[m_currModel]->GetModelTransform()->scale += Time::GetDeltaTime() 
 				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
+
+			m_models[m_currModel]->GetWallTransform()->scale += Time::GetDeltaTime()
+				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_J))
 		{
-			m_models[m_currModel]->GetModelTransform()->scale -= Time::GetDeltaTime() 
+			m_models[m_currModel]->GetWallTransform()->scale -= Time::GetDeltaTime() 
 				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
 		}
 
@@ -217,7 +245,11 @@ private:
 		{
 			m_models[i]->GetModelTransform()->position = positions[i];
 			m_models[i]->GetModelTransform()->rotation = rotations[i];
+			m_models[i]->GetWallTransform()->position = positions[i];
+			m_models[i]->GetWallTransform()->rotation = rotations[i];
 		}
+
+
 	}
 
 	std::vector<Model*> m_models;
@@ -234,4 +266,5 @@ private:
 	float m_currToggle = 0.0f;
 
 	Movement m_currMovementMode = Movement::Rotation;
+	bool isOn = false;
 };
