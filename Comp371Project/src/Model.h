@@ -15,6 +15,8 @@ class Model : public Script
 public:
 	virtual ~Model() { }
 
+	
+	std::shared_ptr<Transform>& GetTransform() { return m_transform; }
 	std::shared_ptr<Transform>& GetModelTransform() { return m_modelTransform; }
 	std::shared_ptr<Transform>& GetWallTransform() { return m_wallTransform; }
 
@@ -28,7 +30,11 @@ public:
 	}
 
 protected:
-	Model() : m_modelTransform(std::make_shared<Transform>()), m_wallTransform(std::make_shared<Transform>()) {  }
+	Model() : m_modelTransform(std::make_shared<Transform>()), m_wallTransform(std::make_shared<Transform>()) 
+	{
+		m_modelTransform->SetParent(m_transform);
+		m_wallTransform->SetParent(m_transform);
+	}
 
 	//rendering function to use inside the models so that we can change the rendering 
 	//primitives used to render them
@@ -49,6 +55,7 @@ protected:
 	}
 
 private:
+	std::shared_ptr<Transform> m_transform;
 	std::shared_ptr<Transform> m_modelTransform;
 	std::shared_ptr<Transform> m_wallTransform;
 	RenderingPrimitive m_primitive = RenderingPrimitive::Triangles;
