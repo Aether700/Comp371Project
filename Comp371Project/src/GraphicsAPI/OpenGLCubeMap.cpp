@@ -147,6 +147,41 @@ OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, void* data
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_width, m_height,
 			0, m_dataFormat[i], GL_UNSIGNED_BYTE, data);
 	}
+	/* //to remove
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	*/
+
+	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_R, GL_REPEAT);
+}
+
+//creates an empty cubemap of the provided width and height with the specified internalDataFormat
+OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, unsigned int internalDataFormat, unsigned int type) 
+	: m_width(width), m_height(height)
+{
+	assert(width > 0 && height > 0);
+
+	glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_rendererID);
+	m_internalFormat[0] = internalDataFormat;
+	m_dataFormat[0] = internalDataFormat;
+
+	Bind();
+
+	for (size_t i = 0; i < 6; i++)
+	{
+		m_internalFormat[i] = m_internalFormat[0];
+		m_dataFormat[i] = m_dataFormat[0];
+
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_width, m_height,
+			0, m_dataFormat[i], type, nullptr);
+	}
 
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

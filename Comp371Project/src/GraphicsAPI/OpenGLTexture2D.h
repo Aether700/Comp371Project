@@ -1,4 +1,6 @@
 #pragma once
+#define GLEW_STATIC
+#include "../Dependencies/glew-2.1.0/include/GL/glew.h"
 #include "OpenGLTexture.h"
 
 #include <string>
@@ -19,13 +21,15 @@ public:
 
 	inline unsigned int GetRendererID() const { return m_rendererID; }
 
-	unsigned int GetWidth() const { return m_width; }
-	unsigned int GetHeight() const { return m_height; }
+	unsigned int GetWidth() const override { return m_width; }
+	unsigned int GetHeight() const override { return m_height; }
 
 	//sets the texture data of this texture object
 	void SetData(void* data, unsigned int size);
 
 	virtual void Bind(unsigned int slot = 0) const override;
+
+	virtual unsigned int GetTextureType() const override { return GL_TEXTURE_2D; }
 
 	//checks to see if the other texture object is a 2D texture 
 	//and if it maps to the same 2D texture as this object

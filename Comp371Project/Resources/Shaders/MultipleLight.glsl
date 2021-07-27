@@ -9,6 +9,7 @@ layout(location = 4) in vec3 a_specular;
 layout(location = 5) in float a_shininess;
 
 uniform mat4 u_viewProjMatrix;
+uniform mat4 u_lightSpaceMatrix;
 
 out vec3 v_camPos;
 out vec3 v_vertexPos;
@@ -17,9 +18,11 @@ out vec3 v_ambient;
 out vec3 v_diffuse;
 out vec3 v_specular;
 out float v_shininess;
+out vec4 v_fragPosLightSpace;
 
 void main()
 {
+    v_fragPosLightSpace = u_lightSpaceMatrix * vec4(a_position, 1);
     v_ambient = a_ambient;
     v_diffuse = a_diffuse;
     v_specular = a_specular;
@@ -45,9 +48,9 @@ struct PointLight
 
 layout(location = 0) out vec4 color;
 
-uniform vec3 u_lightPos = vec3(0, 3, 0);
 uniform PointLight u_pointLights[MAX_NUM_POINT_LIGHTS]; 
 uniform int u_numLights = 0;
+uniform sampler2D u_shadowMap;
 
 in vec3 v_camPos;
 in vec3 v_vertexPos;
@@ -56,6 +59,7 @@ in vec3 v_ambient;
 in vec3 v_diffuse;
 in vec3 v_specular;
 in float v_shininess;
+in vec4 v_fragPosLightSpace;
 
 vec4 CalculatePointLight(PointLight light, vec3 normal, vec3 ambientMat, 
     vec3 diffuseMat, vec3 specularMat, float shininessMat)
@@ -112,6 +116,68 @@ vec4 CalculatePointLight(PointLight light, vec3 normal, vec3 ambientMat,
     */
 }
 
+float ShadowCalculation(PointLight light, vec4 fragPosLightSpace)
+{
+    // perform perspective divide
+    vec3 projCoords = vec3(fragPosLightSpace.x, fragPosLightSpace.y, fragPosLightSpace.z) / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(u_shadowMap, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // calculate bias (based on depth map resolution and slope)
+    vec3 normal = normalize(v_normal);
+    vec3 lightDir = normalize(light.position - v_vertexPos);
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    // check whether current frag pos is in shadow
+    // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+    // PCF
+    float shadow = 0.0;
+    vec2 texSize = 1.0 / textureSize(u_shadowMap, 0);
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(u_shadowMap, projCoords.xy + vec2(x, y) * texSize).r; 
+            shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;        
+        }    
+    }
+    shadow /= 9.0;
+    
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
+        
+    return shadow;
+}
+
+void main()
+{           
+    vec3 c = vec3(1, 1, 1);
+    vec3 normal = normalize(v_normal);
+    vec3 lightColor = vec3(0.3);
+    // ambient
+    vec3 ambient = 0.3 * c;
+    // diffuse
+    vec3 lightDir = normalize(u_pointLights[0].position - v_vertexPos);
+    float diff = max(dot(lightDir, normal), 0.0);
+    vec3 diffuse = diff * lightColor;
+    // specular
+    vec3 viewDir = normalize(v_camPos - v_vertexPos);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = 0.0;
+    vec3 halfwayDir = normalize(lightDir + viewDir);  
+    spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
+    vec3 specular = spec * lightColor;    
+    // calculate shadow
+    float shadow = ShadowCalculation(u_pointLights[0], v_fragPosLightSpace);                      
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * c;    
+    
+    color = vec4(lighting, 1.0);
+}
+
+/*
 void main()
 {
     vec4 result;
@@ -130,3 +196,4 @@ void main()
 
     color = result;
 }
+*/

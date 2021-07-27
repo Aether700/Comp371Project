@@ -1,5 +1,7 @@
 #pragma once
+#define GLEW_STATIC
 #include "OpenGLTexture.h"
+#include "../Dependencies/glew-2.1.0/include/GL/glew.h"
 
 #include <array>
 #include <string>
@@ -28,10 +30,21 @@ public:
 	//applies the texture data provided to all sides of the cube
 	OpenGLCubeMap(unsigned int width, unsigned int height, void* data);
 
+	//creates an empty cubemap of the provided width and height with the specified internalDataFormat
+	OpenGLCubeMap(unsigned int width, unsigned int height, unsigned int internalDataFormat, unsigned int type = GL_UNSIGNED_BYTE);
+
+	
 	~OpenGLCubeMap();
+
+	virtual unsigned int GetRendererID() const { return m_rendererID; }
 
 	//binds the cubemap to the provided texture slot (defaults to slot 0)
 	virtual void Bind(unsigned int slot = 0) const override;
+
+	unsigned int GetWidth() const override { return m_width; }
+	unsigned int GetHeight() const override { return m_height; }
+
+	virtual unsigned int GetTextureType() const override { return GL_TEXTURE_CUBE_MAP; }
 
 	//check if this cubemap is equal to the provided texture
 	virtual bool operator==(const OpenGLTexture& other) const override

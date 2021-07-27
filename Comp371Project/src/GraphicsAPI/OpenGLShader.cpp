@@ -1,6 +1,7 @@
 #include "OpenGLShader.h"
 #include "../Dependencies/glew-2.1.0/include/GL/glew.h"
 #include "../Dependencies/glm-0.9.9.8/glm/gtc/type_ptr.hpp"
+#include "../Core/Debug.h"
 
 #include <iostream>
 #include <assert.h>
@@ -17,6 +18,10 @@ static unsigned int ShaderTypeFromString(const std::string& type)
 	else if (type == "fragment" || type == "pixel")
 	{
 		return GL_FRAGMENT_SHADER;
+	}
+	else if (type == "geometry")
+	{
+		return GL_GEOMETRY_SHADER;
 	}
 
 	std::cout << "Unknown shader type\n";
@@ -201,10 +206,11 @@ void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& m
 //compiles and links all the shaders into an opengl shader program
 void OpenGLShader::Compile(const std::unordered_map<unsigned int, std::string>& shaderSrcs)
 {
+	Debug::CheckOpenGLError();
 	unsigned int program = glCreateProgram();
-	assert(shaderSrcs.size() <= 2);
-	std::array<unsigned int, 2> glShaderIDs;
-	int index = 0;
+	Debug::CheckOpenGLError();
+
+	std::vector<unsigned int> glShaderIDs;
 	for (auto& kv : shaderSrcs)
 	{
 		GLenum type = kv.first;
@@ -229,20 +235,19 @@ void OpenGLShader::Compile(const std::unordered_map<unsigned int, std::string>& 
 
 			glDeleteShader(shader);
 
-			std::cout << infoLog.data() << "\n";
+			std::cout << "error in shader: " << type << "\n" << infoLog.data() << "\n";
 			assert(false);
-			break;
 		}
 
 		glAttachShader(program, shader);
-		glShaderIDs[index] = shader;
-		index++;
+		glShaderIDs.push_back(shader);
 	}
 
 	m_rendererID = program;
 
 	// Link our program
 	glLinkProgram(program);
+	Debug::CheckOpenGLError();
 
 	// Note the different functions here: glGetProgram* instead of glGetShader*.
 	GLint isLinked = 0;
@@ -263,13 +268,15 @@ void OpenGLShader::Compile(const std::unordered_map<unsigned int, std::string>& 
 			glDeleteShader(id);
 
 		std::cout << infoLog.data() << "\n";
-		return;
+		assert(false);
 	}
-
+	Debug::CheckOpenGLError();
+	
 	for (auto id : glShaderIDs)
 	{
 		glDetachShader(program, id);
 	}
+	Debug::CheckOpenGLError();
 }
 
 /*retrieves the uniform location for the uniform name provided

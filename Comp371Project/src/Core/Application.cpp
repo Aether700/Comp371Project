@@ -135,7 +135,6 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 	}
 
 	glfwMakeContextCurrent(m_window);
-
 	//set callbacks
 	glfwSetErrorCallback(&GlfwErrorCallbackHandler);
 	glfwSetWindowSizeCallback(m_window, &WindowResizeEvent);
