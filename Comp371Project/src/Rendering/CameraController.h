@@ -131,7 +131,7 @@ public:
 				m_camPos.y += m_cameraVerticalMoveSpeed * Time::GetDeltaTime();
 			}
 
-			if (Input::IsKeyPressed(GLFW_KEY_LEFT_ALT))
+			if (Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL))
 			{
 				m_camPos.y -= m_cameraVerticalMoveSpeed * Time::GetDeltaTime();
 			}
