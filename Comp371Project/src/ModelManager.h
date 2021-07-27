@@ -165,6 +165,15 @@ public:
 				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
 		}
 
+		//reset the model to original position with T
+		if (Input::IsKeyPressed(GLFW_KEY_T))
+		{
+			m_models[m_currModel]->GetModelTransform()->position = positions[m_currModel];
+			m_models[m_currModel]->GetModelTransform()->rotation = rotations[m_currModel];
+			m_models[m_currModel]->GetModelTransform()->scale = { 1.0,1.0,1.0 };
+
+		}
+
 		/*pressing the Z key will attempt to shuffle the current model.
 		  if the current model does not support the shuffle operation a 
 		  message indicating so will be displayed in the console
@@ -225,21 +234,6 @@ private:
 
 	void SetModelsPos()
 	{
-		glm::vec3 positions[] = {
-			{ -45, 10, -45 },
-			{ -45, 10,  45 },
-			{  45, 10, -45 },
-			{  45, 10,  45 },
-			{  0, 10,  0 },
-		};
-
-		glm::vec3 rotations[] = {
-			{ 0,  glm::radians(45.0f), 0 },
-			{ 0, -glm::radians(225.0f), 0 },
-			{ 0, -glm::radians(45.0f), 0 },
-			{ 0,  glm::radians(225.0f), 0 },
-			{ 0, 0, 0 },
-		};
 
 		for (int i = 0; i < m_models.size() && i < 5; i++)
 		{
@@ -267,4 +261,20 @@ private:
 
 	Movement m_currMovementMode = Movement::Rotation;
 	bool isOn = false;
+
+	glm::vec3 positions[5] = {
+	{ -45, 10, -45 },
+	{ -45, 10,  45 },
+	{  45, 10, -45 },
+	{  45, 10,  45 },
+	{  0, 10,  0 },
+	};
+
+	glm::vec3 rotations[5] = {
+		{ 0,  glm::radians(45.0f), 0 },
+		{ 0, -glm::radians(225.0f), 0 },
+		{ 0, -glm::radians(45.0f), 0 },
+		{ 0,  glm::radians(225.0f), 0 },
+		{ 0, 0, 0 },
+	};
 };
