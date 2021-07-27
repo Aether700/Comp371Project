@@ -161,6 +161,8 @@ public:
 
 		if (Input::IsKeyPressed(GLFW_KEY_J))
 		{
+			m_models[m_currModel]->GetModelTransform()->scale -= Time::GetDeltaTime()
+				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
 			m_models[m_currModel]->GetWallTransform()->scale -= Time::GetDeltaTime() 
 				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
 		}
@@ -180,7 +182,7 @@ public:
 		}
 
 		/*pressing the C key toggle between translation and 
-		  rotation mode which will change how the arrow keys behave
+		  rotation mode which will change how the awsd keys behave
 		*/
 		if (m_currToggle >= m_toggleCooldown && Input::IsKeyPressed(GLFW_KEY_C))
 		{
