@@ -40,7 +40,7 @@ public:
 
 		m_shader->Bind();
 		m_shader->SetFloat3("lightPos", m_light.position);
-		m_shader->SetInt("shadows", 1);
+		m_shader->SetInt("shadows", 0);
 		m_shader->SetFloat("far_plane", Application::GetCamera()->GetPerspectiveFarClip());
 		m_shader->SetInt("depthMap", 0);
 		//SetupDebugger();
@@ -65,6 +65,8 @@ public:
 		m_vao->Bind();
 		m_ibo->Bind();
 		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
+
+
 		/*
 		//draw debugger quad
 		m_shadowMapDebugger->Bind();
@@ -186,6 +188,7 @@ private:
 			index++;
 		}
 		*/
+
 		m_vbo = std::make_shared<OpenGLVertexBuffer>((float*)(void*)cubePlanePos, sizeof(cubePlanePos));
 		m_vbo->SetLayout({ 
 			{ShaderDataType::Float3, "position"}, 
@@ -225,7 +228,7 @@ private:
 		};
 
 		constexpr unsigned int indicesCount = sizeof(indices) / sizeof(unsigned int);
-		unsigned int indexData[3 * indicesCount];
+		unsigned int indexData[2 * indicesCount];
 
 		for (int i = 0; i < 2; i++)
 		{
@@ -326,6 +329,7 @@ private:
 		//m_lightSpaceMatrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f)
 		//	* glm::lookAt(position, m_cube.position, { 0, 1, 0 });
 
+	
 		cubemap->Bind();
 		glm::mat4 lightProjMatrix = glm::perspective(glm::radians(90.0f), 
 			(float)m_framebuffer->GetWidth() / (float)m_framebuffer->GetHeight(), 1.0f, 25.0f);
@@ -344,7 +348,7 @@ private:
 		lightTransforms.push_back(lightProjMatrix * glm::lookAt(m_light.position, 
 				m_light.position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 
-
+		/*
 		m_shadowMapShader->Bind();
 		for (unsigned int i = 0; i < 6; i++)
 		{
@@ -354,7 +358,7 @@ private:
 		m_shadowMapShader->SetFloat3("u_lightPos", m_light.position);
 
 		
-		framebuffer->Bind();
+		//framebuffer->Bind();
 		//store the current window width and height and change the 
 		//viewport size to fit the whole shadow map texture
 		int windowWidth, windowHeight;

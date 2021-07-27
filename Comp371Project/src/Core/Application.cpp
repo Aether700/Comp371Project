@@ -157,8 +157,8 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 	glDepthFunc(GL_LESS);
 
 	//enable backface culling
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_FRONT);
 
 	glPointSize(5.0f);
 }
