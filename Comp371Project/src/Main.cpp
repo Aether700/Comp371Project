@@ -31,10 +31,10 @@ int main()
 	Application::Init();
 
 	//Add Scripts here   
-	//Application::AddScript(new Axes());
-	//Application::AddScript(new Grid());
-	//Application::AddScript(new ModelManager());
-	Application::AddScript(new PointLightTest());
+	Application::AddScript(new Axes());
+	Application::AddScript(new Grid());
+	Application::AddScript(new ModelManager());
+	//Application::AddScript(new PointLightTest());
 	///////////////////
 
 	Application::Run();

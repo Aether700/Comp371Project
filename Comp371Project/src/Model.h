@@ -16,8 +16,10 @@ public:
 	virtual ~Model() { }
 
 	std::shared_ptr<Transform>& GetModelTransform() { return m_modelTransform; }
+	std::shared_ptr<Transform>& GetWallTransform() { return m_wallTransform; }
 
 	void SetRenderingPrimitive(RenderingPrimitive primitive) { m_primitive = primitive; }
+
 
 	//shuffles the model or displays a message in the console indicating that this model does not support shuffling
 	virtual void Shuffle() 
@@ -26,7 +28,7 @@ public:
 	}
 
 protected:
-	Model() : m_modelTransform(std::make_shared<Transform>()) { }
+	Model() : m_modelTransform(std::make_shared<Transform>()), m_wallTransform(std::make_shared<Transform>()) {  }
 
 	//rendering function to use inside the models so that we can change the rendering 
 	//primitives used to render them
@@ -48,5 +50,6 @@ protected:
 
 private:
 	std::shared_ptr<Transform> m_modelTransform;
+	std::shared_ptr<Transform> m_wallTransform;
 	RenderingPrimitive m_primitive = RenderingPrimitive::Triangles;
 };
