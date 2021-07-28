@@ -11,24 +11,20 @@ layout(location = 5) in float a_shininess;
 out vec2 TexCoords;
 
 out VS_OUT {
+    vec4 FragPosLightSpace;
     vec3 FragPos;
     vec3 Normal;
     vec4 color;
 } vs_out;
 
 uniform mat4 u_viewProjMatrix;
-
-uniform bool u_reverseNormals;
+uniform mat4 u_lightSpaceMatrix;
 
 void main()
 {
+    vs_out.FragPosLightSpace = u_lightSpaceMatrix * vec4(a_position, 1.0);
     vs_out.FragPos = a_position;
-    // a slight hack to make sure the outer large cube displays 
-    //lighting from the 'inside' instead of the default 'outside'.
-    if(u_reverseNormals) 
-        vs_out.Normal =  (-1.0 * a_normal);
-    else
-        vs_out.Normal = a_normal;
+    vs_out.Normal = a_normal;
     vs_out.color = vec4(1, 1, 1, 1);
     gl_Position = u_viewProjMatrix * vec4(a_position, 1.0);
 }
@@ -38,19 +34,23 @@ void main()
 out vec4 FragColor;
 
 in VS_OUT {
+    vec4 FragPosLightSpace;
     vec3 FragPos;
     vec3 Normal;
     vec4 color;
 } fs_in;
 
+const float PI = 3.1415926535897932384626433832795;
+
 uniform sampler2D diffuseTexture;
-uniform samplerCube depthMap;
+uniform sampler2D u_shadowMap;
 
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
 uniform float far_plane;
 uniform bool shadows;
+uniform vec3 u_lightDir;
 
 
 // array of offset direction for sampling
@@ -63,6 +63,28 @@ vec3 gridSamplingDisk[20] = vec3[]
    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
 );
 
+float DirectionalShadow()
+{
+    // this function returns 1.0 when the surface receives light, and 0.0 when it is in a shadow
+    // perform perspective divide
+    vec3 ndc = fs_in.FragPosLightSpace.xyz / fs_in.FragPosLightSpace.w;
+    // transform to [0,1] range
+    ndc = ndc * 0.5 + 0.5;
+    
+    // get closest depth value from light's perspective (using [0,1] range fragment_position_light_space as coords)
+    float closest_depth = texture(u_shadowMap, ndc.xy).r;
+    // get depth of current fragment from light's perspective
+    float current_depth = ndc.z;
+    return current_depth;
+    
+    /*
+    // check whether current frag pos is in shadow
+    float bias = 0.03f;  // bias applied in depth map: see shadow_vertex.glsl
+    return ((current_depth - bias) < closest_depth) ? 1.0 : 0.0;
+    */
+}
+
+/*
 float ShadowCalculation(vec3 fragPos)
 {
     // get vector between fragment position and light position
@@ -101,7 +123,6 @@ float ShadowCalculation(vec3 fragPos)
        }
      }
      shadow /= (samples * samples * samples);
-    */
 
     /*
     float shadow = 0.0;
@@ -117,37 +138,50 @@ float ShadowCalculation(vec3 fragPos)
             shadow += 1.0;
     }
     shadow /= float(samples);
-    */
 
     //display closestDepth as debug (to visualize depth cubemap)
-    FragColor = vec4(vec3(closestDepth / far_plane), 1.0);    
+    //FragColor = vec4(vec3(closestDepth / far_plane), 1.0);    
         
     return shadow;
 }
+*/
+
+float spotlightScalar() {
+    float theta = dot(normalize(fs_in.FragPos - lightPos), u_lightDir);
+    
+    if (theta > cos(radians(20.0f))) {
+        return 1.0f;
+    } else if(theta > cos(radians(30.0f))) {
+        return (1.0f - cos(PI * (theta - cos(radians(30.0f)) / (cos(radians(20.0f) - cos(radians(30.0f)))) / 2.0f)));
+    }
+
+    return 0.0f;
+}
 
 void main()
-{           
+{
     vec3 color = vec3(fs_in.color);
-    vec3 normal = normalize(fs_in.Normal);
-    vec3 lightColor = vec3(0.3);
+    vec4 lightColor = vec4(1, 0, 0, 1);
     // ambient
-    vec3 ambient = 0.3 * color;
-    // diffuse
+    vec4 ambient = 0.3f * lightColor;// * vec4(ambientMat, 1);
+  	
+    // diffuse 
+    vec3 norm = normalize(fs_in.Normal);
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
-    float diff = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = diff * lightColor;
+    float diff = max(dot(-norm, lightDir), 0.0);
+    vec4 diffuse = lightColor * diff;// * vec4(diffuseMat, 1);
+    //vec4 diffuse = vec4(norm, 1);
+    
     // specular
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = 0.0;
-    vec3 halfwayDir = normalize(lightDir + viewDir);  
-    spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
-    vec3 specular = spec * lightColor;    
+    vec3 reflectDir = reflect(-lightDir, norm);  
+    float spec = pow(max(dot(viewPos, reflectDir), 0.0), 64);
+    vec4 specular = 0.3f * lightColor * spec;// * vec4(specularMat, 1);  
+        
     // calculate shadow
-    float shadow = shadows ? ShadowCalculation(fs_in.FragPos) : 0.0f;                      
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;    
+    //float shadow = shadows ? DirectionalShadow() * spotlightScalar() : 0.0f;                      
+    //vec4 lighting = (ambient + (1.0 - shadow) * (diffuse + specular));    
     
-    //FragColor = vec4(lighting, 1.0);
-
-    //FragColor = texture(depthMap, fs_in.Normal);
+    //FragColor = vec4((DirectionalShadow() * spotlightScalar()), 0, 0, 1);
+    FragColor = vec4((DirectionalShadow()), 0, 0, 1);
 }
