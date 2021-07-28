@@ -38,7 +38,8 @@ void Application::Init(const std::string& windowName, unsigned int width, unsign
 	s_instance = new Application(windowName, width, height);
 	Debug::CheckOpenGLError();
 	s_instance->m_camera->SetViewportSize(width, height);
-	AddScript(new CameraController());
+	s_instance->m_cameraController = new CameraController();
+	AddScript(s_instance->m_cameraController);
 }
 
 //shuts down the application and clears the memory allocated on the heap

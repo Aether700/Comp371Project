@@ -150,6 +150,8 @@ public:
 		camTransform = glm::lookAt(m_camPos, m_camPos + m_lookDir, { 0, 1, 0 });
 	}
 
+	glm::vec3 GetCamPos() const { return m_camPos; }
+
 	/*handles scroll events and zooms in and out depending on the input provided
 	  
 	  allows the user to zoom in and out as required by the assignment

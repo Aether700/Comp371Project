@@ -10,12 +10,9 @@ layout(location = 5) in float a_shininess;
 
 uniform mat4 u_lightSpaceMatrix;
 
-out vec4 v_fragPosLightSpace;
-
 void main()
 {
     gl_Position = u_lightSpaceMatrix * vec4(a_position, 1.0);
-    v_fragPosLightSpace = gl_Position;
 }
 /*
 #tipe geometry
@@ -48,12 +45,12 @@ void main()
 #type fragment
 #version 330 core
 
-layout(location = 0) out vec4 color;
+out vec4 color;
 
 //take the output of the geometry shader as input
 //in vec4 v_fragPos;
 
-in vec4 v_fragPosLightSpace;
+in vec4 gl_FragCoord;
 
 uniform vec3 u_lightPos;
 uniform float u_farPlane;
@@ -72,5 +69,7 @@ void main()
     color = vec4(vec3(lightDistance, lightDistance, lightDistance), 1);
     */
 
-    gl_FragDepth = v_fragPosLightSpace.z;
+    //gl_FragDepth = v_fragPosLightSpace.z;
+    gl_FragDepth = gl_FragCoord.z;
+    color = vec4(gl_FragCoord.z, 0, 0, 1);
 }

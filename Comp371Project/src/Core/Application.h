@@ -9,6 +9,7 @@
 
 
 class Script;
+class CameraController;
 
 /*singleton class responsible for the life duration of the program and will 
   also contain all the scripts and the window of the application.
@@ -36,6 +37,7 @@ public:
 	//returns the window of the application
 	static GLFWwindow* GetWindow() { return GetApplication().m_window; }
 	static std::shared_ptr<Camera> GetCamera() { return GetApplication().m_camera; }
+	static CameraController* GetCameraController() { return GetApplication().m_cameraController; }
 
 	//add and remove scripts from the application, all application must be heap allocated
 	static void AddScript(Script* s);
@@ -65,4 +67,5 @@ private:
 	GLFWwindow* m_window;
 	glm::vec4 m_backgroundColor = glm::vec4(0, 0, 0, 1);
 	std::shared_ptr<Camera> m_camera;
+	CameraController* m_cameraController;
 };

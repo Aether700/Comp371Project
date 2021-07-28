@@ -7,6 +7,7 @@
 #include "../GraphicsAPI/OpenGLShader.h"
 #include "../GraphicsAPI/OpenGLFramebuffer.h"
 #include "../GraphicsAPI/OpenGLCubeMap.h"
+#include "../Rendering/CameraController.h"
 
 #include <vector>
 #include <sstream>
@@ -43,38 +44,57 @@ public:
 		m_shader->SetInt("shadows", 0);
 		m_shader->SetFloat("far_plane", Application::GetCamera()->GetPerspectiveFarClip());
 		m_shader->SetInt("u_shadowMap", 0);
-		//SetupDebugger();
+	}
+
+	void OnUpdate()
+	{
+		if (Input::IsKeyPressed(GLFW_KEY_W))
+		{
+			m_light.position.z -= 5*Time::GetDeltaTime();
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_S))
+		{
+			m_light.position.z += 5*Time::GetDeltaTime();
+		}
 	}
 
 	void OnRender()
 	{
+		/*
 		auto camera = Application::GetCamera();
 		glm::mat4 camTransform = camera->GetTransform();
 		glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camTransform;
 
 		m_shader->Bind();
 		m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
-		//m_shader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
-		//m_shader->SetInt("u_shadowMap", m_framebuffer->GetDepthAttachment());
-		m_shader->SetFloat3("viewPos", glm::vec3(camTransform[3][0], camTransform[3][1], camTransform[3][2]));
+		m_shader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
+		m_shader->SetInt("u_shadowMap", 0);
+		m_shader->SetFloat3("viewPos", Application::GetCameraController()->GetCamPos());
+		*/
+		
+		m_framebuffer->Unbind();
+		int windowWidth, windowHeight;
+		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
+		glm::mat4 lookAtMat = glm::lookAt(m_light.position, m_cube.position, { 0, 1, 0 });
+		glm::mat4 perspectiveMat = glm::perspective(glm::radians(90.0f), (float)windowWidth / (float)windowHeight,
+			Application::GetCamera()->GetPerspectiveNearClip(), 100.0f);
+		m_lightSpaceMatrix = perspectiveMat * lookAtMat;
 
-		m_framebuffer->BindDepthAttachment();
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemap);
+		m_shadowMapShader->Bind();
+		m_shadowMapShader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
 
+		glActiveTexture(GL_TEXTURE0);
 		m_vao->Bind();
 		m_ibo->Bind();
 		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-
 		/*
-		//draw debugger quad
-		m_shadowMapDebugger->Bind();
-		m_shadowMapDebugger->SetInt("u_shadowMap", m_framebuffer->GetDepthAttachment());
-		m_vaoDebugger->Bind();
-		m_iboDebugger->Bind();
-		glDrawElements(GL_TRIANGLES, m_iboDebugger->GetCount(), GL_UNSIGNED_INT, nullptr);
+		m_vaoLight->Bind();
+		m_iboLight->Bind();
+		glDrawElements(GL_TRIANGLES, m_iboLight->GetCount(), GL_UNSIGNED_INT, nullptr);
 		*/
+
 	}
 
 private:
@@ -170,6 +190,7 @@ private:
 
 		constexpr unsigned int numVertices = sizeof(posAndNormals) / (sizeof(glm::vec3) * 2);
 		LightVertexData cubePlanePos[2 * numVertices];
+		LightVertexData lightPosAndNormal[numVertices];
 
 		unsigned int index = 0;
 		//cube
@@ -191,16 +212,16 @@ private:
 			index++;
 		}
 
-		/*
+		index = 0;
+
 		//light
 		for (int i = 0; i < numVertices * 2; i += 2)
 		{
-			cubePlanePos[index].position = m_light.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
-			cubePlanePos[index].normal = m_light.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 0);
-			cubePlanePos[index].mat = m_defaultMat;
+			lightPosAndNormal[index].position = m_light.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
+			lightPosAndNormal[index].normal = m_light.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 0);
+			lightPosAndNormal[index].mat = m_defaultMat;
 			index++;
 		}
-		*/
 
 		m_vbo = std::make_shared<OpenGLVertexBuffer>((float*)(void*)cubePlanePos, sizeof(cubePlanePos));
 		m_vbo->SetLayout({ 
@@ -212,7 +233,20 @@ private:
 			{ShaderDataType::Float, "shininess"}
 		});
 
+		m_vboLight = std::make_shared<OpenGLVertexBuffer>((float*)(void*)lightPosAndNormal, sizeof(lightPosAndNormal));
+		m_vboLight->SetLayout({
+			{ShaderDataType::Float3, "position"},
+			{ShaderDataType::Float3, "normal"},
+			{ShaderDataType::Float3, "ambiant"},
+			{ShaderDataType::Float3, "diffuse"},
+			{ShaderDataType::Float3, "specular"},
+			{ShaderDataType::Float, "shininess"}
+			});
+
 		m_vao->AddVertexBuffer(m_vbo);
+
+		m_vaoLight = std::make_shared<OpenGLVertexArray>();
+		m_vaoLight->AddVertexBuffer(m_vboLight);
 
 		unsigned int indices[] = {
 			//back face
@@ -242,6 +276,7 @@ private:
 
 		constexpr unsigned int indicesCount = sizeof(indices) / sizeof(unsigned int);
 		unsigned int indexData[2 * indicesCount];
+		unsigned int lightIndices[indicesCount];
 
 		for (int i = 0; i < 2; i++)
 		{
@@ -251,7 +286,13 @@ private:
 			}
 		}
 
+		for (int j = 0; j < indicesCount; j++)
+		{
+			lightIndices[j] = indices[j];
+		}
+
 		m_ibo = std::make_shared<OpenGLIndexBuffer>(indexData, sizeof(indexData) / sizeof(unsigned int));
+		m_iboLight = std::make_shared<OpenGLIndexBuffer>(lightIndices, sizeof(lightIndices) / sizeof(unsigned int));
 	}
 
 	void SetPointLight(std::shared_ptr<OpenGLShader>& shader, glm::vec3 position, glm::vec4 color, int index)
@@ -273,25 +314,29 @@ private:
 		glCullFace(GL_FRONT);
 
 		//might need to change since currently calculating as a directional light
-		m_lightSpaceMatrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f)
-			* glm::lookAt(position, m_cube.position, {0, 1, 0});
+		int windowWidth, windowHeight;
+		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
+		glm::mat4 lookAtMat = glm::lookAt(position, m_cube.position, { 0, 1, 0 });
+		glm::mat4 perspectiveMat = glm::perspective(glm::radians(90.0f), (float)windowWidth / (float)windowHeight,
+			Application::GetCamera()->GetPerspectiveNearClip(), Application::GetCamera()->GetPerspectiveFarClip());
+		m_lightSpaceMatrix = perspectiveMat * lookAtMat;
 
-
+		std::cout << position.x << ", " << position.y << ", " << position.z << "\n\n";
+		PrintMat4(lookAtMat);
 		shader->Bind();
 		shader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
 
-		framebuffer->Bind();
 		//store the current window width and height and change the 
 		//viewport size to fit the whole shadow map texture
-		int windowWidth, windowHeight;
-		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
 		glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
 		
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glActiveTexture(GL_TEXTURE0);
+		framebuffer->Bind();
+		glBindTexture(GL_TEXTURE_2D, framebuffer->GetDepthAttachment());
 
 		//render the scene
-		m_shader->Bind();
+		shader->Bind();
 		m_vao->Bind();
 		m_ibo->Bind();
 		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
@@ -303,45 +348,15 @@ private:
 		glCullFace(GL_BACK);
 	}
 
-	void SetupDebugger()
-	{
-		m_vaoDebugger = std::make_shared<OpenGLVertexArray>();
-
-		float vertexData[] = {
-			-0.25f, -0.25f, 0.0f, 0.0f,
-			-0.5f, -0.25f, 1.0f, 0.0f,
-			-0.25f, -0.5f, 0.0f, 1.0f,
-			-0.5f, -0.5f, 1.0f, 1.0f,
-		};
-
-		m_vboDebugger = std::make_shared<OpenGLVertexBuffer>(vertexData, sizeof(vertexData));
-		m_vboDebugger->SetLayout({ 
-			{ShaderDataType::Float2, "pos"}, 
-			{ShaderDataType::Float2, "textureCoord"}, 
-		});
-
-		m_vaoDebugger->AddVertexBuffer(m_vboDebugger);
-
-		unsigned int indices[] = {
-			0, 1, 2,
-			2, 3, 0
-		};
-
-		m_iboDebugger = std::make_shared<OpenGLIndexBuffer>(indices, sizeof(indices) / sizeof(unsigned int));
-
-		m_shadowMapDebugger = std::make_shared<OpenGLShader>("Resources/Shaders/ShadowMapDebugger.glsl");
-	}
-
 	std::shared_ptr<OpenGLVertexArray> m_vao;
 	std::shared_ptr<OpenGLVertexBuffer> m_vbo;
 	std::shared_ptr<OpenGLIndexBuffer> m_ibo;
 	std::shared_ptr<OpenGLShader> m_shader;
 	std::shared_ptr<OpenGLShader> m_shadowMapShader;
 
-	std::shared_ptr<OpenGLVertexArray> m_vaoDebugger;
-	std::shared_ptr<OpenGLVertexBuffer> m_vboDebugger;
-	std::shared_ptr<OpenGLIndexBuffer> m_iboDebugger;
-	std::shared_ptr<OpenGLShader> m_shadowMapDebugger;
+	std::shared_ptr<OpenGLVertexArray> m_vaoLight;
+	std::shared_ptr<OpenGLVertexBuffer> m_vboLight;
+	std::shared_ptr<OpenGLIndexBuffer> m_iboLight;
 
 	std::shared_ptr<OpenGLFramebuffer> m_framebuffer;
 
@@ -349,12 +364,14 @@ private:
 
 	Transform m_cube = Transform({0, 0, -3});
 	Transform m_plane = Transform({ 0, -3, -3 }, { 0, 0, 0 }, {10, 0.5f, 10});
-	Transform m_light = Transform({ 0.5f, 1.5f, -2 }, { 0, 0, 0 }, {0.1f, 0.1f, 0.1f});
+	Transform m_light = Transform({ 2.0f, 2.0f, -6.0f }, { 0, 0, 0 }, {0.1f, 0.1f, 0.1f});
 
 	Material m_defaultMat = { {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {1, 1, 1}, 32 };
 	Material m_testMat = { {0.1f, 0.0f, 0.0f}, {0.5f, 0.0f, 0.0f}, {0.75f, 0, 0}, 32 };
 
+
 	//temp
 	unsigned int m_fbo;
 	unsigned int m_cubemap;
+	CameraController* m_camController;
 };

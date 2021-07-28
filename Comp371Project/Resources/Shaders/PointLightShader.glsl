@@ -25,7 +25,7 @@ void main()
     vs_out.FragPosLightSpace = u_lightSpaceMatrix * vec4(a_position, 1.0);
     vs_out.FragPos = a_position;
     vs_out.Normal = a_normal;
-    vs_out.color = vec4(1, 1, 1, 1);
+    vs_out.color = vec4(0.5, 0.5, 0.5, 1);
     gl_Position = u_viewProjMatrix * vec4(a_position, 1.0);
 }
 
@@ -68,18 +68,20 @@ float DirectionalShadow()
     // this function returns 1.0 when the surface receives light, and 0.0 when it is in a shadow
     // perform perspective divide
     vec3 ndc = fs_in.FragPosLightSpace.xyz / fs_in.FragPosLightSpace.w;
+    
     // transform to [0,1] range
     ndc = ndc * 0.5 + 0.5;
     
     // get closest depth value from light's perspective (using [0,1] range fragment_position_light_space as coords)
     float closest_depth = texture(u_shadowMap, ndc.xy).r;
+    return closest_depth;
+
+    /*
     // get depth of current fragment from light's perspective
     float current_depth = ndc.z;
-    return current_depth;
     
-    /*
     // check whether current frag pos is in shadow
-    float bias = 0.03f;  // bias applied in depth map: see shadow_vertex.glsl
+    float bias = 0.003f;  // bias applied in depth map: see shadow_vertex.glsl
     return ((current_depth - bias) < closest_depth) ? 1.0 : 0.0;
     */
 }
@@ -161,27 +163,27 @@ float spotlightScalar() {
 void main()
 {
     vec3 color = vec3(fs_in.color);
-    vec4 lightColor = vec4(1, 0, 0, 1);
+    vec3 lightColor = vec3(1, 0, 0);
     // ambient
-    vec4 ambient = 0.3f * lightColor;// * vec4(ambientMat, 1);
+    vec3 ambient = 0.3f * lightColor;// * vec4(ambientMat, 1);
   	
     // diffuse 
     vec3 norm = normalize(fs_in.Normal);
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
-    float diff = max(dot(-norm, lightDir), 0.0);
-    vec4 diffuse = lightColor * diff;// * vec4(diffuseMat, 1);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = lightColor * diff;// * vec4(diffuseMat, 1);
     //vec4 diffuse = vec4(norm, 1);
     
     // specular
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);  
-    float spec = pow(max(dot(viewPos, reflectDir), 0.0), 64);
-    vec4 specular = 0.3f * lightColor * spec;// * vec4(specularMat, 1);  
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    vec3 specular =  lightColor * spec;// * vec4(specularMat, 1);  
         
     // calculate shadow
-    //float shadow = shadows ? DirectionalShadow() * spotlightScalar() : 0.0f;                      
-    //vec4 lighting = (ambient + (1.0 - shadow) * (diffuse + specular));    
-    
-    //FragColor = vec4((DirectionalShadow() * spotlightScalar()), 0, 0, 1);
-    FragColor = vec4((DirectionalShadow()), 0, 0, 1);
+    float shadow = DirectionalShadow() /** spotlightScalar()*/;                      
+    vec3 lighting = (ambient + shadow * (diffuse + specular));    
+
+    //FragColor = vec4(lighting, 1);
+    FragColor = vec4(shadow, 0, 0, 1);
 }
