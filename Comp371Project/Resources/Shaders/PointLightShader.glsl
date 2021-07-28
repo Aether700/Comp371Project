@@ -40,6 +40,8 @@ in VS_OUT {
     vec4 color;
 } fs_in;
 
+const float PI = 3.1415926535897932384626433832795;
+
 uniform sampler2D diffuseTexture;
 uniform sampler2D u_shadowMap;
 
@@ -48,6 +50,7 @@ uniform vec3 viewPos;
 
 uniform float far_plane;
 uniform bool shadows;
+uniform vec3 u_lightDir;
 
 
 // array of offset direction for sampling
@@ -67,13 +70,18 @@ float DirectionalShadow()
     vec3 ndc = fs_in.FragPosLightSpace.xyz / fs_in.FragPosLightSpace.w;
     // transform to [0,1] range
     ndc = ndc * 0.5 + 0.5;
+    
     // get closest depth value from light's perspective (using [0,1] range fragment_position_light_space as coords)
     float closest_depth = texture(u_shadowMap, ndc.xy).r;
     // get depth of current fragment from light's perspective
     float current_depth = ndc.z;
+    return current_depth;
+    
+    /*
     // check whether current frag pos is in shadow
     float bias = 0.03f;  // bias applied in depth map: see shadow_vertex.glsl
     return ((current_depth - bias) < closest_depth) ? 1.0 : 0.0;
+    */
 }
 
 /*
@@ -138,6 +146,18 @@ float ShadowCalculation(vec3 fragPos)
 }
 */
 
+float spotlightScalar() {
+    float theta = dot(normalize(fs_in.FragPos - lightPos), u_lightDir);
+    
+    if (theta > cos(radians(20.0f))) {
+        return 1.0f;
+    } else if(theta > cos(radians(30.0f))) {
+        return (1.0f - cos(PI * (theta - cos(radians(30.0f)) / (cos(radians(20.0f) - cos(radians(30.0f)))) / 2.0f)));
+    }
+
+    return 0.0f;
+}
+
 void main()
 {
     vec3 color = vec3(fs_in.color);
@@ -159,8 +179,9 @@ void main()
     vec4 specular = 0.3f * lightColor * spec;// * vec4(specularMat, 1);  
         
     // calculate shadow
-    float shadow = shadows ? DirectionalShadow() : 0.0f;                      
+    //float shadow = shadows ? DirectionalShadow() * spotlightScalar() : 0.0f;                      
     //vec4 lighting = (ambient + (1.0 - shadow) * (diffuse + specular));    
     
-    FragColor = vec4((1.0 - shadow), 0, 0, 1);
+    //FragColor = vec4((DirectionalShadow() * spotlightScalar()), 0, 0, 1);
+    FragColor = vec4((DirectionalShadow()), 0, 0, 1);
 }

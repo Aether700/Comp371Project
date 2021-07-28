@@ -291,6 +291,7 @@ private:
 		glActiveTexture(GL_TEXTURE0);
 
 		//render the scene
+		m_shader->Bind();
 		m_vao->Bind();
 		m_ibo->Bind();
 		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
