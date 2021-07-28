@@ -76,7 +76,18 @@ public:
 		}
 
 		//Don't move if M is held down, that's when ModelManager is using WASD to control model rotation/movement
-		isOn = !Input::IsKeyPressed(GLFW_KEY_M);
+		//isOn = !Input::IsKeyPressed(GLFW_KEY_M);
+		if (Input::IsKeyPressed(GLFW_KEY_M))
+		{
+			if (isOn == true)
+			{
+				isOn = false;
+			}
+			else
+			{
+				isOn = true;
+			}
+		}
 
 		if(isOn)
 		{
@@ -118,16 +129,7 @@ public:
 				m_camPos.y -= m_cameraVerticalMoveSpeed * Time::GetDeltaTime();
 			}
 
-			/*
-			if (Input::IsKeyPressed(GLFW_KEY_PAGE_UP))
-			{
-				ApplyLookDisplacement(glm::vec2{0, -10.0 * m_cameraRotationSpeed * Time::GetDeltaTime() });
-			}
-			if (Input::IsKeyPressed(GLFW_KEY_PAGE_DOWN))
-			{
-				ApplyLookDisplacement(glm::vec2{ 0, 10.0 * m_cameraRotationSpeed * Time::GetDeltaTime() });
-			}
-			*/
+			
 		}
 
 		//pressing the R key resets the transform of the camera 

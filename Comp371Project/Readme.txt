@@ -9,6 +9,8 @@ Camera(toggle with m to activated)
 - left click the window to lock the cursor and rotate the camera again
 - Scroll down to zoom in and scroll up to zoom out
 - R to reset the camera transform and FOV
+- Right mouse button to only pan
+- Center mouse button to only tilt
 
 Model(toggle with m to activated)
 - use keys 1 through 5 to select a model (defaults to the cube selected by 1)
@@ -17,8 +19,10 @@ Model(toggle with m to activated)
 	applied depends on the current movement mode selected
 - press P, T and L to change the rendering primitive used to render the selected 
 	model (P = points, T= triangles, L = lines)
--use U and J to scale up and down the selected model
--use Z to attempt to shuffle the model (some models might not support this operation)
+- use U and J to scale up and down the selected model
+- use Z to attempt to shuffle the model (some models might not support this operation)
+- use G to reset an individual model
+- use H to reset all models
 
 
 Features:

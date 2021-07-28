@@ -155,18 +155,18 @@ public:
 			m_models[m_currModel]->GetModelTransform()->scale += Time::GetDeltaTime() 
 				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
 
-			m_models[m_currModel]->GetWallTransform()->scale += Time::GetDeltaTime()
-				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
+			//m_models[m_currModel]->GetWallTransform()->scale += Time::GetDeltaTime()
+			//	* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_J))
 		{
-			m_models[m_currModel]->GetTransform()->scale -= Time::GetDeltaTime()
+			m_models[m_currModel]->GetModelTransform()->scale -= Time::GetDeltaTime()
 				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
 		}
 
-		//reset the model to original position with T
-		if (Input::IsKeyPressed(GLFW_KEY_T))
+		//reset the model to original position
+		if (Input::IsKeyPressed(GLFW_KEY_G))
 		{
 			//set model back to original size/orientation/position
 			m_models[m_currModel]->GetModelTransform()->position = positions[m_currModel];
@@ -177,6 +177,23 @@ public:
 			m_models[m_currModel]->GetWallTransform()->position = positions[m_currModel];
 			m_models[m_currModel]->GetWallTransform()->rotation = rotations[m_currModel];
 			m_models[m_currModel]->GetWallTransform()->scale = { 1.0,1.0,1.0 };
+		}
+
+		//reset all models to original position
+		if (Input::IsKeyPressed(GLFW_KEY_H))
+		{
+			for (int i = 0; i < m_models.size() && i < 5; i++)
+			{
+				//set model back to original size/orientation/position
+				m_models[i]->GetModelTransform()->position = positions[i];
+				m_models[i]->GetModelTransform()->rotation = rotations[i];
+				m_models[i]->GetModelTransform()->scale = { 1.0,1.0,1.0 };
+
+				//set wall back to original size/orientation/position
+				m_models[i]->GetWallTransform()->position = positions[i];
+				m_models[i]->GetWallTransform()->rotation = rotations[i];
+				m_models[i]->GetWallTransform()->scale = { 1.0,1.0,1.0 };
+			}
 		}
 
 		/*pressing the Z key will attempt to shuffle the current model.
