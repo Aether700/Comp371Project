@@ -59,31 +59,24 @@ public:
 			{
 				glm::vec2 displacement = currMousePos - m_lastMousePos;
 
-				m_yRotation -= displacement.x * m_cameraRotationSpeed * Time::GetDeltaTime();
-				m_upRotation -= displacement.y * m_cameraRotationSpeed * Time::GetDeltaTime();
-
-				m_upRotation = Clamp(m_upRotation, -m_verticalClamp, m_verticalClamp);
-				
-				if (m_yRotation > 360)
+				//REQ: While right button is pressed -> use mouse movement in x direction to pan
+				if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
 				{
-					m_yRotation -= 360;
+					displacement.y = 0.0;
 				}
-				else if (m_yRotation < 0)
+				//REQ: While middle button is pressed -> use mouse movement in y direction to tilt. 
+				if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE))
 				{
-					m_yRotation += 360;
+					displacement.x = 0.0;
 				}
 
-				//convert rotations into radians
-				float theta = glm::radians(m_yRotation);
-				float phi = glm::radians(m_upRotation);
-
-				//update look direction
-				m_lookDir = glm::vec3(cosf(phi) * cosf(theta), sinf(phi), -cosf(phi) * sinf(theta));
-
+				ApplyLookDisplacement(displacement);
 				m_lastMousePos = currMousePos;
 			}
 		}
 
+		//Don't move if M is held down, that's when ModelManager is using WASD to control model rotation/movement
+		//isOn = !Input::IsKeyPressed(GLFW_KEY_M);
 		if (Input::IsKeyPressed(GLFW_KEY_M))
 		{
 			if (isOn == true)
@@ -135,6 +128,8 @@ public:
 			{
 				m_camPos.y -= m_cameraVerticalMoveSpeed * Time::GetDeltaTime();
 			}
+
+			
 		}
 
 		//pressing the R key resets the transform of the camera 
@@ -147,7 +142,7 @@ public:
 		
 
 		//update camera transform
-		camTransform = glm::lookAt(m_camPos, m_camPos + m_lookDir, { 0, 1, 0 });
+		camTransform = glm::lookAt(m_camPos, m_camPos + m_lookDir, m_camUp);
 	}
 
 	glm::vec3 GetCamPos() const { return m_camPos; }
@@ -177,6 +172,31 @@ private:
 		m_yRotation = 90.0f;
 		m_upRotation = 0.0f;
 		m_lookDir = { 0, 0, -1 };
+	}
+
+	//common function for mouse and keyboard (single axis) to change look direction
+	void ApplyLookDisplacement(glm::vec2 displacement)
+	{
+		m_yRotation -= displacement.x * m_cameraRotationSpeed * Time::GetDeltaTime();
+		m_upRotation -= displacement.y * m_cameraRotationSpeed * Time::GetDeltaTime();
+
+		m_upRotation = Clamp(m_upRotation, -m_verticalClamp, m_verticalClamp);
+
+		if (m_yRotation > 360)
+		{
+			m_yRotation -= 360;
+		}
+		else if (m_yRotation < 0)
+		{
+			m_yRotation += 360;
+		}
+
+		//convert rotations into radians
+		float theta = glm::radians(m_yRotation);
+		float phi = glm::radians(m_upRotation);
+
+		//update look direction
+		m_lookDir = glm::vec3(cosf(phi) * cosf(theta), sinf(phi), -cosf(phi) * sinf(theta));
 	}
 
 	float Clamp(float value, float min, float max)
@@ -210,6 +230,7 @@ private:
 
 	glm::vec3 m_lookDir = { 0, 0, -1 };
 	glm::vec3 m_camPos = { 0, 0, 0 };
+	glm::vec3 m_camUp = { 0,1,0 };
 
 	bool isOn = true;
 };
