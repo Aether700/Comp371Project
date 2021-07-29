@@ -153,7 +153,7 @@ public:
 			{
 				m_models[m_currModel]->GetModelTransform()->position.z -= m_translationSpeed * Time::GetDeltaTime();
 			}
-			
+
 		}
 
 		//pressing P, T or L changes the rendering primitive used to render the model
@@ -175,7 +175,7 @@ public:
 		//pressing U and J will scale up and down the model as specified in the assignment
 		if (Input::IsKeyPressed(GLFW_KEY_U))
 		{
-			m_models[m_currModel]->GetModelTransform()->scale += Time::GetDeltaTime() 
+			m_models[m_currModel]->GetModelTransform()->scale += Time::GetDeltaTime()
 				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
 
 			//m_models[m_currModel]->GetWallTransform()->scale += Time::GetDeltaTime()
@@ -220,7 +220,7 @@ public:
 		}
 
 		/*pressing the Z key will attempt to shuffle the current model.
-		  if the current model does not support the shuffle operation a 
+		  if the current model does not support the shuffle operation a
 		  message indicating so will be displayed in the console
 		*/
 		if (m_currShuffle >= m_shuffleCooldown && Input::IsKeyPressed(GLFW_KEY_Z))
@@ -233,7 +233,7 @@ public:
 			m_currShuffle += Time::GetDeltaTime();
 		}
 
-		/*pressing the C key toggle between translation and 
+		/*pressing the C key toggle between translation and
 		  rotation mode which will change how the awsd keys behave
 		*/
 		if (m_currToggle >= m_toggleCooldown && Input::IsKeyPressed(GLFW_KEY_C))
@@ -263,10 +263,10 @@ private:
 		Translation
 	};
 
-	void AddModel(Model* m) 
-	{ 
+	void AddModel(Model* m)
+	{
 		Application::AddScript(m);
-		m_models.push_back(m); 
+		m_models.push_back(m);
 	}
 
 	void ChangeIndex(size_t newIndex)
