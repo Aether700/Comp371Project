@@ -82,7 +82,7 @@ public:
 				}
 				else
 				{
-					m_models[m_currModel]->GetModelTransform()->position.x -= m_translationSpeed * Time::GetDeltaTime();
+					m_models[m_currModel]->GetModelTransform()->position.y -= m_translationSpeed * Time::GetDeltaTime();
 				}
 			}
 
@@ -94,7 +94,7 @@ public:
 				}
 				else
 				{
-					m_models[m_currModel]->GetModelTransform()->position.x += m_translationSpeed * Time::GetDeltaTime();
+					m_models[m_currModel]->GetModelTransform()->position.y += m_translationSpeed * Time::GetDeltaTime();
 				}
 			}
 
@@ -106,7 +106,7 @@ public:
 				}
 				else
 				{
-					m_models[m_currModel]->GetModelTransform()->position.y += m_translationSpeed * Time::GetDeltaTime();
+					m_models[m_currModel]->GetModelTransform()->position.x += m_translationSpeed * Time::GetDeltaTime();
 				}
 			}
 
@@ -118,7 +118,7 @@ public:
 				}
 				else
 				{
-					m_models[m_currModel]->GetModelTransform()->position.y -= m_translationSpeed * Time::GetDeltaTime();
+					m_models[m_currModel]->GetModelTransform()->position.x -= m_translationSpeed * Time::GetDeltaTime();
 				}
 			}
 
@@ -131,6 +131,29 @@ public:
 			{
 				m_models[m_currModel]->GetModelTransform()->rotation.z += m_rotationSpeed * Time::GetDeltaTime();
 			}
+
+			if (Input::IsKeyPressed(GLFW_KEY_O)) //one small step foward
+			{
+				m_models[m_currModel]->GetModelTransform()->position.z -= m_translationSpeed * Time::GetDeltaTime();
+			}
+
+			if (Input::IsKeyPressed(GLFW_KEY_I)) // toggle continuos step fowards
+			{
+				if (isContinuos == true)
+				{
+					isContinuos = false;
+				}
+				else
+				{
+					isContinuos = true;
+				}
+			}
+
+			if (isContinuos == true)
+			{
+				m_models[m_currModel]->GetModelTransform()->position.z -= m_translationSpeed * Time::GetDeltaTime();
+			}
+			
 		}
 
 		//pressing P, T or L changes the rendering primitive used to render the model
@@ -283,6 +306,7 @@ private:
 
 	Movement m_currMovementMode = Movement::Rotation;
 	bool isOn = false;
+	bool isContinuos = false;
 
 	glm::vec3 positions[5] = {
 	{ -45, 10, -45 },
