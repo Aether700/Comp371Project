@@ -23,6 +23,8 @@ Model(toggle with m to activated)
 - use Z to attempt to shuffle the model (some models might not support this operation)
 - use G to reset an individual model
 - use H to reset all models
+- use O to make a small step in z
+- use I to make a continuous step in z
 
 
 Features:
