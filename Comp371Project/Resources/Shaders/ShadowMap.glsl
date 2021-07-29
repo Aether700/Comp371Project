@@ -8,11 +8,14 @@ layout(location = 3) in vec3 a_diffuse;
 layout(location = 4) in vec3 a_specular;
 layout(location = 5) in float a_shininess;
 
+out vec4 v_pos;
+
 uniform mat4 u_lightSpaceMatrix;
 
 void main()
 {
     gl_Position = u_lightSpaceMatrix * vec4(a_position, 1.0);
+    v_pos = gl_Position;
 }
 /*
 #tipe geometry
@@ -51,6 +54,7 @@ out vec4 color;
 //in vec4 v_fragPos;
 
 in vec4 gl_FragCoord;
+in vec4 v_pos;
 
 uniform vec3 u_lightPos;
 uniform float u_farPlane;
@@ -70,6 +74,6 @@ void main()
     */
 
     //gl_FragDepth = v_fragPosLightSpace.z;
-    gl_FragDepth = gl_FragCoord.z;
-    color = vec4(gl_FragCoord.z, 0, 0, 1);
+    gl_FragDepth = v_pos.z / v_pos.w;
+    color = vec4(gl_FragCoord.w, 0, 0, 1);
 }

@@ -36,7 +36,8 @@ public:
 
 		m_shader = std::make_shared<OpenGLShader>("Resources/Shaders/PointLightShader.glsl");
 		m_shadowMapShader = std::make_shared<OpenGLShader>("Resources/Shaders/ShadowMap.glsl");
-		GenerateShadowMap(m_shadowMapShader, m_framebuffer, m_light.position);
+		//GenerateShadowMap(m_shadowMapShader, m_framebuffer, m_light.position);
+		GenerateShadowMapLab();
 		//SetPointLight(m_shader, m_light.position, {1, 1, 1, 1}, 0);
 
 		m_shader->Bind();
@@ -46,6 +47,7 @@ public:
 		m_shader->SetInt("u_shadowMap", 0);
 	}
 
+	/*
 	void OnUpdate()
 	{
 		if (Input::IsKeyPressed(GLFW_KEY_W))
@@ -58,6 +60,8 @@ public:
 			m_light.position.z += 5*Time::GetDeltaTime();
 		}
 	}
+	*/
+
 
 	void OnRender()
 	{
@@ -73,7 +77,10 @@ public:
 		m_shader->SetFloat3("viewPos", Application::GetCameraController()->GetCamPos());
 		*/
 		
-		m_framebuffer->Unbind();
+
+		//for debugging the shadow map
+		//GenerateShadowMapLab();
+
 		int windowWidth, windowHeight;
 		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
 		glm::mat4 lookAtMat = glm::lookAt(m_light.position, m_cube.position, { 0, 1, 0 });
@@ -85,6 +92,8 @@ public:
 		m_shadowMapShader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
 
 		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_shadowMapID);
+
 		m_vao->Bind();
 		m_ibo->Bind();
 		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
@@ -348,6 +357,127 @@ private:
 		glCullFace(GL_BACK);
 	}
 
+	void GenerateShadowMapLearnOpengl()
+	{
+		// configure depth map FBO
+		// -----------------------
+		const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+		unsigned int depthMapFBO;
+		glGenFramebuffers(1, &depthMapFBO);
+		// create depth texture
+		unsigned int depthMap;
+		glGenTextures(1, &depthMap);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+		// attach depth texture as FBO's depth buffer
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		glm::mat4 lightProjection, lightView;
+		glm::mat4 lightSpaceMatrix;
+		float near_plane = 1.0f, far_plane = 7.5f;
+		//lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
+		lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+		lightView = glm::lookAt(m_light.position, m_cube.position, glm::vec3(0.0, 1.0, 0.0));
+		lightSpaceMatrix = lightProjection * lightView;
+		// render scene from light's point of view
+		m_shadowMapShader->Bind();
+		m_shadowMapShader->SetMat4("u_lightSpaceMatrix", lightSpaceMatrix);
+
+		m_vao->Bind();
+		m_ibo->Bind();
+		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
+
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glActiveTexture(GL_TEXTURE0);
+
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// reset viewport
+		int width, height;
+		glfwGetFramebufferSize(Application::GetWindow(), &width, &height);
+		glViewport(0, 0, width, height);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void GenerateShadowMapLab()
+	{
+		constexpr unsigned int DEPTH_MAP_TEXTURE_SIZE = 1024;
+
+		// Variable storing index to texture used for shadow mapping
+		GLuint depth_map_texture;
+		// Get the texture
+		glGenTextures(1, &depth_map_texture);
+		// Bind the texture so the next glTex calls affect it
+		glBindTexture(GL_TEXTURE_2D, depth_map_texture);
+		// Create the texture and specify it's attributes, including widthn height,
+		// components (only depth is stored, no color information)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, DEPTH_MAP_TEXTURE_SIZE,
+			DEPTH_MAP_TEXTURE_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		// Set texture sampler parameters.
+		// The two calls below tell the texture sampler inside the shader how to
+		// upsample and downsample the texture. Here we choose the nearest filtering
+		// option, which means we just use the value of the closest pixel to the
+		// chosen image coordinate.
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		// The two calls below tell the texture sampler inside the shader how it
+		// should deal with texture coordinates outside of the [0, 1] range. Here we
+		// decide to just tile the image.
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		// Variable storing index to framebuffer used for shadow mapping
+		GLuint depth_map_fbo;  // fbo: framebuffer object
+		// Get the framebuffer
+		glGenFramebuffers(1, &depth_map_fbo);
+		// Bind the framebuffer so the next glFramebuffer calls affect it
+		glBindFramebuffer(GL_FRAMEBUFFER, depth_map_fbo);
+		// Attach the depth map texture to the depth map framebuffer
+		// glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+		// depth_map_texture, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+			depth_map_texture, 0);
+		//glDrawBuffer(GL_NONE);  // disable rendering colors, only write depth values
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		m_fbo = depth_map_fbo;
+		m_shadowMapID = depth_map_texture;
+
+		// Use proper shader
+		m_shadowMapShader->Bind();
+		// Use proper image output size
+		glViewport(0, 0, DEPTH_MAP_TEXTURE_SIZE, DEPTH_MAP_TEXTURE_SIZE);
+		// Bind depth map texture as output framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, depth_map_fbo);
+		// Clear depth data on the framebuffer
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		m_vao->Bind();
+		m_ibo->Bind();
+		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
+
+		int width, height;
+		glfwGetFramebufferSize(Application::GetWindow(), &width, &height);
+		glViewport(0, 0, width, height);
+		// Bind screen as output framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
 	std::shared_ptr<OpenGLVertexArray> m_vao;
 	std::shared_ptr<OpenGLVertexBuffer> m_vbo;
 	std::shared_ptr<OpenGLIndexBuffer> m_ibo;
@@ -372,6 +502,6 @@ private:
 
 	//temp
 	unsigned int m_fbo;
-	unsigned int m_cubemap;
+	unsigned int m_shadowMapID;
 	CameraController* m_camController;
 };

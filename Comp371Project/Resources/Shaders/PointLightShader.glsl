@@ -22,10 +22,10 @@ uniform mat4 u_lightSpaceMatrix;
 
 void main()
 {
-    vs_out.FragPosLightSpace = u_lightSpaceMatrix * vec4(a_position, 1.0);
-    vs_out.FragPos = a_position;
-    vs_out.Normal = a_normal;
-    vs_out.color = vec4(0.5, 0.5, 0.5, 1);
+    //vs_out.FragPosLightSpace = u_lightSpaceMatrix * vec4(a_position, 1.0);
+    //vs_out.FragPos = a_position;
+    //vs_out.Normal = a_normal;
+    //vs_out.color = vec4(0.5, 0.5, 0.5, 1);
     gl_Position = u_viewProjMatrix * vec4(a_position, 1.0);
 }
 
@@ -71,15 +71,14 @@ float DirectionalShadow()
     
     // transform to [0,1] range
     ndc = ndc * 0.5 + 0.5;
-    
+
     // get closest depth value from light's perspective (using [0,1] range fragment_position_light_space as coords)
     float closest_depth = texture(u_shadowMap, ndc.xy).r;
     return closest_depth;
-
     /*
     // get depth of current fragment from light's perspective
     float current_depth = ndc.z;
-    
+
     // check whether current frag pos is in shadow
     float bias = 0.003f;  // bias applied in depth map: see shadow_vertex.glsl
     return ((current_depth - bias) < closest_depth) ? 1.0 : 0.0;
@@ -148,6 +147,7 @@ float ShadowCalculation(vec3 fragPos)
 }
 */
 
+/*
 float spotlightScalar() {
     float theta = dot(normalize(fs_in.FragPos - lightPos), u_lightDir);
     
@@ -159,6 +159,7 @@ float spotlightScalar() {
 
     return 0.0f;
 }
+*/
 
 void main()
 {
@@ -181,9 +182,10 @@ void main()
     vec3 specular =  lightColor * spec;// * vec4(specularMat, 1);  
         
     // calculate shadow
-    float shadow = DirectionalShadow() /** spotlightScalar()*/;                      
+    float shadow = DirectionalShadow();                      
     vec3 lighting = (ambient + shadow * (diffuse + specular));    
 
     //FragColor = vec4(lighting, 1);
+    //FragColor = vec4(0, 0, 0, 1);
     FragColor = vec4(shadow, 0, 0, 1);
 }

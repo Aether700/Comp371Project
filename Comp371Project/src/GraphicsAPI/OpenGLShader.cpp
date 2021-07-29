@@ -210,6 +210,7 @@ void OpenGLShader::Compile(const std::unordered_map<unsigned int, std::string>& 
 	unsigned int program = glCreateProgram();
 	Debug::CheckOpenGLError();
 
+
 	std::vector<unsigned int> glShaderIDs;
 	for (auto& kv : shaderSrcs)
 	{
