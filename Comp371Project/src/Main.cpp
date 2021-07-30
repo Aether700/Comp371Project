@@ -3,7 +3,7 @@
 #include "Axes.h"
 #include "ModelManager.h"
 
-#include "Tests/PointLightTest.h"
+#include "Tests/AlecPointLightTest.h"
 #include "Tests/TextureTest.h"
 
 #include "Core/Application.h"
@@ -35,8 +35,8 @@ int main()
 	//Application::AddScript(new Axes());
 	//Application::AddScript(new Grid());
 	//Application::AddScript(new ModelManager());
-	//Application::AddScript(new PointLightTest());
-	Application::AddScript(new TextureTest());
+	Application::AddScript(new AlecPointLightTest());
+	//Application::AddScript(new TextureTest());
 	///////////////////
 
 	Application::Run();

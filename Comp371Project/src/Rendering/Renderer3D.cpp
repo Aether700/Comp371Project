@@ -580,6 +580,7 @@ void Renderer3D::UploadWireCube(const glm::mat4& transform, std::shared_ptr<Open
 	for (int i = 0; i < sizeof(position) / sizeof(glm::vec3); i++)
 	{
 		cubeVertices[i].position = (glm::vec3)(transform * glm::vec4(position[i], 1));
+		cubeVertices[i].textureCoords = position[i];
 		cubeVertices[i].color = tintColor;
 		cubeVertices[i].normal = position[i];
 		cubeVertices[i].textureIndex = textureIndex;
@@ -630,6 +631,7 @@ void Renderer3D::UploadPointCube(const glm::mat4& transform, std::shared_ptr<Ope
 	for (int i = 0; i < sizeof(position) / sizeof(glm::vec3); i++)
 	{
 		cubeVertices[i].position = (glm::vec3)(transform * glm::vec4(position[i], 1));
+		cubeVertices[i].textureCoords = position[i];
 		cubeVertices[i].color = tintColor;
 		cubeVertices[i].normal = position[i];
 		cubeVertices[i].textureIndex = textureIndex;

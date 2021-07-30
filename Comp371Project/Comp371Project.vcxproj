@@ -161,6 +161,7 @@
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Core\Time.cpp" />
     <ClCompile Include="src\Rendering\Renderer3D.cpp" />
+    <ClCompile Include="src\Tests\AlecPointLightTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AlecModel.h" />
