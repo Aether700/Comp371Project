@@ -152,18 +152,19 @@ void RenderingBatch::Draw(unsigned int renderTarget)
 		m_texture2DSlots[i]->Bind(i);
 	}
 
-	/*
 	for (unsigned int i = 0; i < m_cubemapIndex; i++)
 	{
 		m_cubemapSlots[i]->Bind(i + s_maxTexture2DSlots);
 	}
-	*/
+
+	/*
 	glActiveTexture(GL_TEXTURE0 + s_maxTexture2DSlots);
 	//m_cubemapSlots[0]->Bind(s_maxTexture2DSlots);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapSlots[0]->GetRendererID());
 	glActiveTexture(GL_TEXTURE0 + s_maxTexture2DSlots + 1);
 	//m_cubemapSlots[1]->Bind(s_maxTexture2DSlots + 1);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapSlots[1]->GetRendererID());
+	*/
 
 
 	glDrawElements(renderTarget, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);

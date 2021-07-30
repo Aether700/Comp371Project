@@ -58,10 +58,8 @@ void Application::Run()
 	Application& app = GetApplication();
 	app.m_isRunning = true;
 
-	Debug::CheckOpenGLError();
 	app.CallOnStartScripts();
 
-		Debug::CheckOpenGLError();
 	while (app.m_isRunning && !glfwWindowShouldClose(app.m_window))
 	{
 		//reset stats for the frame
