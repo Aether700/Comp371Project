@@ -59,6 +59,15 @@ in vec4 v_pos;
 uniform vec3 u_lightPos;
 uniform float u_farPlane;
 
+// required when using a perspective projection matrix
+float LinearizeDepth(float depth)
+{
+    float near_plane = 0.01f;
+    float far_plane = 400.0f;
+    float z = depth * 2.0 - 1.0; // Back to NDC 
+    return (2.0 * near_plane * far_plane) / (far_plane + near_plane - z * (far_plane - near_plane));	
+}
+
 void main()
 {
     /*
@@ -74,6 +83,5 @@ void main()
     */
 
     //gl_FragDepth = v_fragPosLightSpace.z;
-    gl_FragDepth = v_pos.z;
-    color = vec4(gl_FragCoord.z, 0, 0, 1);
+    gl_FragDepth = gl_FragCoord.z;
 }

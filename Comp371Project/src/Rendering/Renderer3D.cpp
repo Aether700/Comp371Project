@@ -36,7 +36,7 @@ RenderingBatch::RenderingBatch()
 
 	m_vbo->SetLayout({
 		{ ShaderDataType::Float3, "a_position" },
-		{ ShaderDataType::Float2, "a_textureCoords" },
+		{ ShaderDataType::Float3, "a_textureCoords" },
 		{ ShaderDataType::Float3, "a_normal" },
 		{ ShaderDataType::Float4, "a_color" },
 		{ ShaderDataType::Float, "a_texIndex" },
@@ -361,8 +361,8 @@ void Renderer3D::DrawLine(const glm::vec3& position, const glm::vec3& rotation, 
 void Renderer3D::DrawLine(const glm::mat4& transform, const glm::vec3& point1, const glm::vec3& point2,
 	const glm::vec4& color)
 {
-	constexpr glm::vec2 textureCoords[] = {
-		{0.0f, 0.0f}, {1.0f, 0.0f}
+	constexpr glm::vec3 textureCoords[] = {
+		{0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}
 	};
 
 	glm::vec3 points[] = { point1, point2 };
@@ -380,14 +380,14 @@ void Renderer3D::DrawLine(const glm::vec3& position, const glm::vec3& rotation, 
 
 void Renderer3D::DrawVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
 	unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture,
-	const glm::vec2* textureCoords, float tileFactor, const glm::vec4& tintColor)
+	const glm::vec3* textureCoords, float tileFactor, const glm::vec4& tintColor)
 {
 	UploadVertexData(renderTarget, transform, vertices, numVertices, indices, indexCount, texture, textureCoords, tileFactor, tintColor);
 }
 
 void Renderer3D::DrawVertexData(unsigned int renderTarget, const glm::vec3& position, const glm::vec3& rotation,
 	const glm::vec3& scale, const glm::vec3* vertices, unsigned int numVertices, unsigned int* indices,
-	unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, const glm::vec2* textureCoords, 
+	unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, const glm::vec3* textureCoords, 
 	float tileFactor, const glm::vec4& tintColor)
 {
 	Transform t = Transform(position, rotation, scale);
@@ -468,6 +468,7 @@ void Renderer3D::UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLC
 	for (int i = 0; i < 2 * numVertices; i += 2)
 	{
 		cubeVertices[index].position = (glm::vec3)(transform * glm::vec4(posAndNormals[i], 1));
+		cubeVertices[index].textureCoords = posAndNormals[i];
 		cubeVertices[index].color = tintColor;
 		cubeVertices[index].normal = posAndNormals[i + 1];
 		cubeVertices[index].textureIndex = (float)textureIndex;
@@ -651,11 +652,11 @@ void Renderer3D::UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTe
 	unsigned int renderTarget = GL_TRIANGLES;
 	int textureIndex = s_renderingBatches[renderTarget].AddTexture2D(texture, renderTarget);
 
-	constexpr glm::vec2 textureCoords[] = {
-		{ 0.0f, 0.0f },
-		{ 1.0f, 0.0f },
-		{ 1.0f, 1.0f },
-		{ 0.0f, 1.0f }
+	constexpr glm::vec3 textureCoords[] = {
+		{ 0.0f, 0.0f, 0.0f },
+		{ 1.0f, 0.0f, 0.0f },
+		{ 1.0f, 1.0f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f }
 	};
 
 	glm::vec3 position[] = {
@@ -694,11 +695,11 @@ void Renderer3D::UploadWireSquare(const glm::mat4& transform, std::shared_ptr<Op
 	unsigned int renderTarget = GL_LINES;
 	int textureIndex = s_renderingBatches[renderTarget].AddTexture2D(texture, renderTarget);
 
-	constexpr glm::vec2 textureCoords[] = {
-		{ 0.0f, 0.0f },
-		{ 1.0f, 0.0f },
-		{ 1.0f, 1.0f },
-		{ 0.0f, 1.0f }
+	constexpr glm::vec3 textureCoords[] = {
+		{ 0.0f, 0.0f, 0.0f },
+		{ 1.0f, 0.0f, 0.0f },
+		{ 1.0f, 1.0f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f }
 	};
 
 	glm::vec3 position[] = {
@@ -738,9 +739,9 @@ void Renderer3D::UploadLine(const glm::mat4& transform, std::shared_ptr<OpenGLTe
 	unsigned int renderTarget = GL_LINES;
 	int textureIndex = s_renderingBatches[renderTarget].AddTexture2D(texture, renderTarget);
 
-	constexpr glm::vec2 textureCoords[] = {
-		{ 0.0f, 0.0f },
-		{ 1.0f, 0.0f }
+	constexpr glm::vec3 textureCoords[] = {
+		{ 0.0f, 0.0f, 0.0f },
+		{ 1.0f, 0.0f, 0.0f }
 	};
 
 	glm::vec3 position[] = { 
@@ -769,7 +770,7 @@ void Renderer3D::UploadLine(const glm::mat4& transform, std::shared_ptr<OpenGLTe
 
 void Renderer3D::UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
 	unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture,
-	const glm::vec2* textureCoords, float tileFactor, const glm::vec4& tintColor)
+	const glm::vec3* textureCoords, float tileFactor, const glm::vec4& tintColor)
 {
 	int textureIndex = s_renderingBatches[renderTarget].AddTexture2D(texture, renderTarget);
 

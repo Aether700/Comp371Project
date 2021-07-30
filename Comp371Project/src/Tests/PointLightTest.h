@@ -47,7 +47,6 @@ public:
 		m_shader->SetInt("u_shadowMap", 0);
 	}
 
-	/*
 	void OnUpdate()
 	{
 		if (Input::IsKeyPressed(GLFW_KEY_W))
@@ -59,33 +58,41 @@ public:
 		{
 			m_light.position.z += 5*Time::GetDeltaTime();
 		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_A))
+		{
+			m_light.position.x -= 5 * Time::GetDeltaTime();
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_D))
+		{
+			m_light.position.x += 5 * Time::GetDeltaTime();
+		}
+
 	}
-	*/
 
 
 	void OnRender()
 	{
-		/*
 		auto camera = Application::GetCamera();
 		glm::mat4 camTransform = camera->GetTransform();
 		glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camTransform;
 
 		m_shader->Bind();
 		m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
-		m_shader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
+		m_shader->SetMat4("u_lightSpaceMatrix", glm::mat4(1.0f));
 		m_shader->SetInt("u_shadowMap", 0);
 		m_shader->SetFloat3("viewPos", Application::GetCameraController()->GetCamPos());
-		*/
 		
 
 		//for debugging the shadow map
 		//GenerateShadowMapLab();
 
+		/*
 		int windowWidth, windowHeight;
 		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
 		glm::mat4 lookAtMat = glm::lookAt(m_light.position, m_cube.position, { 0, 1, 0 });
-		//glm::mat4 perspectiveMat = glm::perspective(glm::radians(90.0f), (float)windowWidth / (float)windowHeight,
-		//	Application::GetCamera()->GetPerspectiveNearClip(), 100.0f);
+		//glm::mat4 perspectiveMat = glm::perspective(50.0f, 1.0f, 0.01f, 400.0f);
 		
 		float orthographicSize = Application::GetCamera()->GetOrthographicSize();
 		float aspectRatio = (float)windowWidth / (float)windowHeight;
@@ -94,10 +101,28 @@ public:
 		float orthoBottom = -orthographicSize * 0.5f;
 		float orthoTop = orthographicSize * 0.5f;
 		glm::mat4 perspectiveMat = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop);
-		m_lightSpaceMatrix = perspectiveMat * lookAtMat;
+		*/
+		
+		float lightNearPlane = 0.01f;
+		float lightFarPlane = 400.0f;
 
-		m_shadowMapShader->Bind();
-		m_shadowMapShader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
+		glm::mat4 lightProjMatrix = glm::frustum(-1.0f, 1.0f, -1.0f, 1.0f, lightNearPlane, lightFarPlane);
+			//glm::perspective(50.0f, (float)1024 / (float)1024, lightNearPlane, lightFarPlane);
+		glm::mat4 lightViewMatrix = glm::lookAt(m_light.position, m_cube.position, glm::vec3(0, 1, 0));
+		
+		m_lightSpaceMatrix = lightProjMatrix * lightViewMatrix;
+
+		/*
+		float near_plane = 0.1f;
+		float far_plane = 7.5f;
+		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+		//glm::mat4 lightView = glm::lookAt(m_light.position, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+		glm::mat4 lightView = glm::lookAt(m_light.position, m_cube.position, glm::vec3(0.0, 1.0, 0.0));
+		m_lightSpaceMatrix = lightProjection * lightView;
+
+		*/
+		//m_shadowMapShader->Bind();
+		//m_shadowMapShader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_shadowMapID);
@@ -502,7 +527,7 @@ private:
 
 	Transform m_cube = Transform({0, 0, -3});
 	Transform m_plane = Transform({ 0, -3, -3 }, { 0, 0, 0 }, {10, 0.5f, 10});
-	Transform m_light = Transform({ 0, 1, 0 }, { 0, 0, 0 }, {0.1f, 0.1f, 0.1f});
+	Transform m_light = Transform({ 0, 0, 10 }, { 0, 0, 0 }, {0.1f, 0.1f, 0.1f});
 
 	Material m_defaultMat = { {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {1, 1, 1}, 32 };
 	Material m_testMat = { {0.1f, 0.0f, 0.0f}, {0.5f, 0.0f, 0.0f}, {0.75f, 0, 0}, 32 };

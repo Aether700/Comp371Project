@@ -28,7 +28,7 @@ struct Material
 struct VertexData
 {
 	glm::vec3 position;
-	glm::vec2 textureCoords;
+	glm::vec3 textureCoords;
 	glm::vec3 normal;
 	glm::vec4 color;
 	float textureIndex;
@@ -183,11 +183,11 @@ public:
 	//draw generic Vertex Data
 	static void DrawVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
 		unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture,
-		const glm::vec2* textureCoords, float tileFactor, const glm::vec4& tintColor);
+		const glm::vec3* textureCoords, float tileFactor, const glm::vec4& tintColor);
 
 	static void DrawVertexData(unsigned int renderTarget, const glm::vec3& position, const glm::vec3& rotation, 
 		const glm::vec3& scale, const glm::vec3* vertices, unsigned int numVertices, unsigned int* indices, 
-		unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, const glm::vec2* textureCoords, 
+		unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, const glm::vec3* textureCoords, 
 		float tileFactor, const glm::vec4& tintColor);
 
 private:
@@ -221,7 +221,7 @@ private:
 	//helper function which allows to pass any vertex data with a 2D texture
 	static void UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
 		unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, 
-		const glm::vec2* textureCoords, float tileFactor, const glm::vec4& tintColor);
+		const glm::vec3* textureCoords, float tileFactor, const glm::vec4& tintColor);
 
 	static Renderer3DStatistics s_stats;
 
