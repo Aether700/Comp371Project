@@ -151,9 +151,15 @@ public:
 
 			if (isContinuos == true)
 			{
-				m_models[m_currModel]->GetModelTransform()->position.z -= m_translationSpeed * Time::GetDeltaTime();
+				if (m_models[m_currModel]->GetModelTransform()->position.z > 0)
+				{
+					m_models[m_currModel]->GetModelTransform()->position.z += m_translationSpeed * Time::GetDeltaTime();
+				}
+				else
+				{
+					m_models[m_currModel]->GetModelTransform()->position.z -= m_translationSpeed * Time::GetDeltaTime();
+				}
 			}
-
 		}
 
 		//pressing P, T or L changes the rendering primitive used to render the model
@@ -309,18 +315,18 @@ private:
 	bool isContinuos = false;
 
 	glm::vec3 positions[5] = {
-	{ -45, 10, -45 },
-	{ -45, 10,  45 },
-	{  45, 10, -45 },
-	{  45, 10,  45 },
+	{ -40, 10, -40 },
+	{ -40, 10,  40 },
+	{  40, 10, -40 },
+	{  40, 10,  40 },
 	{  0, 10,  0 },
 	};
 
 	glm::vec3 rotations[5] = {
-		{ 0,  glm::radians(45.0f), 0 },
-		{ 0, -glm::radians(225.0f), 0 },
-		{ 0, -glm::radians(45.0f), 0 },
-		{ 0,  glm::radians(225.0f), 0 },
+		{ 0,  glm::radians(0.0f), 0 },
+		{ 0, -glm::radians(180.0f), 0 },
+		{ 0,  -glm::radians(0.0f), 0 },
+		{ 0,  glm::radians(180.0f), 0 },
 		{ 0, 0, 0 },
 	};
 };

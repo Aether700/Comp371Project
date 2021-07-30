@@ -38,11 +38,11 @@ public:
 		m_cubeArr[12]->position = { 0,  1, -1 };
 		m_cubeArr[13]->position = { 2, -1, -1 };
 
-		//then move them all up above the xz plane
+		/*//then move them all up above the xz plane
 		for (auto& transform : m_cubeArr)
 		{
 			transform->position.y += 3;
-		}
+		}*/
 
 		//Wall
 		//left side
@@ -80,12 +80,12 @@ public:
 		m_wallArr[23]->position = { 0, -1, -4 };
 		m_wallArr[24]->position = { 1, -1, -4 };
 
-
+		/*
 		//then move them all up above the xz plane
 		for (auto& transform : m_wallArr)
 		{
 			transform->position.y += 3;
-		}
+		}*/
 	}
 
 	void OnRender()
