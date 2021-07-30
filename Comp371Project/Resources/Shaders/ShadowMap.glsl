@@ -74,6 +74,6 @@ void main()
     */
 
     //gl_FragDepth = v_fragPosLightSpace.z;
-    gl_FragDepth = v_pos.z / v_pos.w;
-    color = vec4(gl_FragCoord.w, 0, 0, 1);
+    gl_FragDepth = v_pos.z;
+    color = vec4(gl_FragCoord.z, 0, 0, 1);
 }

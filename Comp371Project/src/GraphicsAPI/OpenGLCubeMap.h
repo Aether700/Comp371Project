@@ -60,6 +60,9 @@ public:
 
 private:
 
+	//makes sure that the texture size for both width and height is 2^k + 2*border for some k
+	void ValidateTextureSize(unsigned int& width, unsigned int& height, unsigned int border = 0);
+
 	unsigned int m_rendererID;
 
 	//all textures need to have the same width and height

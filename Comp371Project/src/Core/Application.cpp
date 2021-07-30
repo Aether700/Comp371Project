@@ -58,8 +58,10 @@ void Application::Run()
 	Application& app = GetApplication();
 	app.m_isRunning = true;
 
+	Debug::CheckOpenGLError();
 	app.CallOnStartScripts();
 
+		Debug::CheckOpenGLError();
 	while (app.m_isRunning && !glfwWindowShouldClose(app.m_window))
 	{
 		//reset stats for the frame
@@ -72,6 +74,7 @@ void Application::Run()
 		Renderer3D::BeginScene();
 		app.CallOnRenderScripts();
 		Renderer3D::EndScene();
+
 
 		glfwPollEvents();
 		glfwSwapBuffers(app.m_window);
@@ -153,8 +156,8 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 	Renderer3D::Init();
 	Random::Init();
 
-	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_PROGRAM_POINT_SIZE);
+	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
 	//enable backface culling

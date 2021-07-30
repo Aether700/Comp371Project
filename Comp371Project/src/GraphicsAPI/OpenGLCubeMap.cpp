@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <assert.h>
+#include <math.h>
 
 
 /*pass the texture used for each face where each texture
@@ -37,6 +38,18 @@ OpenGLCubeMap::OpenGLCubeMap(const std::array<std::string, 6>& faceTextures) : m
 			assert(false);
 		}
 		
+		//validate the size of the texture and adjust the width and height accordingly
+		{
+			unsigned int uwidth = width;
+			unsigned int uheight = height;
+
+			ValidateTextureSize(uwidth, uheight);
+
+			width = uwidth;
+			height = uheight;
+		}
+
+
 		if ((m_width != width || m_height != height) && (m_width != 0 || m_height != 0))
 		{
 			std::cerr << "all textures passed to the cube map must have the same width and height\n";
@@ -87,12 +100,15 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 
 	if (data == nullptr)
 	{
-		std::cerr << "Failed to load image\n";
+		std::cout << "Failed to load image\n";
+		assert(false);
 	}
 	
 	m_width = width;
 	m_height = height;
-	
+
+	ValidateTextureSize(m_width, m_height);
+
 	switch (channels)
 	{
 	case 3:
@@ -106,7 +122,8 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 		break;
 
 	default:
-		std::cerr << "The Format provided for the texture '" << faceTexture << "' is not supported\n";
+		std::cout << "The Format provided for the texture '" << faceTexture << "' is not supported\n";
+		assert(false);
 	}
 
 	for (size_t i = 0; i < 6; i++)
@@ -132,6 +149,8 @@ OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, void* data
 	: m_width(width), m_height(height)
 {
 	assert(data != nullptr && width > 0 && height > 0);
+
+	ValidateTextureSize(m_width, m_height);
 
 	glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_rendererID);
 	m_internalFormat[0] = GL_RGB8;
@@ -181,6 +200,7 @@ OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, unsigned i
 
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_width, m_height,
 			0, m_dataFormat[i], type, nullptr);
+		Debug::CheckOpenGLError();
 	}
 
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -199,4 +219,32 @@ OpenGLCubeMap::~OpenGLCubeMap()
 void OpenGLCubeMap::Bind(unsigned int slot) const
 {
 	glBindTextureUnit(slot, m_rendererID);
+}
+
+void OpenGLCubeMap::ValidateTextureSize(unsigned int& width, unsigned int& height, unsigned int border)
+{
+	unsigned int widthWithoutBorder = width - (2 * border);
+
+	float logResult = std::logf(widthWithoutBorder) / std::logf(2.0f);
+
+
+	//check if the result is an even integer
+	if (logResult != (float)((int)logResult))
+	{
+		//if the width is too big take the next smallest value for which the width is valid
+		width = std::pow(2, (int)logResult);
+	}
+
+
+	unsigned int heightWithoutBorder = height - (2 * border);
+
+	logResult = std::logf(heightWithoutBorder) / std::logf(2.0f);
+
+
+	//check if the result is an even integer
+	if (logResult != (float)((int)logResult))
+	{
+		//if the width is too big take the next smallest value for which the height is valid
+		height = std::pow(2, (int)logResult);
+	}
 }

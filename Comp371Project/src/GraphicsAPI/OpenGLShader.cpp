@@ -296,7 +296,7 @@ int OpenGLShader::GetUniformLocation(const std::string& name)
 
 	if (location == -1)
 	{
-		std::cout << "Unknown uniform \"" << name << "\" in shader " << m_name << "\n";
+		printf("Unknown uniform \"%s\" in shader %s\n", name.c_str(), m_name.c_str());
 	}
 
 	m_uniformLocations[name] = location;

@@ -84,8 +84,16 @@ public:
 		int windowWidth, windowHeight;
 		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
 		glm::mat4 lookAtMat = glm::lookAt(m_light.position, m_cube.position, { 0, 1, 0 });
-		glm::mat4 perspectiveMat = glm::perspective(glm::radians(90.0f), (float)windowWidth / (float)windowHeight,
-			Application::GetCamera()->GetPerspectiveNearClip(), 100.0f);
+		//glm::mat4 perspectiveMat = glm::perspective(glm::radians(90.0f), (float)windowWidth / (float)windowHeight,
+		//	Application::GetCamera()->GetPerspectiveNearClip(), 100.0f);
+		
+		float orthographicSize = Application::GetCamera()->GetOrthographicSize();
+		float aspectRatio = (float)windowWidth / (float)windowHeight;
+		float orthoLeft = -orthographicSize * aspectRatio * 0.5f;
+		float orthoRight = orthographicSize * aspectRatio * 0.5f;
+		float orthoBottom = -orthographicSize * 0.5f;
+		float orthoTop = orthographicSize * 0.5f;
+		glm::mat4 perspectiveMat = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop);
 		m_lightSpaceMatrix = perspectiveMat * lookAtMat;
 
 		m_shadowMapShader->Bind();
@@ -494,7 +502,7 @@ private:
 
 	Transform m_cube = Transform({0, 0, -3});
 	Transform m_plane = Transform({ 0, -3, -3 }, { 0, 0, 0 }, {10, 0.5f, 10});
-	Transform m_light = Transform({ 2.0f, 2.0f, -6.0f }, { 0, 0, 0 }, {0.1f, 0.1f, 0.1f});
+	Transform m_light = Transform({ 0, 1, 0 }, { 0, 0, 0 }, {0.1f, 0.1f, 0.1f});
 
 	Material m_defaultMat = { {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {1, 1, 1}, 32 };
 	Material m_testMat = { {0.1f, 0.0f, 0.0f}, {0.5f, 0.0f, 0.0f}, {0.75f, 0, 0}, 32 };

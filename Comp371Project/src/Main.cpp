@@ -4,6 +4,7 @@
 #include "ModelManager.h"
 
 #include "Tests/PointLightTest.h"
+#include "Tests/TextureTest.h"
 
 #include "Core/Application.h"
 #include "Core/Script.h"
@@ -35,6 +36,7 @@ int main()
 	//Application::AddScript(new Grid());
 	//Application::AddScript(new ModelManager());
 	Application::AddScript(new PointLightTest());
+	//Application::AddScript(new TextureTest());
 	///////////////////
 
 	Application::Run();

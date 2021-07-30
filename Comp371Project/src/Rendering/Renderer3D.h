@@ -28,10 +28,12 @@ struct Material
 struct VertexData
 {
 	glm::vec3 position;
+	glm::vec2 textureCoords;
 	glm::vec3 normal;
 	glm::vec4 color;
 	float textureIndex;
 	float tillingFactor;
+	float uses3DTexture;
 };
 
 //struct which contains the statistics of the renderer
@@ -61,7 +63,11 @@ public:
 		unsigned int numIndices, unsigned int renderTarget);
 
 	//returns texture index for the texture
-	int AddTexture(std::shared_ptr<OpenGLTexture> texture, unsigned int renderTarget);
+	int AddTexture2D(std::shared_ptr<OpenGLTexture2D> texture, unsigned int renderTarget);
+
+	//returns texture index for the texture
+	int AddCubemap(std::shared_ptr<OpenGLCubeMap> cubemap, unsigned int renderTarget);
+
 
 	//render target is a gl enum ex: GL_TRIANGLES
 	void Draw(unsigned int renderTarget);
@@ -77,6 +83,8 @@ private:
 	static unsigned int s_maxVertices;
 	static unsigned int s_maxIndices;
 	static unsigned int s_maxTextureSlots;
+	static unsigned int s_maxTexture2DSlots;
+	static unsigned int s_maxCubemapSlots;
 
 
 	std::shared_ptr<OpenGLVertexArray> m_vao;
@@ -89,8 +97,10 @@ private:
 	unsigned int* m_indicesArr;
 	unsigned int m_indicesIndex = 0;
 
-	std::shared_ptr<OpenGLTexture>* m_textureSlots;
-	unsigned int m_textureIndex = 0;
+	std::shared_ptr<OpenGLTexture2D>* m_texture2DSlots;
+	std::shared_ptr<OpenGLCubeMap>* m_cubemapSlots;
+	unsigned int m_texture2DIndex = 0;
+	unsigned int m_cubemapIndex = 0;
 };
 
 //batch renderer for 3D
@@ -172,12 +182,13 @@ public:
 
 	//draw generic Vertex Data
 	static void DrawVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
-		unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture> texture,
-		float tileFactor, const glm::vec4& tintColor);
+		unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture,
+		const glm::vec2* textureCoords, float tileFactor, const glm::vec4& tintColor);
 
 	static void DrawVertexData(unsigned int renderTarget, const glm::vec3& position, const glm::vec3& rotation, 
 		const glm::vec3& scale, const glm::vec3* vertices, unsigned int numVertices, unsigned int* indices, 
-		unsigned int indexCount, std::shared_ptr<OpenGLTexture> texture, float tileFactor, const glm::vec4& tintColor);
+		unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, const glm::vec2* textureCoords, 
+		float tileFactor, const glm::vec4& tintColor);
 
 private:
 	//draw to data passed to the renderer to the screen
@@ -188,29 +199,29 @@ private:
 	static void CheckBatchCapacity();
 
 	//helper function which loads a voxel into the data to pass to the gpu when the renderer flushes
-	static void UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,	
+	static void UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,	
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadWireCube(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+	static void UploadWireCube(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadPointCube(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+	static void UploadPointCube(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
 	//uploads a quad or filled in square into the renderer
-	static void UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+	static void UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadWireSquare(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+	static void UploadWireSquare(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadLine(const glm::mat4& transform, std::shared_ptr<OpenGLTexture> texture,
+	static void UploadLine(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
-	//helper function which allows to pass any
+	//helper function which allows to pass any vertex data with a 2D texture
 	static void UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
-		unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture> texture, 
-		float tileFactor, const glm::vec4& tintColor);
+		unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, 
+		const glm::vec2* textureCoords, float tileFactor, const glm::vec4& tintColor);
 
 	static Renderer3DStatistics s_stats;
 
