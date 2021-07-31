@@ -77,10 +77,17 @@ public:
 
 		//Don't move if M is held down, that's when ModelManager is using WASD to control model rotation/movement
 		//isOn = !Input::IsKeyPressed(GLFW_KEY_M);
-		if (Input::IsKeyPressed(GLFW_KEY_M))
+		if (m_currCameraToggle >= m_toggleCameraCooldown && Input::IsKeyPressed(GLFW_KEY_M))
 		{
 			isOn = !isOn;
+
+			m_currCameraToggle = 0.0f;
 		}
+		else if (m_currCameraToggle < m_toggleCameraCooldown)
+		{
+			m_currCameraToggle += Time::GetDeltaTime();
+		}
+
 
 		if(isOn)
 		{
@@ -221,9 +228,13 @@ private:
 	float m_yRotation = 90.0f;
 	float m_upRotation = 0.0f;
 
+
 	glm::vec3 m_lookDir = { 0, 0, -1 };
 	glm::vec3 m_camPos = { 0, 0, 0 };
 	glm::vec3 m_camUp = { 0,1,0 };
 
 	bool isOn = true;
+
+	float m_toggleCameraCooldown = 0.2f;
+	float m_currCameraToggle = 0.0f;
 };
