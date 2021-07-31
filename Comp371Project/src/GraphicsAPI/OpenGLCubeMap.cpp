@@ -86,7 +86,11 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 	Bind();
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, channels;
+	
+	
 	unsigned char* data = stbi_load(faceTexture.c_str(), &width, &height, &channels, 0);
+
+	
 
 	if (data == nullptr)
 	{
@@ -95,7 +99,7 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 	}
 	
 	m_size = std::min(width, height);
-
+	
 	switch (channels)
 	{
 	case 3:
