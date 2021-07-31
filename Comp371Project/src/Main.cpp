@@ -1,5 +1,4 @@
 #define GLEW_STATIC
-#include "Grid.h"
 #include "Axes.h"
 #include "ModelManager.h"
 
@@ -34,7 +33,7 @@ int main()
 	//Add Scripts here   
 
 	Application::AddScript(new Axes());
-	Application::AddScript(new Grid());
+	//Application::AddScript(new Grid());
 	Application::AddScript(new ModelManager());
 	//Application::AddScript(new AlecPointLightTest());
 	//Application::AddScript(new TextureTest());
