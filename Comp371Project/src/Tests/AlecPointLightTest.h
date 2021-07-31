@@ -21,6 +21,7 @@ struct LightVertexData
 {
 	glm::vec3 position;
 	glm::vec3 normal;
+	glm::vec2 textureCoords;
 	Material mat;
 };
 
@@ -104,6 +105,7 @@ public:
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+	/*
 	void OnUpdate()
 	{
 		if (Input::IsKeyPressed(GLFW_KEY_W))
@@ -116,36 +118,27 @@ public:
 			m_light.position.z += 5 * Time::GetDeltaTime();
 		}
 	}
+	*/
+
 
 	void OnRender()
 	{
-		/*
 		auto camera = Application::GetCamera();
 		glm::mat4 camTransform = camera->GetTransform();
 		glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camTransform;
 
 		m_shader->Bind();
 		m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
-		m_shader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
+		m_shader->SetMat4("u_lightSpaceMatrix", glm::mat4(1.0f));
 		m_shader->SetInt("u_shadowMap", 0);
 		m_shader->SetFloat3("viewPos", Application::GetCameraController()->GetCamPos());
-		*/
-
-
-		//for debugging the shadow map
-		//GenerateShadowMapLab();
 
 		int windowWidth, windowHeight;
 		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
-		//glm::mat4 lookAtMat = glm::lookAt(m_light.position, m_cube.position, { 0, 1, 0 });
-		//glm::mat4 perspectiveMat = glm::perspective(glm::radians(90.0f), (float)windowWidth / (float)windowHeight,
-		//	Application::GetCamera()->GetPerspectiveNearClip(), 100.0f);
-		//m_lightSpaceMatrix = perspectiveMat * lookAtMat;
 
 		float near_plane = 0.1f;
 		float far_plane = 7.5f;
 		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-		//glm::mat4 lightView = glm::lookAt(m_light.position, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 		glm::mat4 lightView = glm::lookAt(m_light.position, m_cube.position, glm::vec3(0.0, 1.0, 0.0));
 		m_lightSpaceMatrix = lightProjection * lightView;
 
@@ -156,7 +149,6 @@ public:
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, depthMap);
 
 		//render scene
 		m_vao->Bind();
@@ -168,24 +160,25 @@ public:
 		glViewport(0, 0, windowWidth, windowHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		m_shader->Bind();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		m_shader->SetInt("u_shadowMap", 0);
+		m_vao->Bind();
+		m_ibo->Bind();
+		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
+
+
+		/*
 		////render Depth map to quad for visual debugging
 		////---------------------------------------------
 		m_shadowMapDebugShader->Bind();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, depthMap);
 		renderQuad();
-
-		/*
-		m_vaoLight->Bind();
-		m_iboLight->Bind();
-		glDrawElements(GL_TRIANGLES, m_iboLight->GetCount(), GL_UNSIGNED_INT, nullptr);
 		*/
 
-		//render depth map to quad for debugging
-		//m_shadowMapDebugShader->Bind();
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, m_framebuffer->GetDepthAttachment() );
-		//renderQuad();
+
 
 	}
 
@@ -231,9 +224,16 @@ private:
 		5, 4, 0
 		*/
 
+		glm::vec2 textureCoords[] = {
+			{0, 0},
+			{1, 0},
+			{0, 1},
+			{1, 1}
+		};
+
 		glm::vec3 posAndNormals[] = {
 			//back face
-			{  0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f },
+			{  0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f }, 
 			{ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f },
 			{ -0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f },
 			{  0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f },
@@ -291,6 +291,7 @@ private:
 			cubePlanePos[index].position = m_cube.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
 			cubePlanePos[index].normal = glm::vec3(m_cube.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 0));
 			cubePlanePos[index].mat = m_testMat;
+			cubePlanePos[index].textureCoords = textureCoords[i % 4];
 			index++;
 		}
 
@@ -319,6 +320,7 @@ private:
 		m_vbo->SetLayout({
 			{ShaderDataType::Float3, "position"},
 			{ShaderDataType::Float3, "normal"},
+			{ShaderDataType::Float2, "textureCoords"},
 			{ShaderDataType::Float3, "ambiant"},
 			{ShaderDataType::Float3, "diffuse"},
 			{ShaderDataType::Float3, "specular"},
