@@ -26,7 +26,7 @@ Model(toggle with m to activated)
 - use O to make a small step in z
 - use I to make a continuous step in z
 
-- Toggle Texture with K
+- Toggle Texture with X
 
 Features:
 

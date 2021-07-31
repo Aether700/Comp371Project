@@ -38,7 +38,7 @@ public:
 		for (int count = 0; count < wallcount; count++)
 		{
 			//transform->scale.z = 0.25f;// to make the wall thinner
-			Renderer3D::DrawVoxel(m_wallCubes[count]->GetTransformMatrix());
+			RenderWall(m_wallCubes[count]->GetTransformMatrix());
 		}
 	}
 
@@ -82,6 +82,12 @@ public:
 		{
 			Renderer3D::DrawPointCube(transform, color);
 		}
+	}
+
+	void RenderWallWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
+	{
+		Renderer3D::DrawVoxel(transform, wallTexture, 1.0f, color);
+
 	}
 
 private:
@@ -177,6 +183,6 @@ private:
 
 
 	int wallcount = 0;
-	glm::vec4 color = { 52.0f / 255.0f, 107.0f / 255.0f, 194.0f / 255.0f, 1 };
+	glm::vec4 color = { 52.0f / 255.0f, 107.0f / 255.0f, 194.0f / 255.0f, 1.0f };
 
 };

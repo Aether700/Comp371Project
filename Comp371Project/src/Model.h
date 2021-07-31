@@ -59,6 +59,11 @@ protected:
 		}
 	}
 
+	void RenderWallNoTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 })
+	{
+		Renderer3D::DrawVoxel(transform, color);
+	}
+
 	void RenderCube(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 })
 	{
 		if (istextureOn)
@@ -71,7 +76,24 @@ protected:
 		}
 	}
 
+	void RenderWall(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 })
+	{
+		if (istextureOn)
+		{
+			RenderWallWithTexture(transform, color);
+		}
+		else
+		{
+			RenderWallNoTexture(transform, color);
+		}
+	}
+
 	virtual void RenderCubeWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 })
+	{
+		RenderCubeNoTexture(transform, color);
+	}
+
+	virtual void RenderWallWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 })
 	{
 		RenderCubeNoTexture(transform, color);
 	}

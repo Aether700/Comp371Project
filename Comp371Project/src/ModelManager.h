@@ -59,9 +59,15 @@ public:
 			ChangeIndex(4);
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_M))
+		if (m_currModelToggle >= m_toggleModelCooldown && Input::IsKeyPressed(GLFW_KEY_M))
 		{
 			isOn = !isOn;
+
+			m_currModelToggle = 0.0f;
+		}
+		else if (m_currModelToggle < m_toggleModelCooldown)
+		{
+			m_currModelToggle += Time::GetDeltaTime();
 		}
 
 		if (isOn)
@@ -130,16 +136,14 @@ public:
 				m_models[m_currModel]->GetModelTransform()->position.z -= m_translationSpeed * Time::GetDeltaTime();
 			}
 
-			if (Input::IsKeyPressed(GLFW_KEY_I)) // toggle continuos step fowards
+			if (m_currMovementToggle >= m_toggleMovementCooldown && Input::IsKeyPressed(GLFW_KEY_I)) // toggle continuos step fowards
 			{
-				if (isContinuos == true)
-				{
-					isContinuos = false;
-				}
-				else
-				{
-					isContinuos = true;
-				}
+				isContinuos = !isContinuos;
+				m_currMovementToggle = 0.0f;
+			}
+			else if (m_currMovementToggle < m_toggleMovementCooldown)
+			{
+				m_currMovementToggle += Time::GetDeltaTime();
 			}
 
 			if (isContinuos == true)
@@ -218,7 +222,7 @@ public:
 			}
 		}
 
-		if (m_currTextureTime >= m_textureCooldown && Input::IsKeyPressed(GLFW_KEY_K))
+		if (m_currTextureTime >= m_textureCooldown && Input::IsKeyPressed(GLFW_KEY_X))
 		{
 			for (int i = 0; i < m_models.size() && i < 5; i++)
 			{
@@ -315,6 +319,12 @@ private:
 
 	float m_toggleCooldown = 0.2f;
 	float m_currToggle = 0.0f;
+
+	float m_toggleMovementCooldown = 0.2f;
+	float m_currMovementToggle = 0.0f;
+
+	float m_toggleModelCooldown = 0.2f;
+	float m_currModelToggle = 0.0f;
 
 	float m_textureCooldown = 0.2f;
 	float m_currTextureTime = 0.0f;
