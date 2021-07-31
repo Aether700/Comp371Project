@@ -149,12 +149,16 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 		throw "GLEW could not be initialized\n";
 	}
 
+	Debug::CheckOpenGLError();
+
 	//we set a virtual camera in the world which will render 
 	//the world using perspective view as required by the assignment
 	m_camera = std::make_shared<Camera>();
 	Renderer3D::Init();
 	Random::Init();
+	Debug::CheckOpenGLError();
 	Model::Init();
+	Debug::CheckOpenGLError();
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_DEPTH_TEST);

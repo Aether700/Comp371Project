@@ -28,10 +28,10 @@ public:
 	OpenGLCubeMap(const std::string& faceTextures);
 
 	//applies the texture data provided to all sides of the cube
-	OpenGLCubeMap(unsigned int width, unsigned int height, void* data);
+	OpenGLCubeMap(unsigned int width, void* data);
 
 	//creates an empty cubemap of the provided width and height with the specified internalDataFormat
-	OpenGLCubeMap(unsigned int width, unsigned int height, unsigned int internalDataFormat, unsigned int type = GL_UNSIGNED_BYTE);
+	OpenGLCubeMap(unsigned int size, unsigned int internalDataFormat, unsigned int type = GL_UNSIGNED_BYTE);
 
 	
 	~OpenGLCubeMap();
@@ -41,8 +41,8 @@ public:
 	//binds the cubemap to the provided texture slot (defaults to slot 0)
 	virtual void Bind(unsigned int slot = 0) const override;
 
-	unsigned int GetWidth() const override { return m_width; }
-	unsigned int GetHeight() const override { return m_height; }
+	unsigned int GetWidth() const override { return m_size; }
+	unsigned int GetHeight() const override { return m_size; }
 
 	virtual unsigned int GetTextureType() const override { return GL_TEXTURE_CUBE_MAP; }
 
@@ -60,13 +60,10 @@ public:
 
 private:
 
-	//makes sure that the texture size for both width and height is 2^k + 2*border for some k
-	void ValidateTextureSize(unsigned int& width, unsigned int& height, unsigned int border = 0);
-
 	unsigned int m_rendererID;
 
 	//all textures need to have the same width and height
-	unsigned int m_width, m_height;
+	unsigned int m_size;
 
 	//format for each of the different faces, indices are matched with 
 	//the order in which the faces are passed to the constructor

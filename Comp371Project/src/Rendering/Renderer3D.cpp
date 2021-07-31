@@ -201,7 +201,7 @@ void RenderingBatch::ResetBatch()
 void Renderer3D::Init()
 {
 	unsigned int whiteTextureData = 0xffffffff;
-	s_defaultWhiteCubeMap = std::make_shared<OpenGLCubeMap>(1, 1, &whiteTextureData);
+	s_defaultWhiteCubeMap = std::make_shared<OpenGLCubeMap>(1, &whiteTextureData);
 	s_defaultWhiteTexture = std::make_shared<OpenGLTexture2D>(1, 1, &whiteTextureData);
 
 	int* samplers = new int[RenderingBatch::s_maxTexture2DSlots];

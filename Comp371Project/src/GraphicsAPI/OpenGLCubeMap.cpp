@@ -19,7 +19,7 @@
   index 4 -> front face (positive Z)
   index 5 -> back face (negative Z)
 */
-OpenGLCubeMap::OpenGLCubeMap(const std::array<std::string, 6>& faceTextures) : m_width(0), m_height(0)
+OpenGLCubeMap::OpenGLCubeMap(const std::array<std::string, 6>& faceTextures) : m_size(0)
 {
 	glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_rendererID);
 	Bind();
@@ -38,26 +38,16 @@ OpenGLCubeMap::OpenGLCubeMap(const std::array<std::string, 6>& faceTextures) : m
 			assert(false);
 		}
 		
-		//validate the size of the texture and adjust the width and height accordingly
+		unsigned int size = std::min(width, height);
+
+
+		if ((m_size != 0) && (size != m_size))
 		{
-			unsigned int uwidth = width;
-			unsigned int uheight = height;
-
-			ValidateTextureSize(uwidth, uheight);
-
-			width = uwidth;
-			height = uheight;
+			std::cerr << "all textures passed to the cube map must have the same size\n";
 		}
-
-
-		if ((m_width != width || m_height != height) && (m_width != 0 || m_height != 0))
+		else if (m_size == 0)
 		{
-			std::cerr << "all textures passed to the cube map must have the same width and height\n";
-		}
-		else if (m_width == 0 || m_height == 0)
-		{
-			m_width = width;
-			m_height = height;
+			m_size = size;
 		}
 
 		switch (channels)
@@ -76,7 +66,7 @@ OpenGLCubeMap::OpenGLCubeMap(const std::array<std::string, 6>& faceTextures) : m
 			std::cerr << "The Format provided for the texture '" << faceTextures[i] << "' is not supported\n";
 		}
 
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_width, m_height, 
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_size, m_size, 
 			0, m_dataFormat[i], GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);
@@ -104,10 +94,7 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 		assert(false);
 	}
 	
-	m_width = width;
-	m_height = height;
-
-	ValidateTextureSize(m_width, m_height);
+	m_size = std::min(width, height);
 
 	switch (channels)
 	{
@@ -131,7 +118,7 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 		m_internalFormat[i] = m_internalFormat[0];
 		m_dataFormat[i] = m_dataFormat[0];
 
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_width, m_height,
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_size, m_size,
 			0, m_dataFormat[i], GL_UNSIGNED_BYTE, data);
 	}
 
@@ -145,12 +132,10 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 }
 
 //applies the texture data provided to all sides of the cube
-OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, void* data) 
-	: m_width(width), m_height(height)
+OpenGLCubeMap::OpenGLCubeMap(unsigned int size, void* data) 
+	: m_size(size)
 {
-	assert(data != nullptr && width > 0 && height > 0);
-
-	ValidateTextureSize(m_width, m_height);
+	assert(data != nullptr && size > 0);
 
 	glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_rendererID);
 	m_internalFormat[0] = GL_RGB8;
@@ -163,7 +148,7 @@ OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, void* data
 		m_internalFormat[i] = m_internalFormat[0];
 		m_dataFormat[i] = m_dataFormat[0];
 
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_width, m_height,
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_size, m_size,
 			0, m_dataFormat[i], GL_UNSIGNED_BYTE, data);
 	}
 	/* //to remove
@@ -182,10 +167,10 @@ OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, void* data
 }
 
 //creates an empty cubemap of the provided width and height with the specified internalDataFormat
-OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, unsigned int internalDataFormat, unsigned int type) 
-	: m_width(width), m_height(height)
+OpenGLCubeMap::OpenGLCubeMap(unsigned int size, unsigned int internalDataFormat, unsigned int type) 
+	: m_size(size)
 {
-	assert(width > 0 && height > 0);
+	assert(size > 0);
 
 	glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_rendererID);
 	m_internalFormat[0] = internalDataFormat;
@@ -198,9 +183,8 @@ OpenGLCubeMap::OpenGLCubeMap(unsigned int width, unsigned int height, unsigned i
 		m_internalFormat[i] = m_internalFormat[0];
 		m_dataFormat[i] = m_dataFormat[0];
 
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_width, m_height,
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_size, m_size,
 			0, m_dataFormat[i], type, nullptr);
-		Debug::CheckOpenGLError();
 	}
 
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -219,32 +203,4 @@ OpenGLCubeMap::~OpenGLCubeMap()
 void OpenGLCubeMap::Bind(unsigned int slot) const
 {
 	glBindTextureUnit(slot, m_rendererID);
-}
-
-void OpenGLCubeMap::ValidateTextureSize(unsigned int& width, unsigned int& height, unsigned int border)
-{
-	unsigned int widthWithoutBorder = width - (2 * border);
-
-	float logResult = std::logf(widthWithoutBorder) / std::logf(2.0f);
-
-
-	//check if the result is an even integer
-	if (logResult != (float)((int)logResult))
-	{
-		//if the width is too big take the next smallest value for which the width is valid
-		width = std::pow(2, (int)logResult);
-	}
-
-
-	unsigned int heightWithoutBorder = height - (2 * border);
-
-	logResult = std::logf(heightWithoutBorder) / std::logf(2.0f);
-
-
-	//check if the result is an even integer
-	if (logResult != (float)((int)logResult))
-	{
-		//if the width is too big take the next smallest value for which the height is valid
-		height = std::pow(2, (int)logResult);
-	}
 }
