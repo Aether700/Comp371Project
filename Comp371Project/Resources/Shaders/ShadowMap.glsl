@@ -3,19 +3,17 @@
 
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec3 a_normal;
-layout(location = 2) in vec3 a_ambient;
-layout(location = 3) in vec3 a_diffuse;
-layout(location = 4) in vec3 a_specular;
-layout(location = 5) in float a_shininess;
-
-out vec4 v_pos;
+layout(location = 2) in vec2 a_textureCoords;
+layout(location = 3) in vec3 a_ambient;
+layout(location = 4) in vec3 a_diffuse;
+layout(location = 5) in vec3 a_specular;
+layout(location = 6) in float a_shininess;
 
 uniform mat4 u_lightSpaceMatrix;
 
 void main()
 {
     gl_Position = u_lightSpaceMatrix * vec4(a_position, 1.0);
-    v_pos = gl_Position;
 }
 /*
 #tipe geometry
@@ -53,7 +51,6 @@ out vec4 color;
 //take the output of the geometry shader as input
 //in vec4 v_fragPos;
 
-in vec4 gl_FragCoord;
 in vec4 v_pos;
 
 uniform vec3 u_lightPos;

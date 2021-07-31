@@ -3,16 +3,18 @@
 
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec3 a_normal;
-layout(location = 2) in vec3 a_ambient;
-layout(location = 3) in vec3 a_diffuse;
-layout(location = 4) in vec3 a_specular;
-layout(location = 5) in float a_shininess;
+layout(location = 2) in vec2 a_textureCoords;
+layout(location = 3) in vec3 a_ambient;
+layout(location = 4) in vec3 a_diffuse;
+layout(location = 5) in vec3 a_specular;
+layout(location = 6) in float a_shininess;
 
 out vec2 TexCoords;
 
 out VS_OUT {
     vec4 FragPosLightSpace;
     vec3 FragPos;
+    vec2 textureCoords;
     vec3 Normal;
     vec4 color;
 } vs_out;
@@ -36,6 +38,7 @@ out vec4 FragColor;
 in VS_OUT {
     vec4 FragPosLightSpace;
     vec3 FragPos;
+    vec2 textureCoords;
     vec3 Normal;
     vec4 color;
 } fs_in;
@@ -67,6 +70,8 @@ float DirectionalShadow()
 {
     // this function returns 1.0 when the surface receives light, and 0.0 when it is in a shadow
     // perform perspective divide
+
+    //normalized device coordinates
     vec3 ndc = fs_in.FragPosLightSpace.xyz / fs_in.FragPosLightSpace.w;
     
     // transform to [0,1] range
@@ -75,6 +80,7 @@ float DirectionalShadow()
     // get closest depth value from light's perspective (using [0,1] range fragment_position_light_space as coords)
     float closest_depth = texture(u_shadowMap, ndc.xy).r;
     return closest_depth;
+
     /*
     // get depth of current fragment from light's perspective
     float current_depth = ndc.z;
@@ -187,5 +193,6 @@ void main()
 
     //FragColor = vec4(lighting, 1);
     //FragColor = vec4(0, 0, 0, 1);
-    FragColor = vec4(shadow, 0, 0, 1);
+    //FragColor = vec4(shadow, 0, 0, 1);
+    FragColor = vec4(texture(u_shadowMap, fs_in.textureCoords).r, 0, 0, 1);
 }
