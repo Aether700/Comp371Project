@@ -34,11 +34,10 @@ int main()
 
 	//Add Scripts here   
 
-	//Application::AddScript(new Axes());
-	//Application::AddScript(new Grid());
-	//Application::AddScript(new ModelManager());
+	Application::AddScript(new Axes());
+	Application::AddScript(new Grid());
+	Application::AddScript(new ModelManager());
 	//Application::AddScript(new AlecPointLightTest());
-	Application::AddScript(new TextureTest());
 
 	///////////////////
 

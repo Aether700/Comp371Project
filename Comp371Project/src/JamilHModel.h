@@ -36,7 +36,7 @@ public:
 
 		for (unsigned int i = 0; i < m_wallCubeCount; i++)
 		{
-			Renderer3D::DrawVoxel(m_wallCubes[i]->GetTransformMatrix());
+			RenderWall(m_wallCubes[i]->GetTransformMatrix());
 		}
 	}
 
@@ -51,6 +51,28 @@ public:
 
 		//recalculate wall
 		SetWallCubesTransform();
+	}
+
+protected:
+	virtual void RenderCubeWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
+	{
+		if (GetRenderingPrimitive() == RenderingPrimitive::Triangles)
+		{
+			Renderer3D::DrawVoxel(transform, modelTexture, 1, color);
+		}
+		else if (GetRenderingPrimitive() == RenderingPrimitive::Lines)
+		{
+			Renderer3D::DrawWireCube(transform, color);
+		}
+		else if (GetRenderingPrimitive() == RenderingPrimitive::Points)
+		{
+			Renderer3D::DrawPointCube(transform, color);
+		}
+	}
+
+	virtual void RenderWallWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
+	{
+		Renderer3D::DrawVoxel(transform, wallTexture, 1, color);
 	}
 
 private:
