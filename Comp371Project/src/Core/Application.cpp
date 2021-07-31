@@ -6,6 +6,7 @@
 #include "Time.h"
 #include "Debug.h"
 #include "Random.h"
+#include "../Model.h"
 
 #include <iostream>
 
@@ -69,9 +70,9 @@ void Application::Run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(app.m_backgroundColor.r, app.m_backgroundColor.g, app.m_backgroundColor.b, app.m_backgroundColor.a);
 
-		//Renderer3D::BeginScene();
+		Renderer3D::BeginScene();
 		app.CallOnRenderScripts();
-		//Renderer3D::EndScene();
+		Renderer3D::EndScene();
 
 
 		glfwPollEvents();
@@ -153,6 +154,7 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 	m_camera = std::make_shared<Camera>();
 	Renderer3D::Init();
 	Random::Init();
+	Model::Init();
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_DEPTH_TEST);

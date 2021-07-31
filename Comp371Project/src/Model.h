@@ -13,6 +13,9 @@ enum class RenderingPrimitive
 class Model : public Script
 {
 public:
+
+	static void Init();
+
 	virtual ~Model() { }
 
 	
@@ -31,7 +34,8 @@ public:
 	}
 
 protected:
-	Model() : m_modelTransform(std::make_shared<Transform>()), m_wallTransform(std::make_shared<Transform>()) 
+	Model() : m_modelTransform(std::make_shared<Transform>()), 
+		m_wallTransform(std::make_shared<Transform>()), m_transform(std::make_shared<Transform>())
 	{
 		m_modelTransform->SetParent(m_transform);
 		m_wallTransform->SetParent(m_transform);
@@ -80,5 +84,5 @@ private:
 	std::shared_ptr<Transform> m_modelTransform;
 	std::shared_ptr<Transform> m_wallTransform;
 	RenderingPrimitive m_primitive = RenderingPrimitive::Triangles;
-	bool istextureOn = true;
+	bool istextureOn = false;
 };

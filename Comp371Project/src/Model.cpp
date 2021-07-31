@@ -1,5 +1,11 @@
 #include "Model.h"
 
 
-std::shared_ptr<OpenGLCubeMap> Model::modelTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg");
-std::shared_ptr<OpenGLCubeMap> Model::wallTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/Bricks.PNG");
+std::shared_ptr<OpenGLCubeMap> Model::modelTexture;
+std::shared_ptr<OpenGLCubeMap> Model::wallTexture;
+
+void Model::Init()
+{
+	modelTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg");
+	wallTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/Bricks.PNG");
+}

@@ -152,6 +152,7 @@
     <ClCompile Include="src\GraphicsAPI\OpenGLCubeMap.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLFramebuffer.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLTexture2D.cpp" />
+    <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Rendering\Camera.cpp" />
     <ClCompile Include="src\Core\Input.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLShader.cpp" />

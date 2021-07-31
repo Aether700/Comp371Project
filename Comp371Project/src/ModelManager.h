@@ -218,12 +218,17 @@ public:
 			}
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_K))
+		if (m_currTextureTime >= m_textureCooldown && Input::IsKeyPressed(GLFW_KEY_K))
 		{
 			for (int i = 0; i < m_models.size() && i < 5; i++)
 			{
 				m_models[i]->ToggleTexture();
 			}
+			m_currTextureTime = 0.0f;
+		}
+		else if (m_currTextureTime < m_textureCooldown)
+		{
+			m_currTextureTime += Time::GetDeltaTime();
 		}
 
 		/*pressing the Z key will attempt to shuffle the current model.
@@ -310,6 +315,9 @@ private:
 
 	float m_toggleCooldown = 0.2f;
 	float m_currToggle = 0.0f;
+
+	float m_textureCooldown = 0.2f;
+	float m_currTextureTime = 0.0f;
 
 	Movement m_currMovementMode = Movement::Rotation;
 	bool isOn = false;
