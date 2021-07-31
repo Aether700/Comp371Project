@@ -11,6 +11,8 @@
 #include "MadelaineModel.h"
 #include "AlecModel.h"
 
+#include "Grid.h"
+
 #include <vector>
 
 class ModelManager : public Script
@@ -24,6 +26,8 @@ public:
 		AddModel(new MadelaineModel());
 		AddModel(new AlecModel());
 		AddModel(new JamilModel());
+
+		AddGrid(new Grid());
 	}
 
 	void OnStart()
@@ -228,6 +232,7 @@ public:
 			{
 				m_models[i]->ToggleTexture();
 			}
+			m_grid[0]->ToggleTexture();
 			m_currTextureTime = 0.0f;
 		}
 		else if (m_currTextureTime < m_textureCooldown)
@@ -285,6 +290,12 @@ private:
 		m_models.push_back(m);
 	}
 
+	void AddGrid(Grid* g)
+	{
+		Application::AddScript(g);
+		m_grid.push_back(g);
+	}
+
 	void ChangeIndex(size_t newIndex)
 	{
 		if (newIndex < m_models.size())
@@ -308,6 +319,7 @@ private:
 	}
 
 	std::vector<Model*> m_models;
+	std::vector<Grid*> m_grid;
 	size_t m_currModel = 0;
 
 	float m_rotationSpeed = 2.0f;
