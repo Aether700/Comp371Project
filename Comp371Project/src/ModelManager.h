@@ -61,14 +61,7 @@ public:
 
 		if (Input::IsKeyPressed(GLFW_KEY_M))
 		{
-			if (isOn == true)
-			{
-				isOn = false;
-			}
-			else
-			{
-				isOn = true;
-			}
+			isOn = !isOn;
 		}
 
 		if (isOn)
@@ -222,6 +215,14 @@ public:
 				m_models[i]->GetWallTransform()->position = positions[i];
 				m_models[i]->GetWallTransform()->rotation = rotations[i];
 				m_models[i]->GetWallTransform()->scale = { 1.0,1.0,1.0 };
+			}
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_K))
+		{
+			for (int i = 0; i < m_models.size() && i < 5; i++)
+			{
+				m_models[i]->ToggleTexture();
 			}
 		}
 

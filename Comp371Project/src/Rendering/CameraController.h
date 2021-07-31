@@ -79,14 +79,7 @@ public:
 		//isOn = !Input::IsKeyPressed(GLFW_KEY_M);
 		if (Input::IsKeyPressed(GLFW_KEY_M))
 		{
-			if (isOn == true)
-			{
-				isOn = false;
-			}
-			else
-			{
-				isOn = true;
-			}
+			isOn = !isOn;
 		}
 
 		if(isOn)

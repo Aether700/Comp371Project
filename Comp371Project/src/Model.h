@@ -21,7 +21,8 @@ public:
 	std::shared_ptr<Transform>& GetWallTransform() { return m_wallTransform; }
 
 	void SetRenderingPrimitive(RenderingPrimitive primitive) { m_primitive = primitive; }
-
+	void ToggleTexture() { istextureOn = !istextureOn; }
+	RenderingPrimitive GetRenderingPrimitive() const { return m_primitive; }
 
 	//shuffles the model or displays a message in the console indicating that this model does not support shuffling
 	virtual void Shuffle() 
@@ -38,7 +39,7 @@ protected:
 
 	//rendering function to use inside the models so that we can change the rendering 
 	//primitives used to render them
-	void RenderCube(const glm::mat4& transform, const glm::vec4& color = {1, 1, 1, 1})
+	void RenderCubeNoTexture(const glm::mat4& transform, const glm::vec4& color = {1, 1, 1, 1})
 	{
 		if (m_primitive == RenderingPrimitive::Triangles)
 		{
@@ -54,9 +55,30 @@ protected:
 		}
 	}
 
+	void RenderCube(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 })
+	{
+		if (istextureOn)
+		{
+			RenderCubeWithTexture(transform, color);
+		}
+		else
+		{
+			RenderCubeNoTexture(transform, color);
+		}
+	}
+
+	virtual void RenderCubeWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 })
+	{
+		RenderCubeNoTexture(transform, color);
+	}
+
+	static std::shared_ptr<OpenGLCubeMap> wallTexture;
+	static std::shared_ptr<OpenGLCubeMap> modelTexture;
+
 private:
 	std::shared_ptr<Transform> m_transform;
 	std::shared_ptr<Transform> m_modelTransform;
 	std::shared_ptr<Transform> m_wallTransform;
 	RenderingPrimitive m_primitive = RenderingPrimitive::Triangles;
+	bool istextureOn = true;
 };

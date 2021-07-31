@@ -68,6 +68,22 @@ public:
 
 	}
 
+	void RenderCubeWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
+	{
+		if (GetRenderingPrimitive() == RenderingPrimitive::Triangles)
+		{	
+			 Renderer3D::DrawVoxel(transform, modelTexture, 1.0f, color);
+		}
+		else if (GetRenderingPrimitive() == RenderingPrimitive::Lines)
+		{
+			Renderer3D::DrawWireCube(transform, color);
+		}
+		else if (GetRenderingPrimitive() == RenderingPrimitive::Points)
+		{
+			Renderer3D::DrawPointCube(transform, color);
+		}
+	}
+
 private:
 
 	std::shared_ptr<Transform> m_cubeModel[16];
