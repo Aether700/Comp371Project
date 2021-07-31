@@ -105,42 +105,51 @@ public:
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	/*
+	
 	void OnUpdate()
 	{
-		if (Input::IsKeyPressed(GLFW_KEY_W))
+		float lightSpeed = 5.0f;
+
+		if (Input::IsKeyPressed(GLFW_KEY_LEFT))
 		{
-			m_light.position.z -= 5 * Time::GetDeltaTime();
+			m_light.position.z -= lightSpeed * Time::GetDeltaTime();
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_S))
+		if (Input::IsKeyPressed(GLFW_KEY_DOWN))
 		{
-			m_light.position.z += 5 * Time::GetDeltaTime();
+			m_light.position.z += lightSpeed * Time::GetDeltaTime();
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_RIGHT))
+		{
+			m_light.position.x += lightSpeed * Time::GetDeltaTime();
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_LEFT))
+		{
+			m_light.position.x -= lightSpeed * Time::GetDeltaTime();
 		}
 	}
-	*/
 
 
 	void OnRender()
 	{
-		auto camera = Application::GetCamera();
-		glm::mat4 camTransform = camera->GetTransform();
-		glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camTransform;
-
-		m_shader->Bind();
-		m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
-		m_shader->SetMat4("u_lightSpaceMatrix", glm::mat4(1.0f));
-		m_shader->SetInt("u_shadowMap", 0);
-		m_shader->SetFloat3("viewPos", Application::GetCameraController()->GetCamPos());
-
 		int windowWidth, windowHeight;
 		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
-
+		/*
 		float near_plane = 0.1f;
 		float far_plane = 7.5f;
 		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 		glm::mat4 lightView = glm::lookAt(m_light.position, m_cube.position, glm::vec3(0.0, 1.0, 0.0));
 		m_lightSpaceMatrix = lightProjection * lightView;
+		*/
+
+		float near_plane = 1.0f, far_plane = 7.5f;
+		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+		glm::mat4 lightView = glm::lookAt(m_light.position, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+		m_lightSpaceMatrix = lightProjection * lightView;
+
+		//PrintMat4(m_lightSpaceMatrix);
 
 		m_shadowMapShader->Bind();
 		m_shadowMapShader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
@@ -160,14 +169,27 @@ public:
 		glViewport(0, 0, windowWidth, windowHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+		auto camera = Application::GetCamera();
+		glm::mat4 camTransform = camera->GetTransform();
+		glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camTransform;
+
 		m_shader->Bind();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, depthMap);
 		m_shader->SetInt("u_shadowMap", 0);
+		m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
+		m_shader->SetFloat3("viewPos", Application::GetCameraController()->GetCamPos());
+		m_shader->SetFloat3("lightPos", m_light.position);
+		m_shader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
+
+
 		m_vao->Bind();
 		m_ibo->Bind();
 		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
 
+
+		//RenderLight();
 
 		/*
 		////render Depth map to quad for visual debugging
@@ -194,6 +216,13 @@ private:
 			}
 			std::cout << "\n";
 		}
+	}
+
+	void RenderLight()
+	{
+		m_vaoLight->Bind();
+		m_iboLight->Bind();
+		glDrawElements(GL_TRIANGLES, m_iboLight->GetCount(), GL_UNSIGNED_INT, nullptr);
 	}
 
 	void PrepareCubeAndPlane()
