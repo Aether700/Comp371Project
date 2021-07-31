@@ -200,6 +200,10 @@
     <ClInclude Include="src\Core\Time.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLTexture.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Textures\Bricks.PNG" />
+    <Image Include="Resources\Textures\Tiles.PNG" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

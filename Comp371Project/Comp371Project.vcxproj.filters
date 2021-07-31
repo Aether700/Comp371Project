@@ -168,4 +168,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Textures\Bricks.PNG">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\Tiles.PNG">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>
