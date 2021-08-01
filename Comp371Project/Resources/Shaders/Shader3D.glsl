@@ -118,7 +118,6 @@ float ShadowCalculationDirectionalLight(int index)
         shadow = 0.0f;
 
     return shadow;
-    //return texture(u_shadow2D[int(u_shadowMapIndices[index])], projCoords.xy).r;
 }
 
 vec4 CalculateDirectionalLight(vec4 baseColor, int index)
@@ -141,10 +140,10 @@ vec4 CalculateDirectionalLight(vec4 baseColor, int index)
     
     // calculate shadow
     float shadow = ShadowCalculationDirectionalLight(index);                      
+    //vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * baseColor.xyz;    
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * baseColor.xyz;    
     
     return vec4(lighting, 0);
-    //return vec4(shadow, 0, 0, 1);
 }
 
 vec4 CalculateLighting(vec4 baseColor)

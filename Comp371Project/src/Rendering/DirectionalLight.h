@@ -65,7 +65,7 @@ public:
 
 	glm::mat4 GetLightSpaceMatrix()
 	{
-		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, m_nearPlane, m_farPlane);
+		glm::mat4 lightProjection = glm::ortho(-m_radius, m_radius, -m_radius, m_radius, m_nearPlane, m_farPlane);
 		glm::mat4 lightView = glm::lookAt(m_position, m_position + m_direction, glm::vec3(0.0, 1.0, 0.0));
 		return lightProjection * lightView;
 	}
@@ -132,7 +132,7 @@ private:
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-
+	float m_radius = 10.0f;
 	float m_nearPlane = 1.0f;
 	float m_farPlane = 50.0f;
 	glm::vec3 m_position;
@@ -143,5 +143,4 @@ private:
 	unsigned int m_framebuffer;
 	unsigned int m_shadowMapID;
 	unsigned int m_size;
-
 };

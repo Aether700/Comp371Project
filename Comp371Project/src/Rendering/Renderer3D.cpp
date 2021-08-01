@@ -806,7 +806,7 @@ void Renderer3D::UploadPointCube(const glm::mat4& transform, std::shared_ptr<Ope
 		cubeVertices[i].position = (glm::vec3)(transform * glm::vec4(position[i], 1));
 		cubeVertices[i].textureCoords = position[i];
 		cubeVertices[i].color = tintColor;
-		cubeVertices[i].normal = position[i];
+		cubeVertices[i].normal = (glm::vec3)(transform * glm::vec4(0, 0, 1, 0));
 		cubeVertices[i].textureIndex = textureIndex;
 		cubeVertices[i].tillingFactor = tileFactor;
 		cubeVertices[i].uses3DTexture = 1;
