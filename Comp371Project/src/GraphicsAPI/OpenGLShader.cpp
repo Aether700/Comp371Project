@@ -265,6 +265,7 @@ void OpenGLShader::Compile(const std::unordered_map<unsigned int, std::string>& 
 		for (auto id : glShaderIDs)
 			glDeleteShader(id);
 
+		std::cout << "During linking process:\n";
 		std::cout << infoLog.data() << "\n";
 		assert(false);
 	}

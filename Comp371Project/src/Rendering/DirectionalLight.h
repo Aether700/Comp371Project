@@ -61,6 +61,8 @@ public:
 		return lightProjection * lightView;
 	}
 
+	const glm::vec4& GetColor() const { return m_color; }
+
 	const glm::vec3& GetPosition() const { return m_position; }
 
 	float GetFarPlane() const { return m_farPlane; }

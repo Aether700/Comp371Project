@@ -342,6 +342,7 @@ void Renderer3D::EndScene()
 		s_shader->SetFloat3("u_lightPos", s_light->GetPosition());
 		s_shader->SetMat4("u_lightSpaceMatrix", s_light->GetLightSpaceMatrix());
 		s_shader->SetInt("u_useShadows", 1);
+		s_shader->SetInt("u_numLights", s_directionalLightIndex);
 		AddShadowMapToShaders(*s_light);
 		FlushBatch();
 	}
@@ -544,7 +545,23 @@ void Renderer3D::DrawVertexData(unsigned int renderTarget, const glm::vec3& posi
 
 void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& lightColor)
 {
-	s_directionalLightArr[s_directionalLightIndex] = DirectionalLight(position, direction, lightColor);
+	assert(s_directionalLightIndex < RenderingBatch::s_maxTexture2DShadowMapSlots);
+
+	DirectionalLight currLight(position, direction, lightColor);
+
+	std::string uniformName = "u_lightArr[";
+	uniformName += std::to_string(s_directionalLightIndex);
+	uniformName += "].";
+
+	s_shader->Bind();
+	s_shader->SetFloat4(uniformName + "color", currLight.GetColor());
+	s_shader->SetFloat3(uniformName + "position", currLight.GetPosition());
+	s_shader->SetFloat(uniformName + "shadowMapIndex", s_directionalLightIndex);
+	s_shader->SetMat4(uniformName + "lightSpaceMatrix", currLight.GetLightSpaceMatrix());
+	//default light space coords to origin (will be calculated on gpu)
+	s_shader->SetFloat4(uniformName + "lightSpaceFragCoords", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	s_directionalLightArr[s_directionalLightIndex] = std::move(currLight);
 	s_directionalLightIndex++;
 }
 
