@@ -66,7 +66,6 @@ public:
 	glm::mat4 GetLightSpaceMatrix()
 	{
 		glm::mat4 lightProjection = glm::ortho(-m_radius, m_radius, -m_radius, m_radius, m_nearPlane, m_farPlane);
-		//glm::mat4 lightView = glm::lookAt(m_position, m_position + m_direction, glm::vec3(0.0, 1.0, 0.0));
 
 		glm::vec3 up = { 0.0, 1.0, 0.0 };
 		//glm::lookAt doesn't know what to do if the center direction and up direction are parallel
