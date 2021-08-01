@@ -206,10 +206,7 @@ void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& m
 //compiles and links all the shaders into an opengl shader program
 void OpenGLShader::Compile(const std::unordered_map<unsigned int, std::string>& shaderSrcs)
 {
-	Debug::CheckOpenGLError();
 	unsigned int program = glCreateProgram();
-	Debug::CheckOpenGLError();
-
 
 	std::vector<unsigned int> glShaderIDs;
 	for (auto& kv : shaderSrcs)

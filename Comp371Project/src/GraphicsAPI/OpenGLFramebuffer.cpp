@@ -3,8 +3,8 @@
 
 #include <assert.h>
 
-OpenGLFramebuffer::OpenGLFramebuffer(unsigned int width, unsigned int height, bool useDepthOnly) 
-	: m_rendererID(0), m_useDepthOnly(useDepthOnly)
+OpenGLFramebuffer::OpenGLFramebuffer(unsigned int width, unsigned int height) 
+	: m_rendererID(0)
 {
 	assert(!(width < 1 || height < 1));
 	Resize(width, height);
@@ -62,7 +62,7 @@ void OpenGLFramebuffer::Resize(unsigned int width, unsigned int height)
 	{
 		glDeleteFramebuffers(1, &m_rendererID);
 
-		if (!m_useDepthOnly && m_colorAttachmentTexture == nullptr)
+		if (m_colorAttachmentTexture == nullptr)
 		{
 			glDeleteTextures(1, &m_colorAttachment);
 		}
@@ -77,20 +77,17 @@ void OpenGLFramebuffer::Resize(unsigned int width, unsigned int height)
 	glCreateFramebuffers(1, &m_rendererID);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_rendererID);
 	
-	if (!m_useDepthOnly)
-	{
-		//create the color attachements to that frame buffer
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_colorAttachment);
-		glBindTexture(GL_TEXTURE_2D, m_colorAttachment);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width,
-			height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+	//create the color attachements to that frame buffer
+	glCreateTextures(GL_TEXTURE_2D, 1, &m_colorAttachment);
+	glBindTexture(GL_TEXTURE_2D, m_colorAttachment);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width,
+		height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		//attach the texture to the framebuffer and specify the mipmap level of the texture
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorAttachment, 0);
-	}
+	//attach the texture to the framebuffer and specify the mipmap level of the texture
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorAttachment, 0);
 
 
 	//create depth attachement
@@ -100,13 +97,6 @@ void OpenGLFramebuffer::Resize(unsigned int width, unsigned int height)
 
 	//attach the texture to the framebuffer and specify the mipmap level of the texture
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depthAttachment, 0);
-
-	if (m_useDepthOnly)
-	{
-		//tell opengl that we won't be using the color attachment
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-	}
 
 	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 

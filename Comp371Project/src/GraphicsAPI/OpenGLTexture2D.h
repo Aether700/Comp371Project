@@ -15,6 +15,8 @@ public:
 	//defines an opengl 2D texture of the width and height and texture data provided 
 	OpenGLTexture2D(unsigned int width, unsigned int height, void* data);
 
+	OpenGLTexture2D(unsigned int rendererID, unsigned int width, unsigned int height);
+
 	//reads the file at the file path provided and tries to create a 2D texture from it
 	OpenGLTexture2D(const std::string& path);
 	~OpenGLTexture2D();

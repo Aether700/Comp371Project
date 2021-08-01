@@ -36,6 +36,9 @@ OpenGLTexture2D::OpenGLTexture2D(unsigned int width, unsigned int height, void* 
 	glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);
 }
 
+OpenGLTexture2D::OpenGLTexture2D(unsigned int rendererID, unsigned int width, unsigned int height) 
+	: m_rendererID(m_rendererID), m_width(width), m_height(height), m_internalFormat(0) { }
+
 //reads the file at the file path provided and tries to create a 2D texture from it
 OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_path(path)
 {
@@ -88,7 +91,10 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_path(path)
 
 OpenGLTexture2D::~OpenGLTexture2D()
 {
-	glDeleteTextures(1, &m_rendererID);
+	if (m_internalFormat != 0)
+	{
+		glDeleteTextures(1, &m_rendererID);
+	}
 }
 
 //sets the texture data of this texture object

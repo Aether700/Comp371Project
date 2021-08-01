@@ -7,7 +7,7 @@
 #include "../GraphicsAPI/OpenGLVertexArray.h"
 #include "../GraphicsAPI/OpenGLBuffer.h"
 #include "../GraphicsAPI/OpenGLShader.h"
-
+#include "DirectionalLight.h"
 
 #include <unordered_map>
 #include <memory>
@@ -68,39 +68,46 @@ public:
 	//returns texture index for the texture
 	int AddCubemap(std::shared_ptr<OpenGLCubeMap> cubemap, unsigned int renderTarget);
 
+	void AddTexture2DShadowMap(std::shared_ptr<OpenGLTexture2D> shadowMap);
+
+	void AddCubemapShadowMap(std::shared_ptr<OpenGLCubeMap> shadowMap);
+
 
 	//render target is a gl enum ex: GL_TRIANGLES
 	void Draw(unsigned int renderTarget);
 
 	bool IsEmpty() const;
 
-private:
-	void CheckCapacity(VertexData* vertices, unsigned int numVertices, unsigned int* indices,
-		unsigned int numIndices, unsigned int renderTarget);
-
 	void ResetBatch();
+private:
 
 	static unsigned int s_maxVertices;
 	static unsigned int s_maxIndices;
 	static unsigned int s_maxTextureSlots;
 	static unsigned int s_maxTexture2DSlots;
+	static unsigned int s_maxTexture2DShadowMapSlots;
 	static unsigned int s_maxCubemapSlots;
+	static unsigned int s_maxCubemapShadowMapSlots;
 
 
 	std::shared_ptr<OpenGLVertexArray> m_vao;
 	std::shared_ptr<OpenGLVertexBuffer> m_vbo;
 	std::shared_ptr<OpenGLIndexBuffer> m_ibo;
 
-	VertexData* m_vertexDataArr;
+	std::vector<VertexData> m_vertexDataArr;
 	unsigned int m_vertexDataIndex = 0;
 
-	unsigned int* m_indicesArr;
+	std::vector<unsigned int> m_indicesArr;
 	unsigned int m_indicesIndex = 0;
 
 	std::shared_ptr<OpenGLTexture2D>* m_texture2DSlots;
+	std::shared_ptr<OpenGLTexture2D>* m_texture2DShadowMapSlots;
 	std::shared_ptr<OpenGLCubeMap>* m_cubemapSlots;
+	std::shared_ptr<OpenGLCubeMap>* m_cubemapShadowMapSlots;
 	unsigned int m_texture2DIndex = 0;
 	unsigned int m_cubemapIndex = 0;
+	unsigned int m_texture2DShadowMapIndex = 0;
+	unsigned int m_cubemapShadowMapIndex = 0;
 };
 
 //batch renderer for 3D
@@ -117,6 +124,8 @@ public:
 	//use to start renderering and stop rendering
 	static void BeginScene();
 	static void EndScene();
+
+	static void UseShadows(bool value) { s_useShadows = value; }
 
 	static std::shared_ptr<OpenGLCubeMap> GetDefaultWhiteCubeMap();
 	static std::shared_ptr<OpenGLTexture2D> GetDefaultWhiteTexture();
@@ -190,13 +199,20 @@ public:
 		unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, const glm::vec3* textureCoords, 
 		float tileFactor, const glm::vec4& tintColor);
 
+	//lighting functions
+	static void AddDirectionalLight(const glm::vec3& position, const glm::vec3& direction, 
+		const glm::vec4& lightColor = { 1, 1, 1, 1 });
+
+
 private:
 	//draw to data passed to the renderer to the screen
 	static void FlushBatch();
 
-	//checks the current capacity of the batch renderer 
-	//and will flush and start a new batch if needed
-	static void CheckBatchCapacity();
+	static void ResetBatches();
+
+	static void CleanUpAfterShadowMapGeneration();
+
+	static void AddShadowMapToShaders(std::shared_ptr<DirectionalLight> light);
 
 	//helper function which loads a voxel into the data to pass to the gpu when the renderer flushes
 	static void UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,	
@@ -230,4 +246,8 @@ private:
 	static std::shared_ptr<OpenGLShader> s_shader;
 
 	static std::unordered_map<unsigned int, RenderingBatch> s_renderingBatches;
+	static bool s_useShadows;
+
+	//temp
+	static std::shared_ptr<DirectionalLight> s_light;
 };
