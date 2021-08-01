@@ -40,8 +40,8 @@ public:
 		}
 
 		//draw light
-		Renderer3D::AddDirectionalLight(GetModelPosition() + glm::vec3(0, 30, 0), {0, -1, 0});
-		std::cout << GetModelPosition().x << ", " << GetModelPosition().y << ", " << GetModelPosition().z << "\n";
+		glm::vec3 lightPos = GetModelPosition() + glm::vec3(0, 30, 0);
+		Renderer3D::AddDirectionalLight(lightPos, GetModelPosition() - lightPos);
  	}
 
 	//shuffles the cube as per the bonus marks requirements of the assignment
