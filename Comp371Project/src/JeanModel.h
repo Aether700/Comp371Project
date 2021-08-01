@@ -7,7 +7,7 @@ class JeanModel : public Model
 {
 public:
 
-	JeanModel()
+	JeanModel(std::shared_ptr<Transform> worldTransform) : Model(worldTransform)
 	{
 		for (auto& transform : m_cubeModel)
 		{
@@ -20,6 +20,8 @@ public:
 			transform = std::make_shared<Transform>();
 			transform->SetParent(GetWallTransform());
 		}
+
+
 	}
 
 	void OnStart()

@@ -6,7 +6,7 @@
 class OpenGLFramebuffer
 {
 public:
-	OpenGLFramebuffer(unsigned int width, unsigned int height, bool useDepthOnly = false);
+	OpenGLFramebuffer(unsigned int width, unsigned int height);
 	~OpenGLFramebuffer();
 
 	void Bind() const;
@@ -30,7 +30,6 @@ private:
 	unsigned int m_width, m_height;
 
 	unsigned int m_colorAttachment, m_depthAttachment;
-	bool m_useDepthOnly;
 
 	//store references to textures that were not created by the framebuffer 
 	//so they don't get deleted while the framebuffer is still in use

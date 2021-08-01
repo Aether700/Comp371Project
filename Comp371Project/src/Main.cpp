@@ -4,6 +4,7 @@
 
 #include "Tests/AlecPointLightTest.h"
 #include "Tests/TextureTest.h"
+#include "Tests/RendererDirectionalLightTest.h"
 
 #include "Core/Application.h"
 #include "Core/Script.h"
@@ -33,10 +34,11 @@ int main()
 
 	//Add Scripts here   
 
-	//Application::AddScript(new Axes());
+	Renderer3D::UseShadows(false);
+
 	//Application::AddScript(new ModelManager());
-	Application::AddScript(new AlecPointLightTest());
-	//Application::AddScript(new TextureTest());
+	//Application::AddScript(new AlecPointLightTest());
+	Application::AddScript(new RendererDirectionalLightTest());
 
 	///////////////////
 

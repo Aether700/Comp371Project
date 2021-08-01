@@ -5,7 +5,7 @@
 class JamilModel : public Model
 {
 public:
-	JamilModel()
+	JamilModel(std::shared_ptr<Transform> worldTransform) : Model(worldTransform)
 	{
 		for (auto& transform : cubes)
 		{

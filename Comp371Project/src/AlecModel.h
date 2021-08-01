@@ -4,7 +4,7 @@
 class AlecModel : public Model
 {
 public:
-	AlecModel()
+	AlecModel(std::shared_ptr<Transform> worldTransform) : Model(worldTransform)
 	{
 		for (auto& transform : m_cubeArr)
 		{

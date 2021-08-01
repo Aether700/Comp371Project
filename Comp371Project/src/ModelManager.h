@@ -21,13 +21,17 @@ public:
 
 	ModelManager()
 	{
-		AddModel(new JamilHModel());
-		AddModel(new JeanModel());
-		AddModel(new MadelaineModel());
-		AddModel(new AlecModel());
-		AddModel(new JamilModel());
+		m_worldTransform = std::make_shared<Transform>();
 
-		AddGrid(new Grid());
+		Application::AddScript(new Axes(m_worldTransform));
+
+		AddModel(new JamilHModel(m_worldTransform));
+		AddModel(new JeanModel(m_worldTransform));
+		AddModel(new MadelaineModel(m_worldTransform));
+		AddModel(new AlecModel(m_worldTransform));
+		AddModel(new JamilModel(m_worldTransform));
+
+		AddGrid(new Grid(m_worldTransform));
 	}
 
 	void OnStart()
@@ -161,6 +165,26 @@ public:
 					m_models[m_currModel]->GetModelTransform()->position.z -= m_translationSpeed * Time::GetDeltaTime();
 				}
 			}
+			/*pressing the C key toggle between translation and
+			  rotation mode which will change how the awsd keys behave
+			*/
+			if (m_currToggle >= m_toggleCooldown && Input::IsKeyPressed(GLFW_KEY_C))
+			{
+				if (m_currMovementMode == Movement::Rotation)
+				{
+					m_currMovementMode = Movement::Translation;
+				}
+				else
+				{
+					m_currMovementMode = Movement::Rotation;
+				}
+
+				m_currToggle = 0.0f;
+			}
+			else if (m_currToggle < m_toggleCooldown)
+			{
+				m_currToggle += Time::GetDeltaTime();
+			}
 		}
 
 		//pressing P, T or L changes the rendering primitive used to render the model
@@ -224,6 +248,9 @@ public:
 				m_models[i]->GetWallTransform()->rotation = rotations[i];
 				m_models[i]->GetWallTransform()->scale = { 1.0,1.0,1.0 };
 			}
+			m_worldTransform->position = glm::vec3(0, 0, 0);
+			m_worldTransform->rotation = glm::vec3(0, 0, 0);
+			m_worldTransform->scale = glm::vec3(1, 1, 1);
 		}
 
 		if (m_currTextureTime >= m_textureCooldown && Input::IsKeyPressed(GLFW_KEY_X))
@@ -254,26 +281,36 @@ public:
 			m_currShuffle += Time::GetDeltaTime();
 		}
 
-		/*pressing the C key toggle between translation and
-		  rotation mode which will change how the awsd keys behave
-		*/
-		if (m_currToggle >= m_toggleCooldown && Input::IsKeyPressed(GLFW_KEY_C))
+		if (Input::IsKeyPressed(GLFW_KEY_UP))
 		{
-			if (m_currMovementMode == Movement::Rotation)
-			{
-				m_currMovementMode = Movement::Translation;
-			}
-			else
-			{
-				m_currMovementMode = Movement::Rotation;
-			}
+			m_worldTransform->position.z += m_translationSpeed * Time::GetDeltaTime();
+		}
 
-			m_currToggle = 0.0f;
-		}
-		else if (m_currToggle < m_toggleCooldown)
+		if (Input::IsKeyPressed(GLFW_KEY_DOWN))
 		{
-			m_currToggle += Time::GetDeltaTime();
+			m_worldTransform->position.z -= m_translationSpeed * Time::GetDeltaTime();
 		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_LEFT))
+		{
+			m_worldTransform->position.x -= m_translationSpeed * Time::GetDeltaTime();
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_RIGHT))
+		{
+			m_worldTransform->position.x += m_translationSpeed * Time::GetDeltaTime();
+		}
+		
+		if (Input::IsKeyPressed(GLFW_KEY_9))
+		{
+			m_worldTransform->rotation.y -= m_translationSpeed * Time::GetDeltaTime();
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_0))
+		{
+			m_worldTransform->rotation.y += m_translationSpeed * Time::GetDeltaTime();
+		}
+		
 	}
 
 private:
@@ -341,9 +378,15 @@ private:
 	float m_textureCooldown = 0.2f;
 	float m_currTextureTime = 0.0f;
 
+	float m_toggleWorlMovementCooldown = 0.2f;
+	float m_currWorlMovementToggle = 0.0f;
+
 	Movement m_currMovementMode = Movement::Rotation;
 	bool isOn = false;
 	bool isContinuos = false;
+	bool isWorldMovement = false;
+
+	std::shared_ptr<Transform> m_worldTransform;
 
 	glm::vec3 positions[5] = {
 	{ -40, 10, -40 },

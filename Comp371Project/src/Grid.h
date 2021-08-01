@@ -9,9 +9,13 @@ class Grid : public Script
 {
 public:
 
-	Grid()
+	Grid(std::shared_ptr<Transform> worldTransform)
 	{
 		m_texture = std::make_shared<OpenGLTexture2D>("Resources/Textures/Tiles.PNG");
+		m_transformMesh = std::make_shared<Transform>(glm::vec3( 0, 0, 0 ), glm::vec3( 0, 0, 0 ), glm::vec3(1, 1, 1 ));
+		m_transformQuad = std::make_shared<Transform>(glm::vec3(0, -0.01, 0 ), glm::vec3(glm::radians(90.0f), 0, 0 ), glm::vec3(100, 100, 100 ));
+		m_transformQuad->SetParent(worldTransform);
+		m_transformMesh->SetParent(worldTransform);
 	}
 
 	void OnRender()
@@ -19,13 +23,13 @@ public:
 		
 		for (int displacement = -50; displacement <= 50; displacement++) // started at -50 since it need to be center at origin assuming(0,0) being origin
 		{
-			Renderer3D::DrawLine(m_transform1.GetTransformMatrix(), { displacement, 0, -50 }, { displacement, 0, 50 });
-			Renderer3D::DrawLine(m_transform1.GetTransformMatrix(), { -50, 0, displacement }, { 50, 0, displacement });
+			Renderer3D::DrawLine(m_transformMesh->GetTransformMatrix(), { displacement, 0, -50 }, { displacement, 0, 50 });
+			Renderer3D::DrawLine(m_transformMesh->GetTransformMatrix(), { -50, 0, displacement }, { 50, 0, displacement });
 		}
 
-		if(isTextureOn)
+		if (isTextureOn)
 		{
-			Renderer3D::DrawQuad(m_transform.GetTransformMatrix(), m_texture, tileFactor);
+			Renderer3D::DrawQuad(m_transformQuad->GetTransformMatrix(), m_texture, tileFactor);
 		}
 	}
 	
@@ -34,13 +38,17 @@ public:
 		isTextureOn = !isTextureOn;
 	}
 
+	std::shared_ptr<Transform> GetTransformMesh() { return m_transformMesh; }
+	std::shared_ptr<Transform> GetTransformQuad() { return m_transformQuad; }
+
 private:
 
 
 		std::shared_ptr<OpenGLTexture2D> m_texture;
 		float tileFactor = 100.0f;
-		Transform m_transform1 = Transform({ 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1 });
-		Transform m_transform = Transform({ 0, -0.01, 0 }, { glm::radians(90.0f), 0, 0 }, { 100, 100, 100 });
+
+		std::shared_ptr<Transform> m_transformMesh;
+		std::shared_ptr<Transform> m_transformQuad;
 		
 		bool isTextureOn = false;
 

@@ -161,6 +161,7 @@
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Core\Time.cpp" />
+    <ClCompile Include="src\Rendering\DirectionalLight.cpp" />
     <ClCompile Include="src\Rendering\Renderer3D.cpp" />
     <ClCompile Include="src\Tests\AlecPointLightTest.h" />
   </ItemGroup>
@@ -196,6 +197,7 @@
     <ClInclude Include="src\Rendering\Renderer3D.h" />
     <ClInclude Include="src\Rendering\Transform.h" />
     <ClInclude Include="src\Tests\PointLightTest.h" />
+    <ClInclude Include="src\Tests\RendererDirectionalLightTest.h" />
     <ClInclude Include="src\Tests\TextureTest.h" />
     <ClInclude Include="src\Tests\TriangleTest.h" />
     <ClInclude Include="src\Core\Time.h" />
