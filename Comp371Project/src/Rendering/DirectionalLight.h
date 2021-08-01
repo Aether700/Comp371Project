@@ -4,6 +4,7 @@
 #include "../GraphicsAPI/OpenGLShader.h"
 #include "../GraphicsAPI/OpenGLFramebuffer.h"
 #include "../GraphicsAPI/OpenGLTexture2D.h"
+#include "../Rendering/Renderer3D.h"
 
 #include <memory>
 
@@ -13,8 +14,8 @@ public:
 	DirectionalLight() : m_shadowMapID(0), m_framebuffer(0) { }
 
 	DirectionalLight(const glm::vec3& position, const glm::vec3& direction = { 0, 0, -1 },
-		const glm::vec4& color = { 1, 1, 1, 1 }, unsigned int size = 2048)
-		: m_color(color), m_position(position), m_direction(direction), m_size(size)
+		const glm::vec4& color = { 1, 1, 1, 1 }, unsigned int size = 2048, bool drawLightCube = true)
+		: m_color(color), m_position(position), m_direction(direction), m_size(size), m_drawLightCube(drawLightCube)
 		//m_framebuffer(std::make_shared<OpenGLFramebuffer>(size, size)) 
 	{
 		if (s_shader == nullptr)
@@ -48,6 +49,14 @@ public:
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glActiveTexture(GL_TEXTURE0);
 	}
+
+	void DrawLightCube()
+	{
+		if (m_drawLightCube)
+		{
+			Renderer3D::DrawVoxel(m_position, { 0, 0, 0 }, { 0.5f, 0.5f, 0.5f }); 
+		}
+	}
 	
 	std::shared_ptr<OpenGLTexture2D> GetShadowMap() const
 	{
@@ -60,6 +69,8 @@ public:
 		glm::mat4 lightView = glm::lookAt(m_position, m_position + m_direction, glm::vec3(0.0, 1.0, 0.0));
 		return lightProjection * lightView;
 	}
+
+
 
 	const glm::vec4& GetColor() const { return m_color; }
 
@@ -127,6 +138,7 @@ private:
 	glm::vec3 m_position;
 	glm::vec3 m_direction;
 	glm::vec4 m_color;
+	bool m_drawLightCube;
 	
 
 	//std::shared_ptr<OpenGLFramebuffer> m_framebuffer;

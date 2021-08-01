@@ -6,6 +6,7 @@
 #include "../GraphicsAPI/OpenGLVertexArray.h"
 #include "../GraphicsAPI/OpenGLTexture2D.h"
 #include "CameraController.h"
+#include "DirectionalLight.h"
 
 #include <array>
 
@@ -337,7 +338,7 @@ void Renderer3D::EndScene()
 		CleanUpAfterShadowMapGeneration();
 		*/
 		GenerateShadowMaps();
-		DrawVoxel(s_light->GetPosition(), { 0, 0, 0 }, {0.5f, 0.5f, 0.5f}); //draw light
+		DrawLights();
 		s_shader->Bind();
 		s_shader->SetFloat3("u_lightPos", s_light->GetPosition());
 		s_shader->SetMat4("u_lightSpaceMatrix", s_light->GetLightSpaceMatrix());
@@ -407,6 +408,14 @@ void Renderer3D::GenerateShadowMaps()
 		FlushBatch();
 	}
 	CleanUpAfterShadowMapGeneration();
+}
+
+void Renderer3D::DrawLights()
+{
+	for (unsigned int i = 0; i < s_directionalLightIndex; i++)
+	{
+		s_directionalLightArr[i].DrawLightCube();
+	}
 }
 
 void Renderer3D::DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
@@ -549,18 +558,12 @@ void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3&
 
 	DirectionalLight currLight(position, direction, lightColor);
 
-	std::string uniformName = "u_lightArr[";
-	uniformName += std::to_string(s_directionalLightIndex);
-	uniformName += "].";
-
 	s_shader->Bind();
-	s_shader->SetFloat4(uniformName + "color", currLight.GetColor());
-	s_shader->SetFloat3(uniformName + "position", currLight.GetPosition());
-	s_shader->SetFloat(uniformName + "shadowMapIndex", s_directionalLightIndex);
-	s_shader->SetMat4(uniformName + "lightSpaceMatrix", currLight.GetLightSpaceMatrix());
-	//default light space coords to origin (will be calculated on gpu)
-	s_shader->SetFloat4(uniformName + "lightSpaceFragCoords", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-
+	s_shader->SetFloat4("u_lightColors[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetColor());
+	s_shader->SetFloat3("u_lightPos[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetPosition());
+	s_shader->SetFloat("u_shadowMapIndices[" + std::to_string(s_directionalLightIndex) + "]", s_directionalLightIndex);
+	s_shader->SetMat4("u_lightSpaceMatrices[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetLightSpaceMatrix());
+	
 	s_directionalLightArr[s_directionalLightIndex] = std::move(currLight);
 	s_directionalLightIndex++;
 }

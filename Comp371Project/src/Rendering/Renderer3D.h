@@ -7,10 +7,12 @@
 #include "../GraphicsAPI/OpenGLVertexArray.h"
 #include "../GraphicsAPI/OpenGLBuffer.h"
 #include "../GraphicsAPI/OpenGLShader.h"
-#include "DirectionalLight.h"
+
 
 #include <unordered_map>
 #include <memory>
+
+class DirectionalLight;
 
 struct Material
 {
@@ -215,6 +217,8 @@ private:
 	static void AddShadowMapToShaders(const DirectionalLight& light);
 
 	static void GenerateShadowMaps();
+
+	static void DrawLights();
 
 	//helper function which loads a voxel into the data to pass to the gpu when the renderer flushes
 	static void UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,	
