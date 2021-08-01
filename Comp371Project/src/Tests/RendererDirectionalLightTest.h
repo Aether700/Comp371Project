@@ -40,7 +40,7 @@ public:
 	{
 		Renderer3D::DrawVoxel(m_cube.GetTransformMatrix(), m_geometryColor);
 		Renderer3D::DrawVoxel(m_plane.GetTransformMatrix(), m_geometryColor);
-		Renderer3D::AddDirectionalLight(m_staticLight, {0, -1, 0});
+		//Renderer3D::AddDirectionalLight(m_staticLight, {0, -1, 0});
 		Renderer3D::AddDirectionalLight(m_lightPos, { 0, -1, 0 });
 		//std::cout << "light pos = " << m_lightPos.x << ", " << m_lightPos.y << ", " << m_lightPos.z << "\n";
 	}
@@ -51,6 +51,6 @@ private:
 	glm::vec3 m_staticLight = { 3, 1, -3};
 
 	glm::vec3 m_lightPos = { -5, 2.0f, -3 };//{ 2.0f, 2.0f, -6.0f };
-	Transform m_cube = Transform({ 0, 0, -3 });
+	Transform m_cube = Transform({ 0, 0, -3 }, { 0, 0, 0 }, {1, 4, 5});
 	Transform m_plane = Transform({ 0, -3, -3 }, { 0, 0, 0 }, { 10, 0.5f, 10 });
 };

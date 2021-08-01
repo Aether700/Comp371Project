@@ -214,7 +214,7 @@ private:
 
 	static void CleanUpAfterShadowMapGeneration();
 
-	static void AddShadowMapToShaders(const DirectionalLight& light);
+	static void AddShadowMapToShaders();
 
 	static void GenerateShadowMaps();
 

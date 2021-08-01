@@ -34,11 +34,8 @@ int main()
 
 	//Add Scripts here   
 
-
-	Renderer3D::UseShadows(true);
-
-	Application::AddScript(new ModelManager());
-	//Application::AddScript(new RendererDirectionalLightTest());
+	//Application::AddScript(new ModelManager());
+	Application::AddScript(new RendererDirectionalLightTest());
 
 	///////////////////
 
