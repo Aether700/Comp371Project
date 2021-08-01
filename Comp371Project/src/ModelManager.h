@@ -23,7 +23,7 @@ public:
 	{
 		m_worldTransform = std::make_shared<Transform>();
 
-		Application::AddScript(new Axes());
+		Application::AddScript(new Axes(m_worldTransform));
 
 		AddModel(new JamilHModel(m_worldTransform));
 		AddModel(new JeanModel(m_worldTransform));
