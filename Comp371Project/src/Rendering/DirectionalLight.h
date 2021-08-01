@@ -10,6 +10,8 @@
 class DirectionalLight
 {
 public:
+	DirectionalLight() { }
+
 	DirectionalLight(const glm::vec3& position, const glm::vec3& direction = { 0, 0, -1 },
 		const glm::vec4& color = { 1, 1, 1, 1 }, unsigned int size = 2048)
 		: m_color(color), m_position(position), m_direction(direction), m_size(size)
@@ -56,6 +58,28 @@ public:
 
 	float GetFarPlane() const { return m_farPlane; }
 
+	DirectionalLight& operator=(const DirectionalLight& other) 
+	{
+		if (&other == this)
+		{
+			return *this;
+		}
+
+		glDeleteTextures(1, &m_shadowMapID);
+		glDeleteFramebuffers(1, &m_framebuffer);
+
+		m_framebuffer = other.m_framebuffer;
+		m_shadowMapID = other.m_shadowMapID;
+		m_size = other.m_size;
+		m_nearPlane = other.m_nearPlane;
+		m_farPlane = other.m_farPlane;
+		m_position = other.m_position;
+		m_direction = other.m_direction;
+		m_color = other.m_color;
+
+		return *this;
+	}
+
 private:
 	static std::shared_ptr<OpenGLShader> s_shader;
 
@@ -80,7 +104,7 @@ private:
 
 
 	float m_nearPlane = 1.0f;
-	float m_farPlane = 50.0f;//7.5f;
+	float m_farPlane = 50.0f;
 	glm::vec3 m_position;
 	glm::vec3 m_direction;
 	glm::vec4 m_color;

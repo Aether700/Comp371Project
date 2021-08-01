@@ -16,6 +16,8 @@ std::shared_ptr<OpenGLCubeMap> Renderer3D::s_defaultWhiteCubeMap;
 std::shared_ptr<OpenGLTexture2D> Renderer3D::s_defaultWhiteTexture;
 std::shared_ptr<OpenGLShader> Renderer3D::s_shader;
 bool Renderer3D::s_useShadows = false;
+DirectionalLight* Renderer3D::s_directionalLightArr;
+unsigned int Renderer3D::s_directionalLightIndex;
 
 std::shared_ptr<DirectionalLight> Renderer3D::s_light;
 
@@ -27,6 +29,8 @@ unsigned int RenderingBatch::s_maxTexture2DShadowMapSlots = RenderingBatch::s_ma
 unsigned int RenderingBatch::s_maxTexture2DSlots = RenderingBatch::s_maxTextureSlots / 4;
 unsigned int RenderingBatch::s_maxCubemapSlots = RenderingBatch::s_maxTextureSlots / 4;
 unsigned int RenderingBatch::s_maxCubemapShadowMapSlots = RenderingBatch::s_maxTextureSlots / 4;
+
+
 
 //rendering batch///////////////////////////////////////////////////////////////////
 
@@ -87,17 +91,18 @@ void RenderingBatch::Add(VertexData* vertices, unsigned int numVertices, unsigne
 int RenderingBatch::AddTexture2D(std::shared_ptr<OpenGLTexture2D> texture, unsigned int renderTarget)
 {
 	int textureIndex = 0;
-
+	bool found = false;
 	for (int i = 0; i < m_texture2DIndex; i++)
 	{
 		if (*texture == *m_texture2DSlots[i])
 		{
 			textureIndex = i;
+			found = true;
 			break;
 		}
 	}
 
-	if (textureIndex == 0 && textureIndex == m_texture2DIndex)
+	if (textureIndex == 0 && !found)
 	{
 		if (m_texture2DIndex == s_maxTexture2DSlots)
 		{
@@ -116,17 +121,18 @@ int RenderingBatch::AddTexture2D(std::shared_ptr<OpenGLTexture2D> texture, unsig
 int RenderingBatch::AddCubemap(std::shared_ptr<OpenGLCubeMap> cubemap, unsigned int renderTarget)
 {
 	int textureIndex = 0;
-
+	bool found = false;
 	for (int i = 0; i < m_cubemapIndex; i++)
 	{
 		if (*cubemap == *m_cubemapSlots[i])
 		{
 			textureIndex = i;
+			found = true;
 			break;
 		}
 	}
 
-	if (textureIndex == 0 && textureIndex == m_cubemapIndex)
+	if (textureIndex == 0 && !found)
 	{
 		if (m_cubemapIndex == s_maxCubemapSlots)
 		{
@@ -144,17 +150,18 @@ int RenderingBatch::AddCubemap(std::shared_ptr<OpenGLCubeMap> cubemap, unsigned 
 void RenderingBatch::AddTexture2DShadowMap(std::shared_ptr<OpenGLTexture2D> shadowMap)
 {
 	int textureIndex = 0;
-
+	bool found = false;
 	for (int i = 0; i < m_texture2DShadowMapIndex; i++)
 	{
 		if (*shadowMap == *m_texture2DShadowMapSlots[i])
 		{
 			textureIndex = i;
+			found = true;
 			break;
 		}
 	}
 
-	if (textureIndex == 0 && textureIndex == m_texture2DShadowMapIndex)
+	if (textureIndex == 0 && !found)
 	{
 		if (m_texture2DShadowMapIndex == s_maxTexture2DShadowMapSlots)
 		{
@@ -169,17 +176,18 @@ void RenderingBatch::AddTexture2DShadowMap(std::shared_ptr<OpenGLTexture2D> shad
 void RenderingBatch::AddCubemapShadowMap(std::shared_ptr<OpenGLCubeMap> shadowMap)
 {
 	int textureIndex = 0;
-
+	bool found = false;
 	for (int i = 0; i < m_cubemapShadowMapIndex; i++)
 	{
 		if (*shadowMap == *m_cubemapShadowMapSlots[i])
 		{
 			textureIndex = i;
+			found = true;
 			break;
 		}
 	}
 
-	if (textureIndex == 0 && textureIndex == m_cubemapShadowMapIndex)
+	if (textureIndex == 0 && !found)
 	{
 		if (m_cubemapShadowMapIndex == s_maxCubemapShadowMapSlots)
 		{
@@ -297,11 +305,13 @@ void Renderer3D::Init()
 	delete[] samplersCubemap;
 	delete[] samplers2DShadowMap;
 	delete[] samplersCubemapShadowMap;
+
+	s_directionalLightArr = new DirectionalLight[RenderingBatch::s_maxTexture2DShadowMapSlots];
 }
 
 void Renderer3D::Shutdown()
 {
-	//future shutdown code will go here
+	delete[] s_directionalLightArr;
 }
 
 void Renderer3D::BeginScene()
@@ -312,22 +322,28 @@ void Renderer3D::BeginScene()
 	s_shader->Bind();
 	s_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
 	s_shader->SetFloat3("u_camPos", Application::GetCameraController()->GetCamPos());
+
+	s_directionalLightIndex = 0;
 }
 
 void Renderer3D::EndScene()
 {
-	if (s_useShadows && s_light != nullptr)
+	if (s_useShadows && s_directionalLightIndex != 0)
 	{
+		/*
 		s_light->PrepareForShadowMapGeneration();
 		FlushBatch();
 		CleanUpAfterShadowMapGeneration();
+		*/
+		DirectionalLight* s_light = &s_directionalLightArr[0];
+		GenerateShadowMaps();
 		DrawVoxel(s_light->GetPosition(), { 0, 0, 0 }, {0.5f, 0.5f, 0.5f}); //draw light
 		s_shader->Bind();
 		s_shader->SetFloat3("u_lightPos", s_light->GetPosition());
 		s_shader->SetFloat("u_lightFarPlane", s_light->GetFarPlane());
 		s_shader->SetMat4("u_lightSpaceMatrix", s_light->GetLightSpaceMatrix());
 		s_shader->SetInt("u_useShadows", 1);
-		AddShadowMapToShaders(s_light);
+		AddShadowMapToShaders(*s_light);
 		FlushBatch();
 	}
 	else
@@ -373,14 +389,24 @@ void Renderer3D::CleanUpAfterShadowMapGeneration()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer3D::AddShadowMapToShaders(std::shared_ptr<DirectionalLight> light)
+void Renderer3D::AddShadowMapToShaders(const DirectionalLight& light)
 {
-	auto shadowMap = light->GetShadowMap();
+	auto shadowMap = light.GetShadowMap();
 
 	for (auto& pair : s_renderingBatches)
 	{
 		pair.second.AddTexture2DShadowMap(shadowMap);
 	}
+}
+
+void Renderer3D::GenerateShadowMaps()
+{
+	for (unsigned int i = 0; i < s_directionalLightIndex; i++)
+	{
+		s_directionalLightArr[i].PrepareForShadowMapGeneration();
+		FlushBatch();
+	}
+	CleanUpAfterShadowMapGeneration();
 }
 
 void Renderer3D::DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
@@ -519,7 +545,8 @@ void Renderer3D::DrawVertexData(unsigned int renderTarget, const glm::vec3& posi
 
 void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& lightColor)
 {
-	s_light = std::make_shared<DirectionalLight>(position, direction, lightColor);
+	s_directionalLightArr[s_directionalLightIndex] = DirectionalLight(position, direction, lightColor);
+	s_directionalLightIndex++;
 }
 
 const Renderer3DStatistics& Renderer3D::GetStats()
