@@ -66,7 +66,18 @@ public:
 	glm::mat4 GetLightSpaceMatrix()
 	{
 		glm::mat4 lightProjection = glm::ortho(-m_radius, m_radius, -m_radius, m_radius, m_nearPlane, m_farPlane);
-		glm::mat4 lightView = glm::lookAt(m_position, m_position + m_direction, glm::vec3(0.0, 1.0, 0.0));
+		//glm::mat4 lightView = glm::lookAt(m_position, m_position + m_direction, glm::vec3(0.0, 1.0, 0.0));
+
+		glm::vec3 up = { 0.0, 1.0, 0.0 };
+		//glm::lookAt doesn't know what to do if the center direction and up direction are parallel
+		//So we have to check if you want to look straight down or up (along the y axis)
+		if (m_direction.x == 0 && m_direction.z == 0)
+		{
+			up = { 1.0, 0.0, 0.0 };
+		}
+		glm::mat4 lightView = glm::lookAt(m_position, m_position + m_direction, up);
+
+
 		return lightProjection * lightView;
 	}
 
@@ -122,8 +133,11 @@ private:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_size, m_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		//specify the color used for border clamping
+		float clamp_color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, clamp_color);
 		// attach depth texture as FBO's depth buffer
 		glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_shadowMapID, 0);
