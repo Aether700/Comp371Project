@@ -185,7 +185,7 @@ float ShadowCalculationDirectionalLight(DirectionalLight light)
     //return texture(u_shadow2D[int(light.shadowMapIndex)], projCoords.xy).r;
 }
 
-vec4 CalculateLighting(vec4 baseColor, DirectionalLight light)
+vec4 CalculateDirectionalLight(vec4 baseColor, DirectionalLight light)
 {
     vec3 normal = normalize(v_normal);
     
@@ -207,8 +207,74 @@ vec4 CalculateLighting(vec4 baseColor, DirectionalLight light)
     float shadow = ShadowCalculationDirectionalLight(light);                      
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * baseColor.xyz;    
     
-    return vec4(lighting, 1);
+    return vec4(lighting, 0);
     //return vec4(shadow, 0, 0, 1);
+}
+
+//not done in a loop or else we go over the 
+//maximum number of varying values
+vec4 CalculateLighting(vec4 baseColor)
+{
+    vec4 result = vec4(0, 0, 0, 1);
+    
+    //index 0
+    if (v_numLights <= 0)
+    {
+        return result;
+    }
+    result += CalculateDirectionalLight(baseColor, v_lightArr[0]);
+    
+    //index 1
+    if (v_numLights <= 1)
+    {
+        return result;
+    }
+    result += CalculateDirectionalLight(baseColor, v_lightArr[1]);
+    
+    //index 2
+    if (v_numLights <= 2)
+    {
+        return result;
+    }
+    result += CalculateDirectionalLight(baseColor, v_lightArr[2]);
+
+    /*
+    //index 3
+    if (v_numLights <= 3)
+    {
+        return result;
+    }
+    result += CalculateDirectionalLight(baseColor, v_lightArr[3]);
+
+    //index 4
+    if (v_numLights <= 4)
+    {
+        return result;
+    }
+    result += CalculateDirectionalLight(baseColor, v_lightArr[4]);
+
+    //index 5
+    if (v_numLights <= 5)
+    {
+        return result;
+    }
+    result += CalculateDirectionalLight(baseColor, v_lightArr[5]);
+
+    //index 6
+    if (v_numLights <= 6)
+    {
+        return result;
+    }
+    result += CalculateDirectionalLight(baseColor, v_lightArr[6]);
+
+    //index 7
+    if (v_numLights <= 7)
+    {
+        return result;
+    }
+    result += CalculateDirectionalLight(baseColor, v_lightArr[7]);
+    */
+    return result;
 }
 
 void main()
@@ -225,7 +291,7 @@ void main()
     
     if (u_useShadows)
     {
-        color = CalculateLighting(baseColor, v_lightArr[0]);
+        color = CalculateLighting(baseColor);
     }
     else
     {
