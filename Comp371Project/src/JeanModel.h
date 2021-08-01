@@ -40,7 +40,8 @@ public:
 			//transform->scale.z = 0.25f;// to make the wall thinner
 			RenderWall(m_wallCubes[count]->GetTransformMatrix());
 		}
-		Renderer3D::AddDirectionalLight(ModelPosition() + glm::vec3(0,30,0) ,glm::vec3(0,-1,0));
+		glm::vec3 ModelPos = glm::vec3(GetModelTransform()->GetTransformMatrix()[3][0], GetModelTransform()->GetTransformMatrix()[3][1], GetModelTransform()->GetTransformMatrix()[3][2]);
+		Renderer3D::AddDirectionalLight(ModelPos + glm::vec3(0,30,0) ,glm::vec3(0,-1,0));
 	}
 
 	virtual void Shuffle() override
@@ -89,12 +90,6 @@ public:
 	{
 		Renderer3D::DrawVoxel(transform, wallTexture, 1.0f, color);
 
-	}
-
-	glm::vec3 ModelPosition()
-	{
-		glm::mat4 modelTransform = GetModelTransform()->GetTransformMatrix();
-		return glm::vec3(modelTransform[3][0], modelTransform[3][1], modelTransform[3][2]);
 	}
 
 
