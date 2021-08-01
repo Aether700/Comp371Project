@@ -20,8 +20,6 @@ public:
 			transform = std::make_shared<Transform>();
 			transform->SetParent(GetWallTransform());
 		}
-
-
 	}
 
 	void OnStart()
@@ -42,6 +40,7 @@ public:
 			//transform->scale.z = 0.25f;// to make the wall thinner
 			RenderWall(m_wallCubes[count]->GetTransformMatrix());
 		}
+		Renderer3D::AddDirectionalLight(ModelPosition() + glm::vec3(0,30,0) ,glm::vec3(0,-1,0));
 	}
 
 	virtual void Shuffle() override
@@ -92,6 +91,13 @@ public:
 
 	}
 
+	glm::vec3 ModelPosition()
+	{
+		glm::mat4 modelTransform = GetModelTransform()->GetTransformMatrix();
+		return glm::vec3(modelTransform[3][0], modelTransform[3][1], modelTransform[3][2]);
+	}
+
+
 private:
 
 	std::shared_ptr<Transform> m_cubeModel[16];
@@ -123,10 +129,7 @@ private:
 		m_cubeModel[13]->position = { 2, -1, 1 };
 		m_cubeModel[14]->position = { 2, -2, -1 };
 		m_cubeModel[15]->position = { 3, -1, 1 };
-
-
 	}
-
 
 	void SetWallCubesTransform(char orientation)
 	{
@@ -142,7 +145,6 @@ private:
 				}
 			}
 		}
-
 	}
 
 	bool checkWallHolePlacement(int axis1, int axis2, char orientation)
@@ -182,7 +184,6 @@ private:
 		}
 		return true;
 	}
-
 
 	int wallcount = 0;
 	glm::vec4 color = { 52.0f / 255.0f, 107.0f / 255.0f, 194.0f / 255.0f, 1.0f };
