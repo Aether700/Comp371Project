@@ -9,18 +9,20 @@ layout(location = 4) in vec3 a_diffuse;
 layout(location = 5) in vec3 a_specular;
 layout(location = 6) in float a_shininess;
 
+uniform mat4 u_lightSpaceMatrix;
+
 void main()
 {
-    gl_Position = vec4(a_position, 1.0);
+    gl_Position = u_lightSpaceMatrix * vec4(a_position, 1.0);
 }
-
-#type geometry
+/*
+#tipe geometry
 #version 330 core
 
 layout (triangles) in;
 layout (triangle_strip, max_vertices=18) out;
 
-uniform mat4 u_lightSpaceMatrices[6];
+uniform mat4 u_shadowMatrices[6];
 
 //output of the geometry shader (will output more than one)
 out vec4 v_fragPos;
@@ -33,30 +35,50 @@ void main()
         for(int i = 0; i < 3; ++i) // for each triangle's vertices
         {
             v_fragPos = gl_in[i].gl_Position;
-            gl_Position = u_lightSpaceMatrices[face] * v_fragPos;
+            gl_Position = u_shadowMatrices[face] * v_fragPos;
             EmitVertex();
         }    
         EndPrimitive();
     }
 } 
+*/
 
 #type fragment
 #version 330 core
 
-//take the output of the geometry shader as input
-in vec4 v_fragPos;
+out vec4 color;
 
+//take the output of the geometry shader as input
+//in vec4 v_fragPos;
+
+in vec4 v_pos;
 
 uniform vec3 u_lightPos;
 uniform float u_farPlane;
 
+// required when using a perspective projection matrix
+float LinearizeDepth(float depth)
+{
+    float near_plane = 0.01f;
+    float far_plane = 400.0f;
+    float z = depth * 2.0 - 1.0; // Back to NDC 
+    return (2.0 * near_plane * far_plane) / (far_plane + near_plane - z * (far_plane - near_plane));	
+}
+
 void main()
 {
-    float lightDistance = length(v_fragPos.xyz - u_lightPos);
+    /*
+    vec3 fragCoord = vec3(v_fragPos.x, v_fragPos.y, v_fragPos.z);
+    float lightDistance = length(fragCoord - u_lightPos);
     
     // map to [0,1] range by dividing by u_farPlane
     lightDistance = lightDistance / u_farPlane;
     
     // write this as modified depth
     gl_FragDepth = lightDistance; 
+    color = vec4(vec3(lightDistance, lightDistance, lightDistance), 1);
+    */
+
+    //gl_FragDepth = v_fragPosLightSpace.z;
+    gl_FragDepth = gl_FragCoord.z;
 }

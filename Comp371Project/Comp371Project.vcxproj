@@ -175,6 +175,7 @@
     <ClInclude Include="src\JeanModel.h" />
     <ClInclude Include="src\MadelaineModel.h" />
     <ClInclude Include="src\ModelManager.h" />
+    <ClInclude Include="src\Rendering\DirectionalLight.h" />
     <ClInclude Include="src\Tests\CameraControllerTestScene.h" />
     <ClInclude Include="src\Core\Debug.h" />
     <ClInclude Include="src\Tests\CubeRenderingTest.h" />

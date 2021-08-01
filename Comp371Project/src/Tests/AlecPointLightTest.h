@@ -25,7 +25,15 @@ struct LightVertexData
 	Material mat;
 };
 
+struct PointLight
+{
+	Transform transform;
+	float farPlane;
+	float nearPlane;
 
+	PointLight(glm::vec3 pos, float far, float near) 
+		: transform(pos), farPlane(far), nearPlane(near) { }
+};
 
 class AlecPointLightTest : public Script
 {
@@ -33,8 +41,6 @@ private:
 	unsigned int quadVAO = 0;
 	unsigned int quadVBO;
 	const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
-	unsigned int depthMapFBO;
-	unsigned int depthMap;
 	void renderQuad()
 	{
 		if (quadVAO == 0)
@@ -68,41 +74,15 @@ public:
 		Application::SetBackgroundColor({ 1, 1, 1, 1 });
 		PrepareCubeAndPlane();
 
-		m_framebuffer = std::make_shared<OpenGLFramebuffer>(1024, 1024, true);
-		m_framebuffer->Unbind();
-
 		m_shader = std::make_shared<OpenGLShader>("Resources/Shaders/PointLightShader.glsl");
+		m_lightShader = std::make_shared<OpenGLShader>("Resources/Shaders/LightPos.glsl");
 		m_shadowMapShader = std::make_shared<OpenGLShader>("Resources/Shaders/ShadowMap.glsl");
-		GenerateShadowMap(m_shadowMapShader, m_framebuffer, m_light.position);
+		PrepareShadowMap();
 		//SetPointLight(m_shader, m_light.position, {1, 1, 1, 1}, 0);
 
-		m_shader->Bind();
-		m_shader->SetFloat3("lightPos", m_light.position);
-		m_shader->SetInt("shadows", 0);
-		m_shader->SetFloat("far_plane", Application::GetCamera()->GetPerspectiveFarClip());
 		m_shader->SetInt("u_shadowMap", 0);
 
-		m_shadowMapDebugShader = std::make_shared<OpenGLShader>("Resources/Shaders/ShadowMapDebugger.glsl");
-		m_shadowMapDebugShader->SetInt("u_shadowMap", 0);
-
-
-		// configure depth map FBO
-		// -----------------------
-		glGenFramebuffers(1, &depthMapFBO);
-		// create depth texture
-		glGenTextures(1, &depthMap);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		// attach depth texture as FBO's depth buffer
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		
 	}
 
 	
@@ -110,24 +90,24 @@ public:
 	{
 		float lightSpeed = 5.0f;
 
-		if (Input::IsKeyPressed(GLFW_KEY_LEFT))
+		if (Input::IsKeyPressed(GLFW_KEY_UP))
 		{
-			m_light.position.z -= lightSpeed * Time::GetDeltaTime();
+			m_light.transform.position.z -= lightSpeed * Time::GetDeltaTime();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_DOWN))
 		{
-			m_light.position.z += lightSpeed * Time::GetDeltaTime();
+			m_light.transform.position.z += lightSpeed * Time::GetDeltaTime();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_RIGHT))
 		{
-			m_light.position.x += lightSpeed * Time::GetDeltaTime();
+			m_light.transform.position.x += lightSpeed * Time::GetDeltaTime();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_LEFT))
 		{
-			m_light.position.x -= lightSpeed * Time::GetDeltaTime();
+			m_light.transform.position.x -= lightSpeed * Time::GetDeltaTime();
 		}
 	}
 
@@ -136,35 +116,9 @@ public:
 	{
 		int windowWidth, windowHeight;
 		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
-		/*
-		float near_plane = 0.1f;
-		float far_plane = 7.5f;
-		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-		glm::mat4 lightView = glm::lookAt(m_light.position, m_cube.position, glm::vec3(0.0, 1.0, 0.0));
-		m_lightSpaceMatrix = lightProjection * lightView;
-		*/
 
-		float near_plane = 1.0f, far_plane = 7.5f;
-		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-		glm::mat4 lightView = glm::lookAt(m_light.position, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-		m_lightSpaceMatrix = lightProjection * lightView;
-
-		//PrintMat4(m_lightSpaceMatrix);
-
-		m_shadowMapShader->Bind();
-		m_shadowMapShader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
-
-		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		glActiveTexture(GL_TEXTURE0);
-
-		//render scene
-		m_vao->Bind();
-		m_ibo->Bind();
-		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+		GenerateShadowMap();
+		
 		// reset viewport
 		glViewport(0, 0, windowWidth, windowHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -175,20 +129,22 @@ public:
 		glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camTransform;
 
 		m_shader->Bind();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
-		m_shader->SetInt("u_shadowMap", 0);
-		m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
-		m_shader->SetFloat3("viewPos", Application::GetCameraController()->GetCamPos());
-		m_shader->SetFloat3("lightPos", m_light.position);
-		m_shader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
 
+		m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
+		m_shader->SetFloat3("u_viewPos", Application::GetCameraController()->GetCamPos());
+		m_shader->SetFloat3("u_lightPos", m_light.transform.position);
+		//m_shader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
+		m_shader->SetFloat("u_farPlane", m_light.farPlane);
+		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemap);
 
 		m_vao->Bind();
 		m_ibo->Bind();
 		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-
+		//m_lightShader->Bind();
+		//m_lightShader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
 		//RenderLight();
 
 		/*
@@ -220,6 +176,7 @@ private:
 
 	void RenderLight()
 	{
+		m_lightShader->Bind();
 		m_vaoLight->Bind();
 		m_iboLight->Bind();
 		glDrawElements(GL_TRIANGLES, m_iboLight->GetCount(), GL_UNSIGNED_INT, nullptr);
@@ -339,8 +296,8 @@ private:
 		//light
 		for (int i = 0; i < numVertices * 2; i += 2)
 		{
-			lightPosAndNormal[index].position = m_light.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
-			lightPosAndNormal[index].normal = m_light.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 0);
+			lightPosAndNormal[index].position = m_light.transform.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
+			lightPosAndNormal[index].normal = m_light.transform.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 0);
 			lightPosAndNormal[index].mat = m_defaultMat;
 			index++;
 		}
@@ -360,6 +317,7 @@ private:
 		m_vboLight->SetLayout({
 			{ShaderDataType::Float3, "position"},
 			{ShaderDataType::Float3, "normal"},
+			{ShaderDataType::Float2, "textureCoords"},
 			{ShaderDataType::Float3, "ambiant"},
 			{ShaderDataType::Float3, "diffuse"},
 			{ShaderDataType::Float3, "specular"},
@@ -429,54 +387,73 @@ private:
 		shader->SetFloat4((ss.str() + "color").c_str(), color);
 	}
 
-	void GenerateShadowMap(std::shared_ptr<OpenGLShader>& shader,
-		std::shared_ptr<OpenGLFramebuffer>& framebuffer, glm::vec3 position)
+	void GenerateShadowMap()
 	{
-		//to avoid peter panning we cull the front face when generating the 
-		//shadow map (works only for solid objects like cubes)
-		glCullFace(GL_FRONT);
+		glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)SHADOW_HEIGHT / (float)SHADOW_HEIGHT,
+			m_light.nearPlane, m_light.farPlane);
+		std::vector<glm::mat4> shadowTransforms;
+		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.transform.position, m_light.transform.position
+			+ glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.transform.position, m_light.transform.position
+			+ glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.transform.position, m_light.transform.position
+			+ glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.transform.position, m_light.transform.position
+			+ glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.transform.position, m_light.transform.position
+			+ glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.transform.position, m_light.transform.position
+			+ glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 
 
-		//might need to change since currently calculating as a directional light
-		int windowWidth, windowHeight;
-		glfwGetWindowSize(Application::GetWindow(), &windowWidth, &windowHeight);
-		glm::mat4 lookAtMat = glm::lookAt(position, m_cube.position, { 0, 1, 0 });
-		glm::mat4 perspectiveMat = glm::perspective(glm::radians(90.0f), (float)windowWidth / (float)windowHeight,
-			Application::GetCamera()->GetPerspectiveNearClip(), Application::GetCamera()->GetPerspectiveFarClip());
-		m_lightSpaceMatrix = perspectiveMat * lookAtMat;
-
-		//std::cout << position.x << ", " << position.y << ", " << position.z << "\n\n";
-		//PrintMat4(lookAtMat);
-		shader->Bind();
-		shader->SetMat4("u_lightSpaceMatrix", m_lightSpaceMatrix);
-
-		//store the current window width and height and change the 
-		//viewport size to fit the whole shadow map texture
-		glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
-
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 		glClear(GL_DEPTH_BUFFER_BIT);
-		glActiveTexture(GL_TEXTURE0);
-		framebuffer->Bind();
-		glBindTexture(GL_TEXTURE_2D, framebuffer->GetDepthAttachment());
+		m_shadowMapShader->Bind();
+		for (unsigned int i = 0; i < 6; ++i)
+			m_shadowMapShader->SetMat4("u_lightSpaceMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+		m_shadowMapShader->SetFloat("u_farPlane", m_light.farPlane);
+		m_shadowMapShader->SetFloat3("u_lightPos", m_light.transform.position);
 
-		//render the scene
-		shader->Bind();
 		m_vao->Bind();
 		m_ibo->Bind();
 		glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-		////////////////////
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 
-		//revert the cull face settings and the viewport size to their previous values for the actual rendering
-		framebuffer->Unbind();
-		glViewport(0, 0, windowWidth, windowHeight);
-		glCullFace(GL_BACK);
+	void PrepareShadowMap()
+	{
+		glGenFramebuffers(1, &m_fbo);
+		// create depth cubemap texture
+		glGenTextures(1, &m_cubemap);
+		
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemap);
+		for (unsigned int i = 0; i < 6; ++i)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
+				SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		}
+		
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		
+		// attach depth texture as FBO's depth buffer
+		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_cubemap, 0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	std::shared_ptr<OpenGLVertexArray> m_vao;
 	std::shared_ptr<OpenGLVertexBuffer> m_vbo;
 	std::shared_ptr<OpenGLIndexBuffer> m_ibo;
 	std::shared_ptr<OpenGLShader> m_shader;
+	std::shared_ptr<OpenGLShader> m_lightShader;
 	std::shared_ptr<OpenGLShader> m_shadowMapShader;
 	std::shared_ptr<OpenGLShader> m_shadowMapDebugShader;
 
@@ -490,7 +467,7 @@ private:
 
 	Transform m_cube = Transform({ 0, 0, -3 });
 	Transform m_plane = Transform({ 0, -3, -3 }, { 0, 0, 0 }, { 10, 0.5f, 10 });
-	Transform m_light = Transform({ 2.0f, 2.0f, -6.0f }, { 0, 0, 0 }, { 0.1f, 0.1f, 0.1f });
+	PointLight m_light = PointLight({ 0, 2, -3.0f }, 1, 25);
 
 	Material m_defaultMat = { {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {1, 1, 1}, 32 };
 	Material m_testMat = { {0.1f, 0.0f, 0.0f}, {0.5f, 0.0f, 0.0f}, {0.75f, 0, 0}, 32 };
