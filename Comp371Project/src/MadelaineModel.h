@@ -5,7 +5,7 @@ class MadelaineModel : public Model
 {
 public:
 
-	MadelaineModel()
+	MadelaineModel(std::shared_ptr<Transform> worldTransform) : Model(worldTransform)
 	{
 		for(Transform& t : m_cubes)
 		{

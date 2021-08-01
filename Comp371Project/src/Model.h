@@ -34,11 +34,13 @@ public:
 	}
 
 protected:
-	Model() : m_modelTransform(std::make_shared<Transform>()), 
+	Model(std::shared_ptr<Transform> worldTransform) : m_modelTransform(std::make_shared<Transform>()), 
 		m_wallTransform(std::make_shared<Transform>()), m_transform(std::make_shared<Transform>())
 	{
 		m_modelTransform->SetParent(m_transform);
 		m_wallTransform->SetParent(m_transform);
+		m_transform->SetParent(worldTransform);
+
 	}
 
 	//rendering function to use inside the models so that we can change the rendering 
