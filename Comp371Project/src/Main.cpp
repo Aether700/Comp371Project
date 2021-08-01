@@ -13,13 +13,19 @@
 
 /*Task seperation
 * 
-* Application/Script framework, camera + camera controller, batch renderer (Jamil Hanachian)
+* Lighting and Shadows (Jamil Hanachian, Alec, Madelaine, Jean)
 * 
-* Coordinate axis (Alec, Jamil Hirsh)
+* Textures framework (Jamil Hanachian, Madelaine)
 * 
-* Model Manager (Madelaine, Jamil Hanachian)
+* Grid Tiles (Jean)
 * 
-* Grid (Jean)
+* World Transform (Jean)
+* 
+* Camera Tilt, model reset (Alec)
+* 
+* Translation and rotations of the model (Jean)
+* 
+* Window resize (Jamil Hanachian)
 * 
 */
 
@@ -34,8 +40,7 @@ int main()
 
 	//Add Scripts here   
 
-	//Application::AddScript(new ModelManager());
-	Application::AddScript(new RendererDirectionalLightTest());
+	Application::AddScript(new ModelManager());
 
 	///////////////////
 
