@@ -328,19 +328,18 @@ void Renderer3D::BeginScene()
 
 void Renderer3D::EndScene()
 {
-	if (s_useShadows && s_directionalLightIndex != 0)
+	if (s_useShadows /*&& s_directionalLightIndex != 0*/)
 	{
+		DirectionalLight* s_light = &s_directionalLightArr[0];
 		/*
 		s_light->PrepareForShadowMapGeneration();
 		FlushBatch();
 		CleanUpAfterShadowMapGeneration();
 		*/
-		DirectionalLight* s_light = &s_directionalLightArr[0];
 		GenerateShadowMaps();
 		DrawVoxel(s_light->GetPosition(), { 0, 0, 0 }, {0.5f, 0.5f, 0.5f}); //draw light
 		s_shader->Bind();
 		s_shader->SetFloat3("u_lightPos", s_light->GetPosition());
-		s_shader->SetFloat("u_lightFarPlane", s_light->GetFarPlane());
 		s_shader->SetMat4("u_lightSpaceMatrix", s_light->GetLightSpaceMatrix());
 		s_shader->SetInt("u_useShadows", 1);
 		AddShadowMapToShaders(*s_light);
