@@ -140,9 +140,6 @@ private:
 	glm::vec4 m_color;
 	bool m_drawLightCube;
 	
-
-	//std::shared_ptr<OpenGLFramebuffer> m_framebuffer;
-
 	unsigned int m_framebuffer;
 	unsigned int m_shadowMapID;
 	unsigned int m_size;

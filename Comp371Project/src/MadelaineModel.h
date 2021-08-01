@@ -35,7 +35,7 @@ public:
 		{
 			if (!(t.position.x == 0 && t.position.y == 0 && t.position.z == 0))
 			{
-				RenderWall(t.GetTransformMatrix(), m_color);
+				RenderWall(t.GetTransformMatrix());
 			}
 		}
 	}

@@ -38,7 +38,11 @@ public:
 		{
 			RenderWall(m_wallCubes[i]->GetTransformMatrix());
 		}
-	}
+
+		//draw light
+		Renderer3D::AddDirectionalLight(GetModelPosition() + glm::vec3(0, 30, 0), {0, -1, 0});
+		std::cout << GetModelPosition().x << ", " << GetModelPosition().y << ", " << GetModelPosition().z << "\n";
+ 	}
 
 	//shuffles the cube as per the bonus marks requirements of the assignment
 	virtual void Shuffle() override
@@ -73,6 +77,12 @@ protected:
 	virtual void RenderWallWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
 	{
 		Renderer3D::DrawVoxel(transform, wallTexture, 1, color);
+	}
+
+	glm::vec3 GetModelPosition()
+	{
+		glm::mat4 transformMatrix = GetModelTransform()->GetTransformMatrix();
+		return { transformMatrix[3][0], transformMatrix[3][1], transformMatrix[3][2] };
 	}
 
 private:

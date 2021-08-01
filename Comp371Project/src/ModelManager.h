@@ -311,6 +311,17 @@ public:
 			m_worldTransform->rotation.y += m_translationSpeed * Time::GetDeltaTime();
 		}
 		
+		if (m_currShadowToggle >= m_toggleShadowsCooldown && Input::IsKeyPressed(GLFW_KEY_N))
+		{
+			m_usesShadows = !m_usesShadows;
+			m_currShadowToggle = 0.0f;
+		}
+		else if (m_currShadowToggle < m_toggleShadowsCooldown)
+		{
+			m_currShadowToggle += Time::GetDeltaTime();
+		}
+
+		Renderer3D::UseShadows(m_usesShadows);
 	}
 
 private:
@@ -379,12 +390,16 @@ private:
 	float m_currTextureTime = 0.0f;
 
 	float m_toggleWorlMovementCooldown = 0.2f;
-	float m_currWorlMovementToggle = 0.0f;
+	float m_currWorldMovementToggle = 0.0f;
+
+	float m_toggleShadowsCooldown = 0.2f;
+	float m_currShadowToggle = 0.0f;
 
 	Movement m_currMovementMode = Movement::Rotation;
 	bool isOn = false;
 	bool isContinuos = false;
 	bool isWorldMovement = false;
+	bool m_usesShadows = false;
 
 	std::shared_ptr<Transform> m_worldTransform;
 

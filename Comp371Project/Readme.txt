@@ -26,11 +26,13 @@ Model(toggle with m to activated)
 - use O to make a small step in z
 - use I to make a continuous step in z
 
-- Toggle Texture with X
-
 world
 - use WASD to move the work
-- use "9" and "0" to rotate the work clock and anticlockwise
+- use "9" and "0" to rotate the world clockwise and anticlockwise
+
+General:
+- Toggle Texture with X
+- n to toggle shadows
 
 Features:
 
