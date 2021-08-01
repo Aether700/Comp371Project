@@ -27,7 +27,7 @@ public:
 			Renderer3D::DrawLine(m_transformMesh->GetTransformMatrix(), { -50, 0, displacement }, { 50, 0, displacement });
 		}
 
-		if(isTextureOn)
+		if (isTextureOn)
 		{
 			Renderer3D::DrawQuad(m_transformQuad->GetTransformMatrix(), m_texture, tileFactor);
 		}

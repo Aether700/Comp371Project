@@ -244,6 +244,8 @@ void RenderingBatch::ResetBatch()
 	m_texture2DShadowMapIndex = 0;
 	m_cubemapIndex = 0;
 	m_cubemapShadowMapIndex = 0;
+	m_vertexDataArr.clear();
+	m_indicesArr.clear();
 }
 
 //Renderer3D///////////////////////////////////////////////////

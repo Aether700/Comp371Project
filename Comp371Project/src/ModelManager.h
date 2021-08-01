@@ -23,6 +23,8 @@ public:
 	{
 		m_worldTransform = std::make_shared<Transform>();
 
+		Application::AddScript(new Axes());
+
 		AddModel(new JamilHModel(m_worldTransform));
 		AddModel(new JeanModel(m_worldTransform));
 		AddModel(new MadelaineModel(m_worldTransform));
@@ -281,32 +283,26 @@ public:
 
 		if (Input::IsKeyPressed(GLFW_KEY_UP))
 		{
-		
 			m_worldTransform->position.z += m_translationSpeed * Time::GetDeltaTime();
-	
 		}
+
 		if (Input::IsKeyPressed(GLFW_KEY_DOWN))
 		{
-
 			m_worldTransform->position.z -= m_translationSpeed * Time::GetDeltaTime();
-
 		}
+
 		if (Input::IsKeyPressed(GLFW_KEY_LEFT))
 		{
-
 			m_worldTransform->position.x -= m_translationSpeed * Time::GetDeltaTime();
-
 		}
+
 		if (Input::IsKeyPressed(GLFW_KEY_RIGHT))
 		{
-	
 			m_worldTransform->position.x += m_translationSpeed * Time::GetDeltaTime();
-		
 		}
 		
 		if (Input::IsKeyPressed(GLFW_KEY_9))
 		{
-
 			m_worldTransform->rotation.y -= m_translationSpeed * Time::GetDeltaTime();
 		}
 
