@@ -56,7 +56,6 @@ uniform sampler2D[8] u_shadow2D;
 uniform samplerCube[8] u_cubeMapShadowMap;
 
 uniform vec3 u_lightPos;
-uniform float u_lightFarPlane;
 uniform vec3 u_camPos;
 
 uniform bool u_useShadows;
@@ -81,8 +80,6 @@ float ShadowCalculationDirectionalLight(vec4 fragPosLightSpace, int shadowMapInd
     vec3 lightDir = normalize(u_lightPos - v_fragPos);
     float bias = 0.03f;
     
-    // check whether current frag pos is in shadow
-    // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
     // PCF
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(u_shadow2D[shadowMapIndex], 0);
@@ -126,7 +123,7 @@ vec4 CalculateLighting(vec4 baseColor, vec4 lightColor)
     float shadow = ShadowCalculationDirectionalLight(v_lightSpaceCoords, 0);                      
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * baseColor.xyz;    
     
-    return vec4(lighting, 1.0);
+    return vec4(lighting, 1);
     //return vec4(shadow, 0, 0, 1);
 }
 

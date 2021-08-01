@@ -10,7 +10,7 @@
 class DirectionalLight
 {
 public:
-	DirectionalLight() { }
+	DirectionalLight() : m_shadowMapID(0), m_framebuffer(0) { }
 
 	DirectionalLight(const glm::vec3& position, const glm::vec3& direction = { 0, 0, -1 },
 		const glm::vec4& color = { 1, 1, 1, 1 }, unsigned int size = 2048)
@@ -27,8 +27,15 @@ public:
 
 	~DirectionalLight()
 	{
-		glDeleteTextures(1, &m_shadowMapID);
-		glDeleteFramebuffers(1, &m_framebuffer);
+		if (m_shadowMapID != 0)
+		{
+			glDeleteTextures(1, &m_shadowMapID);
+		}
+
+		if (m_framebuffer != 0)
+		{
+			glDeleteFramebuffers(1, &m_framebuffer);
+		}
 	}
 
 	void PrepareForShadowMapGeneration()
@@ -58,15 +65,22 @@ public:
 
 	float GetFarPlane() const { return m_farPlane; }
 
-	DirectionalLight& operator=(const DirectionalLight& other) 
+	DirectionalLight& operator=(DirectionalLight&& other) noexcept
 	{
 		if (&other == this)
 		{
 			return *this;
 		}
 
-		glDeleteTextures(1, &m_shadowMapID);
-		glDeleteFramebuffers(1, &m_framebuffer);
+		if (m_shadowMapID != 0)
+		{
+			glDeleteTextures(1, &m_shadowMapID);
+		}
+
+		if (m_framebuffer != 0)
+		{
+			glDeleteFramebuffers(1, &m_framebuffer);
+		}
 
 		m_framebuffer = other.m_framebuffer;
 		m_shadowMapID = other.m_shadowMapID;
@@ -76,6 +90,9 @@ public:
 		m_position = other.m_position;
 		m_direction = other.m_direction;
 		m_color = other.m_color;
+
+		other.m_shadowMapID = 0;
+		other.m_framebuffer = 0;
 
 		return *this;
 	}
