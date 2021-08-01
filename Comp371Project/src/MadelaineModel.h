@@ -26,11 +26,13 @@ public:
 
 	void OnRender()
 	{
+		//draw object
 		for (Transform& t : m_cubes)
 		{
 			RenderCube(t.GetTransformMatrix(), m_color);
 		}
 
+		//draw wall
 		for (Transform& t : m_wall)
 		{
 			if (!(t.position.x == 0 && t.position.y == 0 && t.position.z == 0))
@@ -38,6 +40,10 @@ public:
 				RenderWall(t.GetTransformMatrix());
 			}
 		}
+		
+		//draw light above model
+		glm::vec3 temp = (GetModelTransform()->GetTransformMatrix())[3];
+		Renderer3D::AddDirectionalLight({ temp[0],temp[1] +30 ,temp[2] }, { 0, -1, 0 }, { 1,1,1,1 });
 	}
 
 	//implements the bonus mechanic of shuffling the model
