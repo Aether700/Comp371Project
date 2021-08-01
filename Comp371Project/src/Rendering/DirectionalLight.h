@@ -23,6 +23,11 @@ public:
 		PrepareShadowMap();
 	}
 
+	~DirectionalLight()
+	{
+		glDeleteTextures(1, &m_shadowMapID);
+		glDeleteFramebuffers(1, &m_framebuffer);
+	}
 
 	void PrepareForShadowMapGeneration()
 	{
@@ -49,6 +54,8 @@ public:
 
 	const glm::vec3& GetPosition() const { return m_position; }
 
+	float GetFarPlane() const { return m_farPlane; }
+
 private:
 	static std::shared_ptr<OpenGLShader> s_shader;
 
@@ -72,8 +79,8 @@ private:
 	}
 
 
-	float m_nearPlane = /*1.0f;*/1.0f;
-	float m_farPlane = /*100.0f;*/7.5f;
+	float m_nearPlane = 1.0f;
+	float m_farPlane = 50.0f;//7.5f;
 	glm::vec3 m_position;
 	glm::vec3 m_direction;
 	glm::vec4 m_color;

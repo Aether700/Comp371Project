@@ -36,9 +36,9 @@ int main()
 
 	Renderer3D::UseShadows(false);
 
-	Application::AddScript(new ModelManager());
+	//Application::AddScript(new ModelManager());
 	//Application::AddScript(new AlecPointLightTest());
-	//Application::AddScript(new RendererDirectionalLightTest());
+	Application::AddScript(new RendererDirectionalLightTest());
 
 	///////////////////
 

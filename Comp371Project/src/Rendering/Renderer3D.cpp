@@ -161,7 +161,7 @@ void RenderingBatch::AddTexture2DShadowMap(std::shared_ptr<OpenGLTexture2D> shad
 			assert(false);
 		}
 
-		m_texture2DShadowMapSlots[m_texture2DIndex] = shadowMap;
+		m_texture2DShadowMapSlots[m_texture2DShadowMapIndex] = shadowMap;
 		m_texture2DShadowMapIndex++;
 	}
 }
@@ -321,8 +321,10 @@ void Renderer3D::EndScene()
 		s_light->PrepareForShadowMapGeneration();
 		FlushBatch();
 		CleanUpAfterShadowMapGeneration();
+		DrawVoxel(s_light->GetPosition(), { 0, 0, 0 }, {0.5f, 0.5f, 0.5f}); //draw light
 		s_shader->Bind();
 		s_shader->SetFloat3("u_lightPos", s_light->GetPosition());
+		s_shader->SetFloat("u_lightFarPlane", s_light->GetFarPlane());
 		s_shader->SetMat4("u_lightSpaceMatrix", s_light->GetLightSpaceMatrix());
 		s_shader->SetInt("u_useShadows", 1);
 		AddShadowMapToShaders(s_light);

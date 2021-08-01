@@ -56,6 +56,7 @@ uniform sampler2D[8] u_shadow2D;
 uniform samplerCube[8] u_cubeMapShadowMap;
 
 uniform vec3 u_lightPos;
+uniform float u_lightFarPlane;
 uniform vec3 u_camPos;
 
 uniform bool u_useShadows;
@@ -78,7 +79,7 @@ float ShadowCalculationDirectionalLight(vec4 fragPosLightSpace, int shadowMapInd
     // calculate bias (based on depth map resolution and slope)
     vec3 normal = normalize(v_normal);
     vec3 lightDir = normalize(u_lightPos - v_fragPos);
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    float bias = 0.03f;
     
     // check whether current frag pos is in shadow
     // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
@@ -95,14 +96,12 @@ float ShadowCalculationDirectionalLight(vec4 fragPosLightSpace, int shadowMapInd
     }
     shadow /= 9.0;
     
-    /*
-    // keep the shadow at 0.0 when outside the far plane region of the light's frustum.
-    if(projCoords.z > 1.0)
-        shadow = 0.0;
-    */
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if(projCoords.z > 1.0f)
+        shadow = 0.0f;
 
-    //return shadow;
-    return texture(u_shadow2D[shadowMapIndex], projCoords.xy).r;
+    return shadow;
+    //return texture(u_shadow2D[shadowMapIndex], projCoords.xy).r;
 }
 
 vec4 CalculateLighting(vec4 baseColor, vec4 lightColor)
@@ -127,8 +126,8 @@ vec4 CalculateLighting(vec4 baseColor, vec4 lightColor)
     float shadow = ShadowCalculationDirectionalLight(v_lightSpaceCoords, 0);                      
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * baseColor.xyz;    
     
-    //return vec4(lighting, 1.0);
-    return vec4(shadow, 0, 0, 1);
+    return vec4(lighting, 1.0);
+    //return vec4(shadow, 0, 0, 1);
 }
 
 void main()
