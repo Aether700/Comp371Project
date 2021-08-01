@@ -54,7 +54,7 @@ RenderingBatch::RenderingBatch()
 		{ ShaderDataType::Float, "a_texIndex" },
 		{ ShaderDataType::Float, "a_tillingFactor" },
 		{ ShaderDataType::Float, "a_uses3DTexture" }
-		});
+	});
 
 	m_vao->AddVertexBuffer(m_vbo);
 
@@ -329,22 +329,14 @@ void Renderer3D::BeginScene()
 
 void Renderer3D::EndScene()
 {
-	if (s_useShadows /*&& s_directionalLightIndex != 0*/)
+	if (s_useShadows && s_directionalLightIndex != 0)
 	{
-		DirectionalLight* s_light = &s_directionalLightArr[0];
-		/*
-		s_light->PrepareForShadowMapGeneration();
-		FlushBatch();
-		CleanUpAfterShadowMapGeneration();
-		*/
 		GenerateShadowMaps();
 		DrawLights();
 		s_shader->Bind();
-		s_shader->SetFloat3("u_lightPos", s_light->GetPosition());
-		s_shader->SetMat4("u_lightSpaceMatrix", s_light->GetLightSpaceMatrix());
 		s_shader->SetInt("u_useShadows", 1);
 		s_shader->SetInt("u_numLights", s_directionalLightIndex);
-		AddShadowMapToShaders(*s_light);
+		AddShadowMapToShaders();
 		FlushBatch();
 	}
 	else
@@ -390,13 +382,15 @@ void Renderer3D::CleanUpAfterShadowMapGeneration()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer3D::AddShadowMapToShaders(const DirectionalLight& light)
+void Renderer3D::AddShadowMapToShaders()
 {
-	auto shadowMap = light.GetShadowMap();
-
-	for (auto& pair : s_renderingBatches)
+	for (int i = 0; i < s_directionalLightIndex; i++)
 	{
-		pair.second.AddTexture2DShadowMap(shadowMap);
+		auto shadowMap = s_directionalLightArr[i].GetShadowMap();
+		for (auto& pair : s_renderingBatches)
+		{
+			pair.second.AddTexture2DShadowMap(shadowMap);
+		}
 	}
 }
 

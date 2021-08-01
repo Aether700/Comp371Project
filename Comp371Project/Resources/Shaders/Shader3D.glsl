@@ -9,7 +9,6 @@ layout(location = 4) in float a_texIndex;
 layout(location = 5) in float a_tileFactor;
 layout(location = 6) in float a_uses3DTexture;
 
-
 #define NUM_DIRECTIONAL_LIGHTS 8
 
 uniform mat4 u_lightSpaceMatrices[NUM_DIRECTIONAL_LIGHTS];
@@ -27,6 +26,7 @@ flat out float v_texIndex;
 out float v_tileFactor;
 flat out float v_uses3DTexture;
 
+
 void main()
 {
     v_numLights = u_numLights;
@@ -35,7 +35,6 @@ void main()
     {
         v_lightSpaceFragCoords[i] = u_lightSpaceMatrices[i] * vec4(a_position, 1.0);
     }
-
 	v_textureCoords = a_textureCoords;
 	v_color = a_color;
 	v_normal = a_normal;
@@ -69,6 +68,7 @@ in vec4 v_color;
 flat in float v_texIndex;
 in float v_tileFactor;
 flat in float v_uses3DTexture;
+
 
 uniform sampler2D[8] u_texture;
 uniform samplerCube[8] u_cubeMap;
@@ -140,7 +140,6 @@ vec4 CalculateDirectionalLight(vec4 baseColor, int index)
     
     // calculate shadow
     float shadow = ShadowCalculationDirectionalLight(index);                      
-    //vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * baseColor.xyz;    
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * baseColor.xyz;    
     
     return vec4(lighting, 0);

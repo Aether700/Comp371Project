@@ -20,8 +20,6 @@ public:
 
 	void OnRender()
 	{
-		
-
 		if (isTextureOn)
 		{
 			Renderer3D::DrawQuad(m_transformQuad->GetTransformMatrix(), m_texture, tileFactor);
