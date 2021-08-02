@@ -70,6 +70,8 @@ public:
 
 	}
 
+protected :
+
 	void RenderCubeWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
 	{
 		if (GetRenderingPrimitive() == RenderingPrimitive::Triangles)
