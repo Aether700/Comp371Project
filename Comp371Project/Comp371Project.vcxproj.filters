@@ -179,5 +179,8 @@
     <ClInclude Include="src\Tests\LightRadiusTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Tests\MaterialTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

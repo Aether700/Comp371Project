@@ -8,6 +8,10 @@ layout(location = 3) in vec4 a_color;
 layout(location = 4) in float a_texIndex;
 layout(location = 5) in float a_tileFactor;
 layout(location = 6) in float a_uses3DTexture;
+layout(location = 7) in float a_ambiantIntensity;
+layout(location = 8) in float a_diffuseIntensity;
+layout(location = 9) in float a_specularIntensity;
+layout(location = 10) in float a_shininess;
 
 #define NUM_DIRECTIONAL_LIGHTS 8
 
@@ -25,7 +29,10 @@ out vec4 v_color;
 flat out float v_texIndex;
 out float v_tileFactor;
 flat out float v_uses3DTexture;
-
+flat out float v_ambiantIntensity;
+flat out float v_diffuseIntensity;
+flat out float v_specularIntensity;
+flat out float v_shininess;
 
 void main()
 {
@@ -43,6 +50,11 @@ void main()
 	gl_Position = u_viewProjMatrix * vec4(a_position, 1.0);
 	v_uses3DTexture = a_uses3DTexture;
     v_fragPos = a_position;
+
+    v_ambiantIntensity = a_ambiantIntensity;
+    v_diffuseIntensity = a_diffuseIntensity;
+    v_specularIntensity = a_specularIntensity;
+    v_shininess = a_shininess;
 }
 
 
@@ -70,6 +82,10 @@ flat in float v_texIndex;
 in float v_tileFactor;
 flat in float v_uses3DTexture;
 
+flat in float v_ambiantIntensity;
+flat in float v_diffuseIntensity;
+flat in float v_specularIntensity;
+flat in float v_shininess;
 
 uniform sampler2D[8] u_texture;
 uniform samplerCube[8] u_cubeMap;
@@ -134,19 +150,19 @@ vec4 CalculateDirectionalLight(vec4 baseColor, int index)
     vec3 normal = normalize(v_normal);
     
     // ambient
-    vec3 ambient = 0.3f * baseColor.xyz;
+    vec3 ambient = v_ambiantIntensity * baseColor.xyz;
     
     // diffuse
     vec3 lightDir = normalize(u_lightPos[index] - v_fragPos);
     float diff = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = 0.5f * diff * u_lightColors[index].xyz;
+    vec3 diffuse = v_diffuseIntensity * diff * u_lightColors[index].xyz;
     
 
     // specular
     vec3 viewDir = normalize(u_camPos - v_fragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);
-    vec3 specular =  u_lightColors[index].xyz * spec;
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), v_shininess); 
+    vec3 specular =  v_specularIntensity * u_lightColors[index].xyz * spec;
 
 
     // calculate shadow

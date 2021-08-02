@@ -14,12 +14,22 @@
 
 class DirectionalLight;
 
-struct Material
+class Material
 {
-	glm::vec3 ambiant;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-	float shininess;
+public:
+	Material(float ambiant, float diffuse, float specular, float shininess) 
+		: m_ambiantIntensity(ambiant), m_diffuseIntensity(diffuse), 
+		m_specularIntensity(specular), m_shininess(shininess) { }
+
+	//creates the default Material
+	Material() 
+		: m_ambiantIntensity(0.3f), m_diffuseIntensity(0.5f),
+		m_specularIntensity(1.0f), m_shininess(64.0f) { }
+private:
+	float m_ambiantIntensity;
+	float m_diffuseIntensity;
+	float m_specularIntensity;
+	float m_shininess;
 };
 
 /*struch which contains the data to
@@ -36,6 +46,7 @@ struct VertexData
 	float textureIndex;
 	float tillingFactor;
 	float uses3DTexture;
+	Material mat;
 };
 
 //struct which contains the statistics of the renderer
@@ -221,27 +232,27 @@ private:
 	static void DrawLights();
 
 	//helper function which loads a voxel into the data to pass to the gpu when the renderer flushes
-	static void UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,	
+	static void UploadVoxel(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture,	
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadWireCube(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
+	static void UploadWireCube(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadPointCube(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
+	static void UploadPointCube(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
 	//uploads a quad or filled in square into the renderer
-	static void UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
+	static void UploadQuad(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadWireSquare(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
+	static void UploadWireSquare(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadLine(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
+	static void UploadLine(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
 	//helper function which allows to pass any vertex data with a 2D texture
-	static void UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
+	static void UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const Material& mat, const glm::vec3* vertices,
 		unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, 
 		const glm::vec3* textureCoords, float tileFactor, const glm::vec4& tintColor);
 
@@ -250,7 +261,7 @@ private:
 	static std::shared_ptr<OpenGLCubeMap> s_defaultWhiteCubeMap;
 	static std::shared_ptr<OpenGLTexture2D> s_defaultWhiteTexture;
 	static std::shared_ptr<OpenGLShader> s_shader;
-
+	static Material s_defaultMaterial;
 	static std::unordered_map<unsigned int, RenderingBatch> s_renderingBatches;
 	static bool s_useShadows;
 

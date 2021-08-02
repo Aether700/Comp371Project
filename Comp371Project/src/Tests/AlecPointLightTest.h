@@ -22,7 +22,6 @@ struct LightVertexData
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec2 textureCoords;
-	Material mat;
 };
 
 struct PointLight
@@ -276,7 +275,6 @@ private:
 		{
 			cubePlanePos[index].position = m_cube.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
 			cubePlanePos[index].normal = glm::vec3(m_cube.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 0));
-			cubePlanePos[index].mat = m_testMat;
 			cubePlanePos[index].textureCoords = textureCoords[i % 4];
 			index++;
 		}
@@ -287,7 +285,6 @@ private:
 		{
 			cubePlanePos[index].position = m_plane.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
 			cubePlanePos[index].normal = glm::vec3(m_plane.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 0));
-			cubePlanePos[index].mat = m_testMat;
 			index++;
 		}
 
@@ -298,7 +295,6 @@ private:
 		{
 			lightPosAndNormal[index].position = m_light.transform.GetTransformMatrix() * glm::vec4(posAndNormals[i], 1);
 			lightPosAndNormal[index].normal = m_light.transform.GetTransformMatrix() * glm::vec4(posAndNormals[i + 1], 0);
-			lightPosAndNormal[index].mat = m_defaultMat;
 			index++;
 		}
 
@@ -307,10 +303,6 @@ private:
 			{ShaderDataType::Float3, "position"},
 			{ShaderDataType::Float3, "normal"},
 			{ShaderDataType::Float2, "textureCoords"},
-			{ShaderDataType::Float3, "ambiant"},
-			{ShaderDataType::Float3, "diffuse"},
-			{ShaderDataType::Float3, "specular"},
-			{ShaderDataType::Float, "shininess"}
 			});
 
 		m_vboLight = std::make_shared<OpenGLVertexBuffer>((float*)(void*)lightPosAndNormal, sizeof(lightPosAndNormal));
@@ -318,10 +310,6 @@ private:
 			{ShaderDataType::Float3, "position"},
 			{ShaderDataType::Float3, "normal"},
 			{ShaderDataType::Float2, "textureCoords"},
-			{ShaderDataType::Float3, "ambiant"},
-			{ShaderDataType::Float3, "diffuse"},
-			{ShaderDataType::Float3, "specular"},
-			{ShaderDataType::Float, "shininess"}
 			});
 
 		m_vao->AddVertexBuffer(m_vbo);
@@ -468,10 +456,6 @@ private:
 	Transform m_cube = Transform({ 0, 0, -3 });
 	Transform m_plane = Transform({ 0, -3, -3 }, { 0, 0, 0 }, { 10, 0.5f, 10 });
 	PointLight m_light = PointLight({ 0, 2, -3.0f }, 1, 25);
-
-	Material m_defaultMat = { {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {1, 1, 1}, 32 };
-	Material m_testMat = { {0.1f, 0.0f, 0.0f}, {0.5f, 0.0f, 0.0f}, {0.75f, 0, 0}, 32 };
-
 
 	//temp
 	unsigned int m_fbo;

@@ -16,7 +16,7 @@ layout(triangle_strip, max_vertices = 18) out;
 
 uniform mat4 u_lightSpaceMatrices[6];
 
-// fragPos from GS (output per emitvertex)
+//output per emitvertex
 out vec4 v_fragPos; 
 
 void main()
@@ -37,6 +37,7 @@ void main()
 #type fragment
 #version 330 core
 
+// fragPos from GS 
 in vec4 v_fragPos;
 
 uniform vec3 u_lightPos;
@@ -51,5 +52,4 @@ void main()
     
     // write this as modified depth
     gl_FragDepth = lightDistance;
-    gl_FragDepth = 0.0f;
 }
