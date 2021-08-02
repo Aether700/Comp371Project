@@ -33,13 +33,16 @@ public:
 
 
 
+
 		Renderer3D::AddDirectionalLight(glm::vec3(0, 30, 0) + position, glm::vec3(0, -1, 0));
+
 
 		for (auto& transform : walls)
 		{
 			RenderWall(transform->GetTransformMatrix());
 		}
 	}
+
 
 protected:
 	virtual void RenderCubeWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
@@ -57,7 +60,7 @@ protected:
 		{
 			Renderer3D::DrawWireCube(transform, color);
 		}
-
+	
 
 	}
 
