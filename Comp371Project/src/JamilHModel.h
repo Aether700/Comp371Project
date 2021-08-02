@@ -41,7 +41,7 @@ public:
 
 		//draw light
 		glm::vec3 lightPos = GetModelPosition() + glm::vec3(0, 30, 0);
-		Renderer3D::AddDirectionalLight(lightPos, (GetModelPosition() - glm::vec3(0.0f, 0.0f, 0.05f)) - lightPos);
+		Renderer3D::AddDirectionalLight(lightPos, {0, -1, 0});
  	}
 
 	//shuffles the cube as per the bonus marks requirements of the assignment
@@ -62,7 +62,7 @@ protected:
 	{
 		if (GetRenderingPrimitive() == RenderingPrimitive::Triangles)
 		{
-			Renderer3D::DrawVoxel(transform, modelTexture, 1, color);
+			Renderer3D::DrawVoxel(transform, modelTexture);
 		}
 		else if (GetRenderingPrimitive() == RenderingPrimitive::Lines)
 		{
@@ -76,7 +76,7 @@ protected:
 
 	virtual void RenderWallWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
 	{
-		Renderer3D::DrawVoxel(transform, wallTexture, 1, color);
+		Renderer3D::DrawVoxel(transform, wallTexture);
 	}
 
 	glm::vec3 GetModelPosition()
