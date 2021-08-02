@@ -14,12 +14,27 @@
 
 class DirectionalLight;
 
-struct Material
+class Material
 {
-	glm::vec3 ambiant;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-	float shininess;
+public:
+	Material(float ambiant = 0.3f, float diffuse = 0.5f, float specular = 1.0f, 
+		float shininess = 64.0f) 
+		: m_ambiantIntensity(ambiant), m_diffuseIntensity(diffuse), 
+		m_specularIntensity(specular), m_shininess(shininess), 
+		m_ignoresLighting(0.0f) { }
+
+	Material(bool ignoresLighting)
+		: m_ambiantIntensity(0.3f), m_diffuseIntensity(0.5f),
+		m_specularIntensity(1.0f), m_shininess(64.0f), 
+		m_ignoresLighting(ignoresLighting ? 1.0f : 0.0f) { }
+
+
+private:
+	float m_ambiantIntensity;
+	float m_diffuseIntensity;
+	float m_specularIntensity;
+	float m_shininess;
+	float m_ignoresLighting;
 };
 
 /*struch which contains the data to
@@ -36,6 +51,7 @@ struct VertexData
 	float textureIndex;
 	float tillingFactor;
 	float uses3DTexture;
+	Material mat;
 };
 
 //struct which contains the statistics of the renderer
@@ -135,57 +151,113 @@ public:
 	//primitives
 
 	//voxels/cubes
+	static void DrawVoxel(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture, float tileFactor = 1.0f,
+		const glm::vec4& tintColor = { 1, 1, 1, 1 });
+
 	static void DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture, float tileFactor = 1.0f, 
+		const glm::vec4& tintColor = { 1, 1, 1, 1 });
+
+	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, std::shared_ptr<OpenGLCubeMap> texture, float tileFactor = 1.0f,
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
 		std::shared_ptr<OpenGLCubeMap> texture, float tileFactor = 1.0f,
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
+	static void DrawVoxel(const glm::mat4& transform, const Material& mat, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawVoxel(const glm::mat4& transform, 
 		const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	//wire cube
+	static void DrawWireCube(const glm::mat4& transform, const Material& mat, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawWireCube(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawWireCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawWireCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	//point cube
+	static void DrawPointCube(const glm::mat4& transform, const Material& mat, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawPointCube(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawPointCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawPointCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	//squares
+	static void DrawQuad(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
+		float tileFactor = 1.0f, const glm::vec4& tintColor = { 1, 1, 1, 1 });
+
 	static void DrawQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
 		float tileFactor = 1.0f, const glm::vec4& tintColor = { 1, 1, 1, 1 });
+
+	static void DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, std::shared_ptr<OpenGLTexture2D> texture, float tileFactor = 1.0f,
+		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	static void DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		std::shared_ptr<OpenGLTexture2D> texture, float tileFactor = 1.0f,
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
+	static void DrawQuad(const glm::mat4& transform, const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawQuad(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	//wired squares
+	static void DrawWireSquare(const glm::mat4& transform, const Material& mat, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawWireSquare(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawWireSquare(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawWireSquare(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	//Lines
+	static void DrawLine(const glm::mat4& transform, const Material& mat, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawLine(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
+	static void DrawLine(const glm::mat4& transform, const Material& mat, const glm::vec3& point1, 
+		const glm::vec3& point2, const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawLine(const glm::mat4& transform, const glm::vec3& point1, const glm::vec3& point2, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec3& point1, const glm::vec3& point2, 
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
@@ -221,27 +293,27 @@ private:
 	static void DrawLights();
 
 	//helper function which loads a voxel into the data to pass to the gpu when the renderer flushes
-	static void UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,	
+	static void UploadVoxel(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture,	
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadWireCube(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
+	static void UploadWireCube(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadPointCube(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
+	static void UploadPointCube(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
 	//uploads a quad or filled in square into the renderer
-	static void UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
+	static void UploadQuad(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadWireSquare(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
+	static void UploadWireSquare(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
-	static void UploadLine(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
+	static void UploadLine(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
 		float tileFactor, const glm::vec4& tintColor);
 
 	//helper function which allows to pass any vertex data with a 2D texture
-	static void UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
+	static void UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const Material& mat, const glm::vec3* vertices,
 		unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, 
 		const glm::vec3* textureCoords, float tileFactor, const glm::vec4& tintColor);
 
@@ -250,7 +322,7 @@ private:
 	static std::shared_ptr<OpenGLCubeMap> s_defaultWhiteCubeMap;
 	static std::shared_ptr<OpenGLTexture2D> s_defaultWhiteTexture;
 	static std::shared_ptr<OpenGLShader> s_shader;
-
+	static Material s_defaultMaterial;
 	static std::unordered_map<unsigned int, RenderingBatch> s_renderingBatches;
 	static bool s_useShadows;
 

@@ -186,6 +186,7 @@
     <ClInclude Include="src\GraphicsAPI\OpenGLTexture2D.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Tests\LightRadiusTest.h" />
+    <ClInclude Include="src\Tests\MaterialTest.h" />
     <ClInclude Include="src\Tests\ParentTransformTest.h" />
     <ClInclude Include="src\Rendering\Camera.h" />
     <ClInclude Include="src\Core\Input.h" />

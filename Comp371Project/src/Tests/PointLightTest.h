@@ -302,12 +302,17 @@ private:
 		glGenTextures(1, &depthCubemap);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
 		for (unsigned int i = 0; i < 6; ++i)
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, m_fboSize, m_fboSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
+				m_fboSize, m_fboSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		}
+		
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		
 		// attach depth texture as FBO's depth buffer
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap, 0);
@@ -328,7 +333,9 @@ private:
 
 	void GenerateShadowMap()
 	{
-		glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)m_fboSize / (float)m_fboSize, m_nearPlane, m_farPlane);
+		glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), 
+			(float)m_fboSize / (float)m_fboSize, m_nearPlane, m_farPlane);
+		
 		std::vector<glm::mat4> shadowTransforms;
 		shadowTransforms.push_back(shadowProj * glm::lookAt(m_light.position, m_light.position
 			+ glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));

@@ -54,7 +54,7 @@ public:
 	{
 		if (m_drawLightCube)
 		{
-			Renderer3D::DrawVoxel(m_position, { 0, 0, 0 }, { 2.0f, 2.0f, 2.0f });
+			Renderer3D::DrawVoxel(m_position, { 0, 0, 0 }, { 2.0f, 2.0f, 2.0f }, s_glowMat);
 		}
 	}
 	
@@ -124,6 +124,7 @@ public:
 
 private:
 	static std::shared_ptr<OpenGLShader> s_shader;
+	static Material s_glowMat;
 
 	void PrepareShadowMap()
 	{

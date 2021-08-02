@@ -16,6 +16,7 @@ Renderer3DStatistics Renderer3D::s_stats;
 std::shared_ptr<OpenGLCubeMap> Renderer3D::s_defaultWhiteCubeMap;
 std::shared_ptr<OpenGLTexture2D> Renderer3D::s_defaultWhiteTexture;
 std::shared_ptr<OpenGLShader> Renderer3D::s_shader;
+Material Renderer3D::s_defaultMaterial = Material(); //create the default material
 bool Renderer3D::s_useShadows = false;
 DirectionalLight* Renderer3D::s_directionalLightArr;
 unsigned int Renderer3D::s_directionalLightIndex;
@@ -53,7 +54,12 @@ RenderingBatch::RenderingBatch()
 		{ ShaderDataType::Float4, "a_color" },
 		{ ShaderDataType::Float, "a_texIndex" },
 		{ ShaderDataType::Float, "a_tillingFactor" },
-		{ ShaderDataType::Float, "a_uses3DTexture" }
+		{ ShaderDataType::Float, "a_uses3DTexture" },
+		{ ShaderDataType::Float, "a_ambiantIntensity" },
+		{ ShaderDataType::Float, "a_diffuseIntensity" },
+		{ ShaderDataType::Float, "a_specularIntensity" },
+		{ ShaderDataType::Float, "a_shininess" },
+		{ ShaderDataType::Float, "a_ignoresLighting" }
 	});
 
 	m_vao->AddVertexBuffer(m_vbo);
@@ -412,11 +418,25 @@ void Renderer3D::DrawLights()
 	}
 }
 
+void Renderer3D::DrawVoxel(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture,
+	float tileFactor, const glm::vec4& tintColor)
+{
+	UploadVoxel(transform, mat, texture, tileFactor, tintColor);
+}
+
 void Renderer3D::DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
 	float tileFactor, const glm::vec4& tintColor)
 {
-	UploadVoxel(transform, texture, tileFactor, tintColor);
+	DrawVoxel(transform, s_defaultMaterial, texture, tileFactor, tintColor);
 }
+
+void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const Material& mat, std::shared_ptr<OpenGLCubeMap> texture, float tileFactor, const glm::vec4& tintColor)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawVoxel(t.GetTransformMatrix(), mat, texture, tileFactor, tintColor);
+}
+
 
 void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 	std::shared_ptr<OpenGLCubeMap> texture, float tileFactor, const glm::vec4& tintColor)
@@ -425,20 +445,43 @@ void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation,
 	DrawVoxel(t.GetTransformMatrix(), texture, tileFactor, tintColor);
 }
 
+void Renderer3D::DrawVoxel(const glm::mat4& transform, const Material& mat, const glm::vec4& color)
+{
+	DrawVoxel(transform, mat, GetDefaultWhiteCubeMap(), 1, color);
+}
+
 void Renderer3D::DrawVoxel(const glm::mat4& transform, const glm::vec4& color)
 {
 	DrawVoxel(transform, GetDefaultWhiteCubeMap(), 1, color);
 }
 
+void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation,
+	const glm::vec3& scale, const Material& mat, const glm::vec4& color)
+{
+	DrawVoxel(position, rotation, scale, mat, GetDefaultWhiteCubeMap(), 1, color);
+}
+
 void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, 
 	const glm::vec3& scale, const glm::vec4& color)
 {
-	DrawVoxel(position, rotation, scale, GetDefaultWhiteCubeMap(), 1.0f, color);
+	DrawVoxel(position, rotation, scale, GetDefaultWhiteCubeMap(), 1, color);
+}
+
+void Renderer3D::DrawWireCube(const glm::mat4& transform, const Material& mat, const glm::vec4& color)
+{
+	UploadWireCube(transform, mat, GetDefaultWhiteCubeMap(), 1, color);
 }
 
 void Renderer3D::DrawWireCube(const glm::mat4& transform, const glm::vec4& color)
 {
-	UploadWireCube(transform, GetDefaultWhiteCubeMap(), 1, color);
+	UploadWireCube(transform, s_defaultMaterial, GetDefaultWhiteCubeMap(), 1, color);
+}
+
+void Renderer3D::DrawWireCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const Material& mat, const glm::vec4& color)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawWireCube(t.GetTransformMatrix(), mat, color);
 }
 
 void Renderer3D::DrawWireCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
@@ -448,9 +491,21 @@ void Renderer3D::DrawWireCube(const glm::vec3& position, const glm::vec3& rotati
 	DrawWireCube(t.GetTransformMatrix(), color);
 }
 
+void Renderer3D::DrawPointCube(const glm::mat4& transform, const Material& mat, const glm::vec4& color)
+{
+	UploadPointCube(transform, mat, GetDefaultWhiteCubeMap(), 1.0f, color);
+}
+
 void Renderer3D::DrawPointCube(const glm::mat4& transform, const glm::vec4& color) 
 {
-	UploadPointCube(transform, GetDefaultWhiteCubeMap(), 1.0f, color);
+	UploadPointCube(transform, s_defaultMaterial, GetDefaultWhiteCubeMap(), 1.0f, color);
+}
+
+void Renderer3D::DrawPointCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const Material& mat, const glm::vec4& color)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawPointCube(t.GetTransformMatrix(), mat, color);
 }
 
 void Renderer3D::DrawPointCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
@@ -460,10 +515,24 @@ void Renderer3D::DrawPointCube(const glm::vec3& position, const glm::vec3& rotat
 	DrawPointCube(t.GetTransformMatrix(), color);
 }
 
+void Renderer3D::DrawQuad(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
+	float tileFactor, const glm::vec4& tintColor)
+{
+	UploadQuad(transform, mat, texture, tileFactor, tintColor);
+}
+
 void Renderer3D::DrawQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture, 
 	float tileFactor, const glm::vec4& tintColor)
 {
-	UploadQuad(transform, texture, tileFactor, tintColor);
+	UploadQuad(transform, s_defaultMaterial, texture, tileFactor, tintColor);
+}
+
+void Renderer3D::DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const Material& mat, std::shared_ptr<OpenGLTexture2D> texture, float tileFactor,
+	const glm::vec4& tintColor)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawQuad(t.GetTransformMatrix(), mat, texture, tileFactor, tintColor);
 }
 
 void Renderer3D::DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
@@ -474,9 +543,20 @@ void Renderer3D::DrawQuad(const glm::vec3& position, const glm::vec3& rotation, 
 	DrawQuad(t.GetTransformMatrix(), texture, tileFactor, tintColor);
 }
 
+void Renderer3D::DrawQuad(const glm::mat4& transform, const Material& mat, const glm::vec4& color)
+{
+	DrawQuad(transform, mat, GetDefaultWhiteTexture(), 1.0f, color);
+}
+
 void Renderer3D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
 {
 	DrawQuad(transform, GetDefaultWhiteTexture(), 1.0f, color);
+}
+
+void Renderer3D::DrawQuad(const glm::vec3& position, const glm::vec3& rotation,
+	const glm::vec3& scale, const Material& mat, const glm::vec4& color)
+{
+	DrawQuad(position, rotation, scale, mat, GetDefaultWhiteTexture(), 1.0f, color);
 }
 
 void Renderer3D::DrawQuad(const glm::vec3& position, const glm::vec3& rotation, 
@@ -485,9 +565,21 @@ void Renderer3D::DrawQuad(const glm::vec3& position, const glm::vec3& rotation,
 	DrawQuad(position, rotation, scale, GetDefaultWhiteTexture(), 1.0f, color);
 }
 
+void Renderer3D::DrawWireSquare(const glm::mat4& transform, const Material& mat, const glm::vec4& color)
+{
+	UploadWireSquare(transform, mat, GetDefaultWhiteTexture(), 1, color);
+}
+
 void Renderer3D::DrawWireSquare(const glm::mat4& transform, const glm::vec4& color)
 {
-	UploadWireSquare(transform, GetDefaultWhiteTexture(), 1, color);
+	UploadWireSquare(transform, s_defaultMaterial, GetDefaultWhiteTexture(), 1, color);
+}
+
+void Renderer3D::DrawWireSquare(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const Material& mat, const glm::vec4& color)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawWireSquare(t.GetTransformMatrix(), mat, color);
 }
 
 void Renderer3D::DrawWireSquare(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
@@ -497,9 +589,21 @@ void Renderer3D::DrawWireSquare(const glm::vec3& position, const glm::vec3& rota
 	DrawWireSquare(t.GetTransformMatrix(), color);
 }
 
+void Renderer3D::DrawLine(const glm::mat4& transform, const Material& mat, const glm::vec4& color)
+{
+	UploadLine(transform, mat, GetDefaultWhiteTexture(), 1, color);
+}
+
 void Renderer3D::DrawLine(const glm::mat4& transform, const glm::vec4& color)
 {
-	UploadLine(transform, GetDefaultWhiteTexture(), 1, color);
+	UploadLine(transform, s_defaultMaterial, GetDefaultWhiteTexture(), 1, color);
+}
+
+void Renderer3D::DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const Material& mat, const glm::vec4& color)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawLine(t.GetTransformMatrix(), mat, color);
 }
 
 void Renderer3D::DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
@@ -507,6 +611,20 @@ void Renderer3D::DrawLine(const glm::vec3& position, const glm::vec3& rotation, 
 {
 	Transform t = Transform(position, rotation, scale);
 	DrawLine(t.GetTransformMatrix(), color);
+}
+
+void Renderer3D::DrawLine(const glm::mat4& transform, const Material& mat, 
+	const glm::vec3& point1, const glm::vec3& point2, const glm::vec4& color)
+{
+	constexpr glm::vec3 textureCoords[] = {
+		{0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}
+	};
+
+	glm::vec3 points[] = { point1, point2 };
+	unsigned int indices[] = { 0, 1 };
+
+	UploadVertexData(GL_LINES, transform, mat, points, 2, indices, 
+		2, GetDefaultWhiteTexture(), textureCoords, 1, color);
 }
 
 void Renderer3D::DrawLine(const glm::mat4& transform, const glm::vec3& point1, const glm::vec3& point2,
@@ -519,7 +637,14 @@ void Renderer3D::DrawLine(const glm::mat4& transform, const glm::vec3& point1, c
 	glm::vec3 points[] = { point1, point2 };
 	unsigned int indices[] = { 0, 1 };
 
-	UploadVertexData(GL_LINES, transform, points, 2, indices, 2, GetDefaultWhiteTexture(), textureCoords, 1, color);
+	UploadVertexData(GL_LINES, transform, s_defaultMaterial, points, 2, indices, 2, GetDefaultWhiteTexture(), textureCoords, 1, color);
+}
+
+void Renderer3D::DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const Material& mat, const glm::vec3& point1, const glm::vec3& point2, const glm::vec4& color)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawLine(t.GetTransformMatrix(), mat, point1, point2, color);
 }
 
 void Renderer3D::DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
@@ -533,7 +658,8 @@ void Renderer3D::DrawVertexData(unsigned int renderTarget, const glm::mat4& tran
 	unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture,
 	const glm::vec3* textureCoords, float tileFactor, const glm::vec4& tintColor)
 {
-	UploadVertexData(renderTarget, transform, vertices, numVertices, indices, indexCount, texture, textureCoords, tileFactor, tintColor);
+	UploadVertexData(renderTarget, transform, s_defaultMaterial, vertices, numVertices, 
+		indices, indexCount, texture, textureCoords, tileFactor, tintColor);
 }
 
 void Renderer3D::DrawVertexData(unsigned int renderTarget, const glm::vec3& position, const glm::vec3& rotation,
@@ -573,7 +699,7 @@ void Renderer3D::ResetStats()
 	s_stats.Reset();
 }
 
-void Renderer3D::UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
+void Renderer3D::UploadVoxel(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture,
 	float tileFactor, const glm::vec4& tintColor)
 {
 	unsigned int renderTarget = GL_TRIANGLES;
@@ -642,6 +768,7 @@ void Renderer3D::UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLC
 		cubeVertices[index].textureIndex = (float)textureIndex;
 		cubeVertices[index].tillingFactor = tileFactor;
 		cubeVertices[index].uses3DTexture = 1; //set uses3DTexture to true
+		cubeVertices[index].mat = mat; 
 		index++;
 	}
 
@@ -726,7 +853,7 @@ void Renderer3D::UploadVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLC
 		sizeof(indices) / sizeof(unsigned int), renderTarget);
 }
 
-void Renderer3D::UploadWireCube(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
+void Renderer3D::UploadWireCube(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture,
 	float tileFactor, const glm::vec4& tintColor)
 {
 	unsigned int renderTarget = GL_LINES;
@@ -754,6 +881,7 @@ void Renderer3D::UploadWireCube(const glm::mat4& transform, std::shared_ptr<Open
 		cubeVertices[i].textureIndex = textureIndex;
 		cubeVertices[i].tillingFactor = tileFactor;
 		cubeVertices[i].uses3DTexture = 1;
+		cubeVertices[i].mat = mat;
 	}
 
 	unsigned int indices[] = {
@@ -777,7 +905,7 @@ void Renderer3D::UploadWireCube(const glm::mat4& transform, std::shared_ptr<Open
 		sizeof(indices) / sizeof(unsigned int), renderTarget);
 }
 
-void Renderer3D::UploadPointCube(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
+void Renderer3D::UploadPointCube(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture,
 	float tileFactor, const glm::vec4& tintColor)
 {
 	unsigned int renderTarget = GL_POINTS;
@@ -805,6 +933,7 @@ void Renderer3D::UploadPointCube(const glm::mat4& transform, std::shared_ptr<Ope
 		cubeVertices[i].textureIndex = textureIndex;
 		cubeVertices[i].tillingFactor = tileFactor;
 		cubeVertices[i].uses3DTexture = 1;
+		cubeVertices[i].mat = mat;
 	}
 
 	unsigned int indices[] = {
@@ -816,7 +945,7 @@ void Renderer3D::UploadPointCube(const glm::mat4& transform, std::shared_ptr<Ope
 }
 
 
-void Renderer3D::UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
+void Renderer3D::UploadQuad(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
 	float tileFactor, const glm::vec4& tintColor)
 {
 	unsigned int renderTarget = GL_TRIANGLES;
@@ -847,6 +976,7 @@ void Renderer3D::UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTe
 		quadVertices[i].textureIndex = textureIndex;
 		quadVertices[i].tillingFactor = tileFactor;
 		quadVertices[i].uses3DTexture = 0;
+		quadVertices[i].mat = mat;
 	}
 
 
@@ -859,7 +989,7 @@ void Renderer3D::UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTe
 		sizeof(indices) / sizeof(unsigned int), renderTarget);
 }
 
-void Renderer3D::UploadWireSquare(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
+void Renderer3D::UploadWireSquare(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
 	float tileFactor, const glm::vec4& tintColor)
 {
 	unsigned int renderTarget = GL_LINES;
@@ -890,6 +1020,7 @@ void Renderer3D::UploadWireSquare(const glm::mat4& transform, std::shared_ptr<Op
 		quadVertices[i].textureIndex = textureIndex;
 		quadVertices[i].tillingFactor = tileFactor;
 		quadVertices[i].uses3DTexture = 0;
+		quadVertices[i].mat = mat;
 	}
 
 	unsigned int indices[] = {
@@ -903,7 +1034,7 @@ void Renderer3D::UploadWireSquare(const glm::mat4& transform, std::shared_ptr<Op
 		sizeof(indices) / sizeof(unsigned int), renderTarget);
 }
 
-void Renderer3D::UploadLine(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
+void Renderer3D::UploadLine(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
 	float tileFactor, const glm::vec4& tintColor)
 {
 	unsigned int renderTarget = GL_LINES;
@@ -930,6 +1061,7 @@ void Renderer3D::UploadLine(const glm::mat4& transform, std::shared_ptr<OpenGLTe
 		vertexData[i].textureIndex = textureIndex;
 		vertexData[i].tillingFactor = tileFactor;
 		vertexData[i].uses3DTexture = 0;
+		vertexData[i].mat = mat;
 	}
 
 	unsigned int indices[] = { 0, 1 };
@@ -938,9 +1070,9 @@ void Renderer3D::UploadLine(const glm::mat4& transform, std::shared_ptr<OpenGLTe
 		sizeof(indices) / sizeof(unsigned int), renderTarget);
 }
 
-void Renderer3D::UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const glm::vec3* vertices,
-	unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture,
-	const glm::vec3* textureCoords, float tileFactor, const glm::vec4& tintColor)
+void Renderer3D::UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const Material& mat, 
+	const glm::vec3* vertices, unsigned int numVertices, unsigned int* indices, unsigned int indexCount, 
+	std::shared_ptr<OpenGLTexture2D> texture, const glm::vec3* textureCoords, float tileFactor, const glm::vec4& tintColor)
 {
 	int textureIndex = s_renderingBatches[renderTarget].AddTexture2D(texture, renderTarget);
 
@@ -955,6 +1087,7 @@ void Renderer3D::UploadVertexData(unsigned int renderTarget, const glm::mat4& tr
 		vertexData[i].textureIndex = textureIndex;
 		vertexData[i].tillingFactor = tileFactor;
 		vertexData[i].uses3DTexture = 0;
+		vertexData[i].mat = mat;
 	}
 
 	s_renderingBatches[renderTarget].Add(vertexData, numVertices, indices,
