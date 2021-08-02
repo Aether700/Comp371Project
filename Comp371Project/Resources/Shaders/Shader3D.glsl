@@ -12,6 +12,7 @@ layout(location = 7) in float a_ambiantIntensity;
 layout(location = 8) in float a_diffuseIntensity;
 layout(location = 9) in float a_specularIntensity;
 layout(location = 10) in float a_shininess;
+layout(location = 11) in float a_ignoresLighting;
 
 #define NUM_DIRECTIONAL_LIGHTS 8
 
@@ -29,10 +30,12 @@ out vec4 v_color;
 flat out float v_texIndex;
 out float v_tileFactor;
 flat out float v_uses3DTexture;
+
 flat out float v_ambiantIntensity;
 flat out float v_diffuseIntensity;
 flat out float v_specularIntensity;
 flat out float v_shininess;
+flat out float v_ignoresLighting;
 
 void main()
 {
@@ -55,6 +58,7 @@ void main()
     v_diffuseIntensity = a_diffuseIntensity;
     v_specularIntensity = a_specularIntensity;
     v_shininess = a_shininess;
+    v_ignoresLighting = a_ignoresLighting;
 }
 
 
@@ -86,6 +90,8 @@ flat in float v_ambiantIntensity;
 flat in float v_diffuseIntensity;
 flat in float v_specularIntensity;
 flat in float v_shininess;
+flat in float v_ignoresLighting;
+
 
 uniform sampler2D[8] u_texture;
 uniform samplerCube[8] u_cubeMap;
@@ -196,7 +202,9 @@ void main()
 		baseColor = texture(u_texture[int(v_texIndex)], v_textureCoords.xy * v_tileFactor) * v_color;
 	}
     
-    if (u_useShadows)
+    //calculate shadows only if the shadows are on 
+    //and if the object does not ignore lighting
+    if (u_useShadows && v_ignoresLighting == 0.0f)
     {
         color = CalculateLighting(baseColor);
     }

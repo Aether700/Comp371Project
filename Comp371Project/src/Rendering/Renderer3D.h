@@ -17,19 +17,24 @@ class DirectionalLight;
 class Material
 {
 public:
-	Material(float ambiant, float diffuse, float specular, float shininess) 
+	Material(float ambiant = 0.3f, float diffuse = 0.5f, float specular = 1.0f, 
+		float shininess = 64.0f) 
 		: m_ambiantIntensity(ambiant), m_diffuseIntensity(diffuse), 
-		m_specularIntensity(specular), m_shininess(shininess) { }
+		m_specularIntensity(specular), m_shininess(shininess), 
+		m_ignoresLighting(0.0f) { }
 
-	//creates the default Material
-	Material() 
+	Material(bool ignoresLighting)
 		: m_ambiantIntensity(0.3f), m_diffuseIntensity(0.5f),
-		m_specularIntensity(1.0f), m_shininess(64.0f) { }
+		m_specularIntensity(1.0f), m_shininess(64.0f), 
+		m_ignoresLighting(ignoresLighting ? 1.0f : 0.0f) { }
+
+
 private:
 	float m_ambiantIntensity;
 	float m_diffuseIntensity;
 	float m_specularIntensity;
 	float m_shininess;
+	float m_ignoresLighting;
 };
 
 /*struch which contains the data to
@@ -146,15 +151,28 @@ public:
 	//primitives
 
 	//voxels/cubes
+	static void DrawVoxel(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture, float tileFactor = 1.0f,
+		const glm::vec4& tintColor = { 1, 1, 1, 1 });
+
 	static void DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture, float tileFactor = 1.0f, 
+		const glm::vec4& tintColor = { 1, 1, 1, 1 });
+
+	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, std::shared_ptr<OpenGLCubeMap> texture, float tileFactor = 1.0f,
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
 		std::shared_ptr<OpenGLCubeMap> texture, float tileFactor = 1.0f,
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
+	static void DrawVoxel(const glm::mat4& transform, const Material& mat, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawVoxel(const glm::mat4& transform, 
 		const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	static void DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });

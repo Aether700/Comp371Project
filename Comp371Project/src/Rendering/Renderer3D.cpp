@@ -59,6 +59,7 @@ RenderingBatch::RenderingBatch()
 		{ ShaderDataType::Float, "a_diffuseIntensity" },
 		{ ShaderDataType::Float, "a_specularIntensity" },
 		{ ShaderDataType::Float, "a_shininess" },
+		{ ShaderDataType::Float, "a_ignoresLighting" }
 	});
 
 	m_vao->AddVertexBuffer(m_vbo);
@@ -417,11 +418,25 @@ void Renderer3D::DrawLights()
 	}
 }
 
+void Renderer3D::DrawVoxel(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLCubeMap> texture,
+	float tileFactor, const glm::vec4& tintColor)
+{
+	UploadVoxel(transform, mat, texture, tileFactor, tintColor);
+}
+
 void Renderer3D::DrawVoxel(const glm::mat4& transform, std::shared_ptr<OpenGLCubeMap> texture,
 	float tileFactor, const glm::vec4& tintColor)
 {
-	UploadVoxel(transform, s_defaultMaterial, texture, tileFactor, tintColor);
+	DrawVoxel(transform, s_defaultMaterial, texture, tileFactor, tintColor);
 }
+
+void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+	const Material& mat, std::shared_ptr<OpenGLCubeMap> texture, float tileFactor, const glm::vec4& tintColor)
+{
+	Transform t = Transform(position, rotation, scale);
+	DrawVoxel(t.GetTransformMatrix(), mat, texture, tileFactor, tintColor);
+}
+
 
 void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 	std::shared_ptr<OpenGLCubeMap> texture, float tileFactor, const glm::vec4& tintColor)
@@ -430,15 +445,26 @@ void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation,
 	DrawVoxel(t.GetTransformMatrix(), texture, tileFactor, tintColor);
 }
 
+void Renderer3D::DrawVoxel(const glm::mat4& transform, const Material& mat, const glm::vec4& color)
+{
+	DrawVoxel(transform, mat, GetDefaultWhiteCubeMap(), 1, color);
+}
+
 void Renderer3D::DrawVoxel(const glm::mat4& transform, const glm::vec4& color)
 {
 	DrawVoxel(transform, GetDefaultWhiteCubeMap(), 1, color);
 }
 
+void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation,
+	const glm::vec3& scale, const Material& mat, const glm::vec4& color)
+{
+	DrawVoxel(position, rotation, scale, mat, GetDefaultWhiteCubeMap(), 1, color);
+}
+
 void Renderer3D::DrawVoxel(const glm::vec3& position, const glm::vec3& rotation, 
 	const glm::vec3& scale, const glm::vec4& color)
 {
-	DrawVoxel(position, rotation, scale, GetDefaultWhiteCubeMap(), 1.0f, color);
+	DrawVoxel(position, rotation, scale, GetDefaultWhiteCubeMap(), 1, color);
 }
 
 void Renderer3D::DrawWireCube(const glm::mat4& transform, const glm::vec4& color)
