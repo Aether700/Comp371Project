@@ -17,14 +17,14 @@ class DirectionalLight;
 class Material
 {
 public:
-	Material(float ambiant = 0.3f, float diffuse = 0.5f, float specular = 1.0f, 
+	Material(float ambiant = 0.1f, float diffuse = 0.3f, float specular = 1.0f, 
 		float shininess = 64.0f) 
 		: m_ambiantIntensity(ambiant), m_diffuseIntensity(diffuse), 
 		m_specularIntensity(specular), m_shininess(shininess), 
 		m_ignoresLighting(0.0f) { }
 
 	Material(bool ignoresLighting)
-		: m_ambiantIntensity(0.3f), m_diffuseIntensity(0.5f),
+		: m_ambiantIntensity(0.1f), m_diffuseIntensity(0.3f),
 		m_specularIntensity(1.0f), m_shininess(64.0f), 
 		m_ignoresLighting(ignoresLighting ? 1.0f : 0.0f) { }
 

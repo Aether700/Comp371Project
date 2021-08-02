@@ -194,5 +194,5 @@ private:
 
 	glm::vec4 color = { 1, 0, 0, 1 };
 	Material m_glowMat = Material(true);
-	float m_outlineScale = 1.0005f;
+	float m_outlineScale = 1.001f;
 };

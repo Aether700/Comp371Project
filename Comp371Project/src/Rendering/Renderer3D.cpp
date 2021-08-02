@@ -972,7 +972,7 @@ void Renderer3D::UploadQuad(const glm::mat4& transform, const Material& mat, std
 		quadVertices[i].position = (glm::vec3)(transform * glm::vec4(position[i], 1));
 		quadVertices[i].textureCoords = textureCoords[i];
 		quadVertices[i].color = tintColor;
-		quadVertices[i].normal = (glm::vec3)(transform * glm::vec4(0, 0, 1, 1));
+		quadVertices[i].normal = (glm::vec3)(transform * glm::vec4(0, 0, 1, 0));
 		quadVertices[i].textureIndex = textureIndex;
 		quadVertices[i].tillingFactor = tileFactor;
 		quadVertices[i].uses3DTexture = 0;
