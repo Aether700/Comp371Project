@@ -41,6 +41,7 @@ int main()
 	//Add Scripts here   
 
 	Application::AddScript(new ModelManager());
+	//Application::AddScript(new RendererDirectionalLightTest());
 
 	///////////////////
 

@@ -332,7 +332,7 @@ void Renderer3D::EndScene()
 	if (s_useShadows && s_directionalLightIndex != 0)
 	{
 		GenerateShadowMaps();
-		DrawLights();
+		//DrawLights();
 		s_shader->Bind();
 		s_shader->SetInt("u_useShadows", 1);
 		s_shader->SetInt("u_numLights", s_directionalLightIndex);

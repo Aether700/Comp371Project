@@ -73,7 +73,7 @@ void Application::Run()
 		Renderer3D::BeginScene();
 		app.CallOnRenderScripts();
 		Renderer3D::EndScene();
-		std::cout << "num draw calls: " << Renderer3D::GetStats().numDrawCalls << "\n";
+		//std::cout << "num draw calls: " << Renderer3D::GetStats().numDrawCalls << "\n";
 
 		glfwPollEvents();
 		glfwSwapBuffers(app.m_window);
@@ -165,8 +165,8 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 	glDepthFunc(GL_LESS);
 
 	//enable backface culling
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_FRONT);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	glPointSize(5.0f);
 }

@@ -25,11 +25,11 @@ public:
 
 		Application::AddScript(new Axes(m_worldTransform));
 
-		AddModel(new JamilHModel(m_worldTransform));
+		//AddModel(new JamilHModel(m_worldTransform));
 		AddModel(new JeanModel(m_worldTransform));
-		AddModel(new MadelaineModel(m_worldTransform));
-		AddModel(new AlecModel(m_worldTransform));
-		AddModel(new JamilModel(m_worldTransform));
+		//AddModel(new MadelaineModel(m_worldTransform));
+		//AddModel(new AlecModel(m_worldTransform));
+		//AddModel(new JamilModel(m_worldTransform));
 
 		AddGrid(new Grid(m_worldTransform));
 	}
