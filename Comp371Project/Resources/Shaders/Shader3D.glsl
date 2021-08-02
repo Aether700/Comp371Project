@@ -57,6 +57,7 @@ layout(location = 0) out vec4 color;
 uniform vec4 u_lightColors[NUM_DIRECTIONAL_LIGHTS];
 uniform vec3 u_lightPos[NUM_DIRECTIONAL_LIGHTS];
 uniform float u_shadowMapIndices[NUM_DIRECTIONAL_LIGHTS];
+uniform float u_lightRadius[NUM_DIRECTIONAL_LIGHTS];
 
 in vec4 v_lightSpaceFragCoords[NUM_DIRECTIONAL_LIGHTS];
 
@@ -84,6 +85,14 @@ float ShadowCalculationDirectionalLight(int index)
 {
     // perform perspective divide
     vec3 projCoords = v_lightSpaceFragCoords[index].xyz / v_lightSpaceFragCoords[index].w;
+
+    float distance = length(u_lightPos[index] - projCoords);
+
+    //if the fragment is farther than the radius of the light then it is in shadow
+    if (distance > u_lightRadius[index])
+    {
+        return 1.0f;
+    }
 
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
@@ -125,19 +134,21 @@ vec4 CalculateDirectionalLight(vec4 baseColor, int index)
     vec3 normal = normalize(v_normal);
     
     // ambient
-    vec3 ambient = 0.3 * baseColor.xyz;
+    vec3 ambient = 0.3f * baseColor.xyz;
     
     // diffuse
     vec3 lightDir = normalize(u_lightPos[index] - v_fragPos);
     float diff = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = diff * u_lightColors[index].xyz;
+    vec3 diffuse = 0.5f * diff * u_lightColors[index].xyz;
     
+
     // specular
     vec3 viewDir = normalize(u_camPos - v_fragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);
     vec3 specular =  u_lightColors[index].xyz * spec;
-    
+
+
     // calculate shadow
     float shadow = ShadowCalculationDirectionalLight(index);                      
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * baseColor.xyz;    

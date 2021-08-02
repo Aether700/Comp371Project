@@ -14,7 +14,8 @@ Camera(toggle with m to activated)
 
 Model(toggle with m to activated)
 - use keys 1 through 5 to select a model (defaults to the cube selected by 1)
-- press C to toggle movement mode for the models between translation and rotation (defaults to rotation) only work if model is toggle on
+- press C to toggle movement mode for the models between translation and rotation 
+	(defaults to rotation) only work if model is toggle on
 - use aswd keys to rotate/move the currently selected model, the transformation 
 	applied depends on the current movement mode selected
 - press P, T and L to change the rendering primitive used to render the selected 

@@ -5,6 +5,7 @@
 #include "Tests/AlecPointLightTest.h"
 #include "Tests/TextureTest.h"
 #include "Tests/RendererDirectionalLightTest.h"
+#include "Tests/LightRadiusTest.h"
 
 #include "Core/Application.h"
 #include "Core/Script.h"
