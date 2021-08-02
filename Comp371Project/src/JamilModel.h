@@ -28,12 +28,44 @@ public:
 		{
 			RenderCube(transform->GetTransformMatrix(), color);
 		}
+		glm::mat4 transform_Matrix = GetModelTransform()->GetTransformMatrix();
+		glm::vec3 position = transform_Matrix[3];
+
+
+
+		Renderer3D::AddDirectionalLight(glm::vec3(0, 30, 0)+position, glm::vec3(0, -1, 0));
 
 		for (auto& transform : walls)
 		{
-			Renderer3D::DrawVoxel(transform->GetTransformMatrix());
+			RenderWall(transform->GetTransformMatrix());
 		}
 	}
+
+protected:
+	virtual void RenderCubeWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
+	{
+
+		if (GetRenderingPrimitive() == RenderingPrimitive::Points)
+		{
+			Renderer3D::DrawPointCube(transform, color);
+		}
+		else if (GetRenderingPrimitive() == RenderingPrimitive::Triangles)
+		{
+			Renderer3D::DrawVoxel(transform, modelTexture, 1, color);
+		}
+		else if (GetRenderingPrimitive() == RenderingPrimitive::Lines)
+		{
+			Renderer3D::DrawWireCube(transform, color);
+		}
+	
+
+	}
+
+	virtual void RenderWallWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
+	{
+		Renderer3D::DrawVoxel(transform, wallTexture, 1, color);
+	}
+
 
 
 private:
