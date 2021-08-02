@@ -65,7 +65,8 @@ public:
 
 	glm::mat4 GetLightSpaceMatrix()
 	{
-		glm::mat4 lightProjection = glm::ortho(-m_radius, m_radius, -m_radius, m_radius, m_nearPlane, m_farPlane);
+		glm::mat4 lightProjection = glm::ortho(-m_orthogonalSize, m_orthogonalSize, 
+			-m_orthogonalSize, m_orthogonalSize, m_nearPlane, m_farPlane);
 
 		glm::vec3 up = { 0.0, 1.0, 0.0 };
 		//glm::lookAt doesn't know what to do if the center direction and up direction are parallel
@@ -87,6 +88,7 @@ public:
 	const glm::vec3& GetPosition() const { return m_position; }
 
 	float GetFarPlane() const { return m_farPlane; }
+	float GetRadius() const { return m_radius; }
 
 	DirectionalLight& operator=(DirectionalLight&& other) noexcept
 	{
@@ -145,7 +147,8 @@ private:
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	float m_radius = 10.0f;
+	float m_radius = 100.0f;
+	float m_orthogonalSize = 10.0f;
 	float m_nearPlane = 1.0f;
 	float m_farPlane = 50.0f;
 	glm::vec3 m_position;

@@ -556,6 +556,7 @@ void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3&
 	s_shader->SetFloat4("u_lightColors[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetColor());
 	s_shader->SetFloat3("u_lightPos[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetPosition());
 	s_shader->SetFloat("u_shadowMapIndices[" + std::to_string(s_directionalLightIndex) + "]", s_directionalLightIndex);
+	s_shader->SetFloat("u_lightRadius[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetRadius());
 	s_shader->SetMat4("u_lightSpaceMatrices[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetLightSpaceMatrix());
 	
 	s_directionalLightArr[s_directionalLightIndex] = std::move(currLight);
@@ -842,7 +843,7 @@ void Renderer3D::UploadQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTe
 		quadVertices[i].position = (glm::vec3)(transform * glm::vec4(position[i], 1));
 		quadVertices[i].textureCoords = textureCoords[i];
 		quadVertices[i].color = tintColor;
-		quadVertices[i].normal = position[i];
+		quadVertices[i].normal = (glm::vec3)(transform * glm::vec4(0, 0, 1, 1));
 		quadVertices[i].textureIndex = textureIndex;
 		quadVertices[i].tillingFactor = tileFactor;
 		quadVertices[i].uses3DTexture = 0;

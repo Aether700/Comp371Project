@@ -5,6 +5,7 @@
 #include "Tests/AlecPointLightTest.h"
 #include "Tests/TextureTest.h"
 #include "Tests/RendererDirectionalLightTest.h"
+#include "Tests/LightRadiusTest.h"
 
 #include "Core/Application.h"
 #include "Core/Script.h"
@@ -41,6 +42,7 @@ int main()
 	//Add Scripts here   
 
 	Application::AddScript(new ModelManager());
+	//Application::AddScript(new LightRadiusTest());
 
 	///////////////////
 
