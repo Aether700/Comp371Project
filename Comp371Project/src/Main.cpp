@@ -37,8 +37,8 @@ int main()
 
 	//Add Scripts here   
 
-	//Application::AddScript(new ModelManager());
-	Application::AddScript(new MaterialTest());
+	Application::AddScript(new ModelManager());
+	//Application::AddScript(new MaterialTest());
 
 	///////////////////
 

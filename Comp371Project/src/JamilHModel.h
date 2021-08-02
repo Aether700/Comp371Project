@@ -79,13 +79,18 @@ protected:
 		Renderer3D::DrawVoxel(transform, wallTexture, 1, color);
 	}
 
+	virtual void DrawOnSelected(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
+	{
+		glm::mat4 outlineTransform = glm::scale(transform, { m_outlineScale, m_outlineScale, m_outlineScale });
+		Renderer3D::DrawWireCube(outlineTransform, m_glowMat, glm::vec4{ 0, 1, 0, 1 });
+	}
+
+private:
 	glm::vec3 GetModelPosition()
 	{
 		glm::mat4 transformMatrix = GetModelTransform()->GetTransformMatrix();
 		return { transformMatrix[3][0], transformMatrix[3][1], transformMatrix[3][2] };
 	}
-
-private:
 
 	void SetModelCubesTransform()
 	{
@@ -188,5 +193,6 @@ private:
 	float m_wallZOffset = -10.0f;
 
 	glm::vec4 color = { 1, 0, 0, 1 };
-
+	Material m_glowMat = Material(true);
+	float m_outlineScale = 1.0005f;
 };

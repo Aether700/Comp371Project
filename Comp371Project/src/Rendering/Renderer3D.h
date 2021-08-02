@@ -178,43 +178,86 @@ public:
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	//wire cube
+	static void DrawWireCube(const glm::mat4& transform, const Material& mat, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawWireCube(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawWireCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawWireCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	//point cube
+	static void DrawPointCube(const glm::mat4& transform, const Material& mat, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawPointCube(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawPointCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawPointCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	//squares
+	static void DrawQuad(const glm::mat4& transform, const Material& mat, std::shared_ptr<OpenGLTexture2D> texture,
+		float tileFactor = 1.0f, const glm::vec4& tintColor = { 1, 1, 1, 1 });
+
 	static void DrawQuad(const glm::mat4& transform, std::shared_ptr<OpenGLTexture2D> texture,
 		float tileFactor = 1.0f, const glm::vec4& tintColor = { 1, 1, 1, 1 });
+
+	static void DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, std::shared_ptr<OpenGLTexture2D> texture, float tileFactor = 1.0f,
+		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	static void DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		std::shared_ptr<OpenGLTexture2D> texture, float tileFactor = 1.0f,
 		const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
+	static void DrawQuad(const glm::mat4& transform, const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawQuad(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawQuad(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	//wired squares
+	static void DrawWireSquare(const glm::mat4& transform, const Material& mat, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawWireSquare(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawWireSquare(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawWireSquare(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	//Lines
+	static void DrawLine(const glm::mat4& transform, const Material& mat, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawLine(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
+	static void DrawLine(const glm::mat4& transform, const Material& mat, const glm::vec3& point1, 
+		const glm::vec3& point2, const glm::vec4& color = { 1, 1, 1, 1 });
+
 	static void DrawLine(const glm::mat4& transform, const glm::vec3& point1, const glm::vec3& point2, 
+		const glm::vec4& color = { 1, 1, 1, 1 });
+
+	static void DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale,
+		const Material& mat, const glm::vec3& point1, const glm::vec3& point2, 
 		const glm::vec4& color = { 1, 1, 1, 1 });
 
 	static void DrawLine(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, 

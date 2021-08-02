@@ -33,6 +33,8 @@ public:
 		AddModel(new JamilModel(m_worldTransform));
 
 		AddGrid(new Grid(m_worldTransform));
+
+		m_models[m_currModel]->Select();
 	}
 
 	void OnStart()
@@ -349,7 +351,10 @@ private:
 	{
 		if (newIndex < m_models.size())
 		{
+
+			m_models[m_currModel]->Unselect();
 			m_currModel = newIndex;
+			m_models[m_currModel]->Select();
 		}
 	}
 

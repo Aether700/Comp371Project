@@ -20,13 +20,13 @@ public:
 	void OnRender()
 	{
 		//x
-		Renderer3D::DrawLine(m_x->GetTransformMatrix(),{ 1,0,0,0 });
+		Renderer3D::DrawLine(m_x->GetTransformMatrix(), glm::vec4{ 1,0,0,0 });
 
 		//y
-		Renderer3D::DrawLine(m_y->GetTransformMatrix(), { 0,1,0,0 });
+		Renderer3D::DrawLine(m_y->GetTransformMatrix(), glm::vec4{ 0,1,0,0 });
 
 		//z
-		Renderer3D::DrawLine(m_z->GetTransformMatrix(), { 0,0,1,0 });
+		Renderer3D::DrawLine(m_z->GetTransformMatrix(), glm::vec4{ 0,0,1,0 });
 	}
 
 private:
