@@ -97,12 +97,44 @@ public:
 
 		for (auto& transform : m_wallArr)
 		{
-			Renderer3D::DrawVoxel(transform->GetTransformMatrix());
+			RenderWall(transform->GetTransformMatrix());
 		}
+
+		//add light above model
+		glm::vec3 light_pos = (glm::vec3)(GetModelTransform()->GetTransformMatrix())[3] + glm::vec3{0, 30, 0};
+		glm::vec3 light_dir = { 0.0f, -1.0f, 0.0f };
+
+		Renderer3D::AddDirectionalLight(light_pos, light_dir);
 	}
 
+protected:
+	virtual void RenderCubeWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
+	{
+		
+		if(GetRenderingPrimitive() == RenderingPrimitive::Points)
+		{
+			Renderer3D::DrawPointCube(transform, color);
+		}
+		else if (GetRenderingPrimitive() == RenderingPrimitive::Lines)
+		{
+			Renderer3D::DrawWireCube(transform, color);
+		}
+		else if (GetRenderingPrimitive() == RenderingPrimitive::Triangles)
+		{
+			Renderer3D::DrawVoxel(transform, modelTexture, 1, color);
+		}
+
+	}
+
+	virtual void RenderWallWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
+	{
+		Renderer3D::DrawVoxel(transform, wallTexture, 1, color);
+	}
 
 private:
+
+
+
 	std::shared_ptr<Transform> m_cubeArr[14];
 	std::shared_ptr<Transform> m_wallArr[25];
 
