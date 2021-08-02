@@ -70,13 +70,13 @@ public:
 
 	}
 
-protected :
 
+protected:
 	void RenderCubeWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
 	{
 		if (GetRenderingPrimitive() == RenderingPrimitive::Triangles)
-		{	
-			 Renderer3D::DrawVoxel(transform, modelTexture, 1.0f, color);
+		{
+			Renderer3D::DrawVoxel(transform, modelTexture, 1.0f, color);
 		}
 		else if (GetRenderingPrimitive() == RenderingPrimitive::Lines)
 		{
@@ -93,7 +93,6 @@ protected :
 		Renderer3D::DrawVoxel(transform, wallTexture, 1.0f, color);
 
 	}
-
 
 private:
 

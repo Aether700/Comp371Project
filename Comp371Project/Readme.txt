@@ -56,5 +56,9 @@ The tasks have been seperated as following
 - Application/Script framework, camera + camera controller, batch renderer (Jamil Hanachian)
 - Coordinate axis (Alec, Jamil Hirsh)
 - Model Manager (Madelaine, Jamil Hanachian)
-- Grid (Jean)
-
+- Grid, Grid Tiles (Jean)
+- Lighting and Shadows (Jamil Hanachian, Alec, Madelaine, Jean)
+- Textures framework (Jamil Hanachian, Madelaine)
+- World Transform (Jean)
+- Camera Tilt, model reset (Alec)
+- Translation and rotations of the model (Jean)
