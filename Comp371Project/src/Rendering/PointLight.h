@@ -13,7 +13,7 @@ class PointLight
 public:
 	PointLight() : m_shadowMapID(0), m_framebuffer(0) { }
 
-	PointLight(const glm::vec3& position, const glm::vec4& color = { 1, 1, 1, 1 }, unsigned int size = 2048, 
+	PointLight(const glm::vec3& position, const glm::vec4& color = { 1, 1, 1, 1 }, unsigned int size = 512, 
 		bool drawLightCube = true) : m_color(color), m_position(position), 
 		m_size(size), m_drawLightCube(drawLightCube)
 	{

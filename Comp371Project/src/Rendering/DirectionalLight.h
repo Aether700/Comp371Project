@@ -14,7 +14,7 @@ public:
 	DirectionalLight() : m_shadowMapID(0), m_framebuffer(0) { }
 
 	DirectionalLight(const glm::vec3& position, const glm::vec3& direction = { 0, 0, -1 },
-		const glm::vec4& color = { 1, 1, 1, 1 }, unsigned int size = 2048, bool drawLightCube = true)
+		const glm::vec4& color = { 1, 1, 1, 1 }, unsigned int size = 512, bool drawLightCube = true)
 		: m_color(color), m_position(position), m_direction(direction), m_size(size), m_drawLightCube(drawLightCube)
 		//m_framebuffer(std::make_shared<OpenGLFramebuffer>(size, size)) 
 	{
