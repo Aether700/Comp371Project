@@ -17,6 +17,8 @@ public:
 			transform = std::make_shared<Transform>();
 			transform->SetParent(GetWallTransform());
 		}
+
+		m_wireframe_glow_material = Material(true);
 	}
 
 	void OnStart()
@@ -100,11 +102,17 @@ public:
 			RenderWall(transform->GetTransformMatrix());
 		}
 
-		//add light above model
-		glm::vec3 light_pos = (glm::vec3)(GetModelTransform()->GetTransformMatrix())[3] + glm::vec3{0, 30, 0};
-		glm::vec3 light_dir = { 0.0f, -1.0f, 0.0f };
+		// Light should only appear and cast light/shadows if this model is selected
+		if (IsSelected())
+		{
+			Renderer3D::AddPointLight(m_lightPos);
+		}
+	}
 
-		Renderer3D::AddDirectionalLight(light_pos, light_dir);
+	//Light position is set only once, at beginning
+	void SetLightPos()
+	{
+		m_lightPos = (glm::vec3)(GetModelTransform()->GetTransformMatrix())[3] + glm::vec3{ 0, 30, 0 };
 	}
 
 protected:
@@ -131,6 +139,13 @@ protected:
 		Renderer3D::DrawVoxel(transform, wallTexture, 1, color);
 	}
 
+	//Implement glowing boundary effect with wireframe
+	//Called when model is selected, once per cube drawn
+	virtual void DrawOnSelected(const glm::mat4& transform, const glm::vec4& color) 
+	{ 
+		Renderer3D::DrawWireCube(glm::scale(transform, { 1.007, 1.007, 1.007 }), m_wireframe_glow_material, glm::vec4{ 1 } - color + glm::vec4{ 0, 0, 0, 1 });
+	}
+
 private:
 
 
@@ -139,4 +154,8 @@ private:
 	std::shared_ptr<Transform> m_wallArr[25];
 
 	glm::vec4 color = { 0.1, 0.9, 0.1, 1 };
+
+	glm::vec3 m_lightPos;
+
+	Material m_wireframe_glow_material;
 };
