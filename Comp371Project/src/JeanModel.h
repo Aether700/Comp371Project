@@ -40,8 +40,11 @@ public:
 			//transform->scale.z = 0.25f;// to make the wall thinner
 			RenderWall(m_wallCubes[count]->GetTransformMatrix());
 		}
-		glm::vec3 ModelPos = glm::vec3(GetModelTransform()->GetTransformMatrix()[3][0], GetModelTransform()->GetTransformMatrix()[3][1], GetModelTransform()->GetTransformMatrix()[3][2]);
-		Renderer3D::AddDirectionalLight(ModelPos + glm::vec3(0,30,0) ,glm::vec3(0,-1,0));
+
+		if (IsSelected())
+		{
+			Renderer3D::AddPointLight(m_LightPosition);
+		}
 	}
 
 	virtual void Shuffle() override
@@ -100,6 +103,11 @@ protected:
 		WireTransform[1][1] = WireTransform[1][1] * 1.001f;//y
 		WireTransform[2][2] = WireTransform[2][2] * 1.001f;//z
 		Renderer3D::DrawWireCube(WireTransform, glm::vec4(1 - color.x, 1- color.y, 1-color.z, color.w));// opposite color
+	}
+
+	 void SetLightPos() override
+	{
+		 m_LightPosition = glm::vec3(GetModelTransform()->GetTransformMatrix()[3]) + glm::vec3(0,30,0);
 	}
 
 private:
@@ -188,7 +196,7 @@ private:
 		}
 		return true;
 	}
-
+	glm::vec3 m_LightPosition;
 	int wallcount = 0;
 	glm::vec4 color = { 52.0f / 255.0f, 107.0f / 255.0f, 194.0f / 255.0f, 1.0f };
 
