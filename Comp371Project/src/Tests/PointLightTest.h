@@ -66,8 +66,8 @@ public:
 
 	void OnRender()
 	{
-		Renderer3D::DrawVoxel(m_cube.GetTransformMatrix());
-		Renderer3D::DrawVoxel(m_plane.GetTransformMatrix());
+		Renderer3D::DrawVoxel(m_cube.GetTransformMatrix(), glm::vec4{ 0.5, 0, 0.5, 1 });
+		Renderer3D::DrawVoxel(m_plane.GetTransformMatrix(), glm::vec4{0.3, 0.7, 0.1, 1 });
 		Renderer3D::AddPointLight(m_light.position);
 
 		

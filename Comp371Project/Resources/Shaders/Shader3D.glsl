@@ -239,7 +239,7 @@ vec4 CalculatePointLight(vec4 baseColor, int index)
     
     //calculate both specular and diffuse lighting
     vec3 diffuseSpecular = CalculateDiffuseSpecular(baseColor, normal, 
-        u_dirLightPos[index], u_dirLightColors[index]);
+        u_dirLightPos[index], u_pointLightColors[index]);
 
     // calculate shadow
     float shadow = ShadowCalculationPointLight(index);                      
