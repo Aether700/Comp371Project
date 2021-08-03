@@ -317,6 +317,16 @@ public:
 		{
 			m_worldTransform->rotation.y += m_translationSpeed * Time::GetDeltaTime();
 		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_7))
+		{
+			m_worldTransform->rotation.x -= m_translationSpeed * Time::GetDeltaTime();
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_8))
+		{
+			m_worldTransform->rotation.x += m_translationSpeed * Time::GetDeltaTime();
+		}
 		
 		if (m_currShadowToggle >= m_toggleShadowsCooldown && Input::IsKeyPressed(GLFW_KEY_N))
 		{

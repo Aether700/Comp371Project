@@ -29,7 +29,8 @@ Model(toggle with m to activated)
 
 world
 - use WASD to move the work
-- use "9" and "0" to rotate the world clockwise and anticlockwise
+- use "9" and "0" to rotate the world clockwise and anticlockwise in y axis
+- use "7" and "8" to rotate the world clockwise and anticlockwise in x axis
 
 General:
 - Toggle Texture with X
