@@ -201,7 +201,7 @@ void RenderingBatch::AddCubemapShadowMap(std::shared_ptr<OpenGLCubeMap> shadowMa
 			assert(false);
 		}
 
-		m_cubemapShadowMapSlots[m_texture2DIndex] = shadowMap;
+		m_cubemapShadowMapSlots[m_cubemapShadowMapIndex] = shadowMap;
 		m_cubemapShadowMapIndex++;
 	}
 }
@@ -804,7 +804,7 @@ void Renderer3D::UploadVoxel(const glm::mat4& transform, const Material& mat, st
 		cubeVertices[index].position = (glm::vec3)(transform * glm::vec4(posAndNormals[i], 1));
 		cubeVertices[index].textureCoords = posAndNormals[i];
 		cubeVertices[index].color = tintColor;
-		cubeVertices[index].normal = posAndNormals[i + 1];
+		cubeVertices[index].normal = (glm::vec3)(transform * glm::vec4(posAndNormals[i + 1], 0));
 		cubeVertices[index].textureIndex = (float)textureIndex;
 		cubeVertices[index].tillingFactor = tileFactor;
 		cubeVertices[index].uses3DTexture = 1; //set uses3DTexture to true

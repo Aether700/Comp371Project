@@ -66,34 +66,36 @@ public:
 
 	void OnRender()
 	{
-		Renderer3D::DrawVoxel(m_cube.GetTransformMatrix(), glm::vec4{ 0.5, 0, 0.5, 1 });
+		Renderer3D::DrawVoxel(m_cube.GetTransformMatrix(), glm::vec4(1, 0, 0, 1));//glm::vec4{ 0.5, 0, 0.5, 1 });
 		Renderer3D::DrawVoxel(m_plane.GetTransformMatrix(), glm::vec4{0.3, 0.7, 0.1, 1 });
 		Renderer3D::AddPointLight(m_light.position);
 
 		
-		//GenerateShadowMap();
+		/*
+		GenerateShadowMap();
 
-		////clean up
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		//int width, height;
-		//glfwGetWindowSize(Application::GetWindow(), &width, &height);
-		//glViewport(0, 0, width, height);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//clean up
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		int width, height;
+		glfwGetWindowSize(Application::GetWindow(), &width, &height);
+		glViewport(0, 0, width, height);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//m_shader->Bind();
-		//auto camera = Application::GetCamera();
-		//glm::mat4 camTransform = camera->GetTransform();
-		//glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camTransform;
+		m_shader->Bind();
+		auto camera = Application::GetCamera();
+		glm::mat4 camTransform = camera->GetTransform();
+		glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camTransform;
 
-		//m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
-		//
-		//// set lighting uniforms
-		//m_shader->SetFloat3("u_lightPos", m_light.position);
-		//m_shader->SetFloat3("u_viewPos", Application::GetCameraController()->GetCamPos());
-		//m_shader->SetFloat("u_farPlane", m_farPlane);
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_CUBE_MAP, m_shadowMapID);
-		//RenderScene();
+		m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
+		
+		// set lighting uniforms
+		m_shader->SetFloat3("u_lightPos", m_light.position);
+		m_shader->SetFloat3("u_viewPos", Application::GetCameraController()->GetCamPos());
+		m_shader->SetFloat("u_farPlane", m_farPlane);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_shadowMapID);
+		RenderScene();
+		*/
 		
 	}
 
