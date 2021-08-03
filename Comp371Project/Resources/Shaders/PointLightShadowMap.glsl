@@ -56,5 +56,5 @@ void main()
     
     // write this as modified depth
     gl_FragDepth = lightDistance;
-    gl_FragDepth = 0.5f / u_farPlane;
+    //gl_FragDepth = 0.5f / u_farPlane;
 }
