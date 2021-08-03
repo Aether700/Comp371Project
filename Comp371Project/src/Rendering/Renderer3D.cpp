@@ -7,6 +7,7 @@
 #include "../GraphicsAPI/OpenGLTexture2D.h"
 #include "CameraController.h"
 #include "DirectionalLight.h"
+#include "PointLight.h"
 
 #include <array>
 
@@ -20,9 +21,8 @@ Material Renderer3D::s_defaultMaterial = Material(); //create the default materi
 bool Renderer3D::s_useShadows = false;
 DirectionalLight* Renderer3D::s_directionalLightArr;
 unsigned int Renderer3D::s_directionalLightIndex;
-
-std::shared_ptr<DirectionalLight> Renderer3D::s_light;
-
+PointLight* Renderer3D::s_pointLightArr;
+unsigned int Renderer3D::s_pointLightIndex;
 
 unsigned int RenderingBatch::s_maxVertices = 16000;
 unsigned int RenderingBatch::s_maxIndices = 72000;
@@ -314,11 +314,13 @@ void Renderer3D::Init()
 	delete[] samplersCubemapShadowMap;
 
 	s_directionalLightArr = new DirectionalLight[RenderingBatch::s_maxTexture2DShadowMapSlots];
+	s_pointLightArr = new PointLight[RenderingBatch::s_maxCubemapShadowMapSlots];
 }
 
 void Renderer3D::Shutdown()
 {
 	delete[] s_directionalLightArr;
+	delete[] s_pointLightArr;
 }
 
 void Renderer3D::BeginScene()
@@ -331,17 +333,19 @@ void Renderer3D::BeginScene()
 	s_shader->SetFloat3("u_camPos", Application::GetCameraController()->GetCamPos());
 
 	s_directionalLightIndex = 0;
+	s_pointLightIndex = 0;
 }
 
 void Renderer3D::EndScene()
 {
-	if (s_useShadows && s_directionalLightIndex != 0)
+	if (s_useShadows && (s_directionalLightIndex != 0 || s_pointLightIndex != 0))
 	{
 		GenerateShadowMaps();
 		DrawLights();
 		s_shader->Bind();
 		s_shader->SetInt("u_useShadows", 1);
-		s_shader->SetInt("u_numLights", s_directionalLightIndex);
+		s_shader->SetInt("u_numDirLights", s_directionalLightIndex);
+		s_shader->SetInt("u_numPointLights", s_pointLightIndex);
 		AddShadowMapToShaders();
 		FlushBatch();
 	}
@@ -398,6 +402,15 @@ void Renderer3D::AddShadowMapToShaders()
 			pair.second.AddTexture2DShadowMap(shadowMap);
 		}
 	}
+
+	for (int i = 0; i < s_pointLightIndex; i++)
+	{
+		auto shadowMap = s_pointLightArr[i].GetShadowMap();
+		for (auto& pair : s_renderingBatches)
+		{
+			pair.second.AddCubemapShadowMap(shadowMap);
+		}
+	}
 }
 
 void Renderer3D::GenerateShadowMaps()
@@ -407,6 +420,13 @@ void Renderer3D::GenerateShadowMaps()
 		s_directionalLightArr[i].PrepareForShadowMapGeneration();
 		FlushBatch();
 	}
+
+	for (unsigned int i = 0; i < s_pointLightIndex; i++)
+	{
+		s_pointLightArr[i].PrepareForShadowMapGeneration();
+		FlushBatch();
+	}
+
 	CleanUpAfterShadowMapGeneration();
 }
 
@@ -415,6 +435,11 @@ void Renderer3D::DrawLights()
 	for (unsigned int i = 0; i < s_directionalLightIndex; i++)
 	{
 		s_directionalLightArr[i].DrawLightCube();
+	}
+
+	for (unsigned int i = 0; i < s_pointLightIndex; i++)
+	{
+		s_pointLightArr[i].DrawLightCube();
 	}
 }
 
@@ -679,14 +704,29 @@ void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3&
 	DirectionalLight currLight(position, direction, lightColor);
 
 	s_shader->Bind();
-	s_shader->SetFloat4("u_lightColors[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetColor());
-	s_shader->SetFloat3("u_lightPos[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetPosition());
-	s_shader->SetFloat("u_shadowMapIndices[" + std::to_string(s_directionalLightIndex) + "]", s_directionalLightIndex);
+	s_shader->SetFloat4("u_dirLightColors[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetColor());
+	s_shader->SetFloat3("u_dirLightPos[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetPosition());
 	s_shader->SetFloat("u_lightRadius[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetRadius());
-	s_shader->SetMat4("u_lightSpaceMatrices[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetLightSpaceMatrix());
+	s_shader->SetMat4("u_dirLightSpaceMatrices[" + std::to_string(s_directionalLightIndex) + "]", 
+		currLight.GetLightSpaceMatrix());
 	
 	s_directionalLightArr[s_directionalLightIndex] = std::move(currLight);
 	s_directionalLightIndex++;
+}
+
+void Renderer3D::AddPointLight(const glm::vec3& position, const glm::vec4& lightColor)
+{
+	assert(s_pointLightIndex < RenderingBatch::s_maxCubemapShadowMapSlots);
+
+	PointLight currLight(position, lightColor);
+
+	s_shader->Bind();
+	s_shader->SetFloat4("u_pointLightColors[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetColor());
+	s_shader->SetFloat3("u_pointLightPos[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetPosition());
+	s_shader->SetFloat("u_pointLightFarPlanes[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetFarPlane());
+
+	s_pointLightArr[s_pointLightIndex] = std::move(currLight);
+	s_pointLightIndex++;
 }
 
 const Renderer3DStatistics& Renderer3D::GetStats()

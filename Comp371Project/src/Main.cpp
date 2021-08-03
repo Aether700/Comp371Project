@@ -6,7 +6,7 @@
 
 #include "Core/Debug.h"
 
-#include "Tests/MaterialTest.h"
+#include "Tests/PointLightTest.h"
 
 /*Task seperation
 * 
@@ -36,9 +36,9 @@ int main()
 	Application::Init();
 
 	//Add Scripts here   
-
-	Application::AddScript(new ModelManager());
-	//Application::AddScript(new MaterialTest());
+	
+	//Application::AddScript(new ModelManager());
+	Application::AddScript(new PointLightTest());
 
 	///////////////////
 

@@ -162,6 +162,7 @@
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Core\Time.cpp" />
     <ClCompile Include="src\Rendering\DirectionalLight.cpp" />
+    <ClCompile Include="src\Rendering\PointLight.cpp" />
     <ClCompile Include="src\Rendering\Renderer3D.cpp" />
     <ClCompile Include="src\Tests\AlecPointLightTest.h" />
   </ItemGroup>
@@ -177,6 +178,7 @@
     <ClInclude Include="src\MadelaineModel.h" />
     <ClInclude Include="src\ModelManager.h" />
     <ClInclude Include="src\Rendering\DirectionalLight.h" />
+    <ClInclude Include="src\Rendering\PointLight.h" />
     <ClInclude Include="src\Tests\CameraControllerTestScene.h" />
     <ClInclude Include="src\Core\Debug.h" />
     <ClInclude Include="src\Tests\CubeRenderingTest.h" />

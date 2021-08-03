@@ -198,9 +198,15 @@ OpenGLCubeMap::OpenGLCubeMap(unsigned int size, unsigned int internalDataFormat,
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }
 
+OpenGLCubeMap::OpenGLCubeMap(unsigned int rendererID, unsigned int size) 
+	: m_rendererID(rendererID), m_size(size), m_internalFormat({0, 0, 0, 0, 0, 0}) { }
+
 OpenGLCubeMap::~OpenGLCubeMap()
 {
-	glDeleteTextures(1, &m_rendererID);
+	if (m_internalFormat[0] != 0)
+	{
+		glDeleteTextures(1, &m_rendererID);
+	}
 }
 
 //binds the cubemap to the provided texture slot (defaults to slot 0)

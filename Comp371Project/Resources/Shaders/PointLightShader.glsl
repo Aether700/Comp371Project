@@ -46,38 +46,12 @@ vec3 gridSamplingDisk[20] = vec3[]
 
 float ShadowCalculation(vec3 fragPos)
 {
-    // get vector between fragment position and light position
     vec3 fragToLight = fragPos - u_lightPos;
     
-    // use the fragment to light vector to sample from the depth map    
-    // float closestDepth = texture(u_shadowMap, fragToLight).r;
-    // it is currently in linear range between [0,1], let's re-transform it back to original depth value
-    // closestDepth *= u_farPlane;
+    
     // now get current linear depth as the length between the fragment and light position
     float currentDepth = length(fragToLight);
     
-    // test for shadows
-    // float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, u_farPlane] range
-    // float shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0;
-    // PCF
-    // float shadow = 0.0;
-    // float bias = 0.05; 
-    // float samples = 4.0;
-    // float offset = 0.1;
-    // for(float x = -offset; x < offset; x += offset / (samples * 0.5))
-    // {
-        // for(float y = -offset; y < offset; y += offset / (samples * 0.5))
-        // {
-            // for(float z = -offset; z < offset; z += offset / (samples * 0.5))
-            // {
-                // float closestDepth = texture(u_shadowMap, fragToLight + vec3(x, y, z)).r; // use lightdir to lookup cubemap
-                // closestDepth *= u_farPlane;   // Undo mapping [0;1]
-                // if(currentDepth - bias > closestDepth)
-                    // shadow += 1.0;
-            // }
-        // }
-    // }
-    // shadow /= (samples * samples * samples);
     float shadow = 0.0;
     float bias = 0.15;
     int samples = 20;
@@ -91,10 +65,7 @@ float ShadowCalculation(vec3 fragPos)
             shadow += 1.0;
     }
     shadow /= float(samples);
-        
-    // display closestDepth as debug (to visualize depth cubemap)
-    FragColor = vec4(texture(u_shadowMap, fragToLight).r, 0, 0, 1.0);    
-        
+    
     return shadow;
 }
 
@@ -121,8 +92,7 @@ void main()
     
     // calculate shadow
     float shadow = ShadowCalculation(fs_in.FragPos);                      
-    //vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;    
-    vec3 lighting = (ambient + diffuse + specular) * color;    
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;    
     
-    //FragColor = vec4(lighting, 1.0);
+    FragColor = vec4(lighting, 1.0);
 }

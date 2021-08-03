@@ -13,6 +13,7 @@
 #include <memory>
 
 class DirectionalLight;
+class PointLight;
 
 class Material
 {
@@ -277,6 +278,7 @@ public:
 	static void AddDirectionalLight(const glm::vec3& position, const glm::vec3& direction, 
 		const glm::vec4& lightColor = { 1, 1, 1, 1 });
 
+	static void AddPointLight(const glm::vec3& position, const glm::vec4& lightColor = { 1, 1, 1, 1 });
 
 private:
 	//draw to data passed to the renderer to the screen
@@ -329,6 +331,8 @@ private:
 	static DirectionalLight* s_directionalLightArr;
 	static unsigned int s_directionalLightIndex;
 
-	//temp
-	static std::shared_ptr<DirectionalLight> s_light;
+	static PointLight* s_pointLightArr;
+	static unsigned int s_pointLightIndex;
+
+	
 };

@@ -16,13 +16,13 @@ layout(location = 11) in float a_ignoresLighting;
 
 #define NUM_DIRECTIONAL_LIGHTS 8
 
-uniform mat4 u_lightSpaceMatrices[NUM_DIRECTIONAL_LIGHTS];
+uniform mat4 u_dirLightSpaceMatrices[NUM_DIRECTIONAL_LIGHTS];
 
 uniform mat4 u_viewProjMatrix;
-uniform int u_numLights;
+uniform int u_numDirLights;
 
-out vec4 v_lightSpaceFragCoords[NUM_DIRECTIONAL_LIGHTS];
-flat out int v_numLights;
+out vec4 v_dirLightSpaceFragCoords[NUM_DIRECTIONAL_LIGHTS];
+flat out int v_numDirLights;
 out vec3 v_fragPos;
 out vec3 v_textureCoords;
 out vec3 v_normal;
@@ -39,11 +39,11 @@ flat out float v_ignoresLighting;
 
 void main()
 {
-    v_numLights = u_numLights;
+    v_numDirLights = u_numDirLights;
     
-    for (int i = 0; i < v_numLights && i < NUM_DIRECTIONAL_LIGHTS; i++)
+    for (int i = 0; i < v_numDirLights && i < NUM_DIRECTIONAL_LIGHTS; i++)
     {
-        v_lightSpaceFragCoords[i] = u_lightSpaceMatrices[i] * vec4(a_position, 1.0);
+        v_dirLightSpaceFragCoords[i] = u_dirLightSpaceMatrices[i] * vec4(a_position, 1.0);
     }
 	v_textureCoords = a_textureCoords;
 	v_color = a_color;
@@ -68,16 +68,20 @@ void main()
 layout(location = 0) out vec4 color;
 
 #define NUM_DIRECTIONAL_LIGHTS 8
+#define NUM_POINT_LIGHTS 8
 
-
-uniform vec4 u_lightColors[NUM_DIRECTIONAL_LIGHTS];
-uniform vec3 u_lightPos[NUM_DIRECTIONAL_LIGHTS];
-uniform float u_shadowMapIndices[NUM_DIRECTIONAL_LIGHTS];
+uniform vec4 u_dirLightColors[NUM_DIRECTIONAL_LIGHTS];
+uniform vec3 u_dirLightPos[NUM_DIRECTIONAL_LIGHTS];
 uniform float u_lightRadius[NUM_DIRECTIONAL_LIGHTS];
 
-in vec4 v_lightSpaceFragCoords[NUM_DIRECTIONAL_LIGHTS];
+uniform int u_numPointLights;
+uniform vec4 u_pointLightColors[NUM_POINT_LIGHTS];
+uniform vec3 u_pointLightPos[NUM_POINT_LIGHTS];
+uniform float u_pointLightFarPlanes[NUM_POINT_LIGHTS];
 
-flat in int v_numLights;
+in vec4 v_dirLightSpaceFragCoords[NUM_DIRECTIONAL_LIGHTS];
+
+flat in int v_numDirLights;
 in vec3 v_fragPos;
 in vec3 v_textureCoords;
 in vec3 v_normal;
@@ -103,12 +107,22 @@ uniform vec3 u_camPos;
 
 uniform bool u_useShadows;
 
+// array of offset direction for sampling for the point light shadow calculations
+vec3 gridSamplingDisk[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
 float ShadowCalculationDirectionalLight(int index)
 {
     // perform perspective divide
-    vec3 projCoords = v_lightSpaceFragCoords[index].xyz / v_lightSpaceFragCoords[index].w;
+    vec3 projCoords = v_dirLightSpaceFragCoords[index].xyz / v_dirLightSpaceFragCoords[index].w;
 
-    float distance = length(u_lightPos[index] - projCoords);
+    float distance = length(u_dirLightPos[index] - projCoords);
 
     //if the fragment is farther than the radius of the light then it is in shadow
     if (distance > u_lightRadius[index])
@@ -120,7 +134,7 @@ float ShadowCalculationDirectionalLight(int index)
     projCoords = projCoords * 0.5 + 0.5;
     
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(u_shadow2D[int(u_shadowMapIndices[index])], projCoords.xy).r; 
+    float closestDepth = texture(u_shadow2D[int(index)], projCoords.xy).r; 
 
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
@@ -128,17 +142,17 @@ float ShadowCalculationDirectionalLight(int index)
     
     // calculate bias (based on depth map resolution and slope)
     vec3 normal = normalize(v_normal);
-    vec3 lightDir = normalize(u_lightPos[index] - v_fragPos);
+    vec3 lightDir = normalize(u_dirLightPos[index] - v_fragPos);
     float bias = 0.03f;
     
     // PCF
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(u_shadow2D[int(u_shadowMapIndices[index])], 0);
+    vec2 texelSize = 1.0 / textureSize(u_shadow2D[int(index)], 0);
     for(int x = -1; x <= 1; ++x)
     {
         for(int y = -1; y <= 1; ++y)
         {
-            float pcfDepth = texture(u_shadow2D[int(u_shadowMapIndices[index])], projCoords.xy + vec2(x, y) * texelSize).r; 
+            float pcfDepth = texture(u_shadow2D[int(index)], projCoords.xy + vec2(x, y) * texelSize).r; 
             shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;        
         }    
     }
@@ -151,29 +165,85 @@ float ShadowCalculationDirectionalLight(int index)
     return shadow;
 }
 
+vec3 CalculateAmbiant(vec4 baseColor)
+{
+    return v_ambiantIntensity * baseColor.xyz;
+}
+
+//returns the diffuse + specular color
+vec3 CalculateDiffuseSpecular(vec4 baseColor, vec3 normal, vec3 lightPos, vec4 lightColor)
+{
+    vec3 lightDir = normalize(lightPos - v_fragPos);
+    float diff = max(dot(lightDir, normal), 0.0);
+    vec3 diffuse = v_diffuseIntensity * diff * lightColor.xyz;
+
+    vec3 viewDir = normalize(u_camPos - v_fragPos);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), v_shininess); 
+    vec3 specular =  v_specularIntensity * lightColor.xyz * spec;
+
+    return diffuse + specular;
+}
+
 vec4 CalculateDirectionalLight(vec4 baseColor, int index)
 {
     vec3 normal = normalize(v_normal);
     
     // ambient
-    vec3 ambient = v_ambiantIntensity * baseColor.xyz;
+    vec3 ambient = CalculateAmbiant(baseColor);
     
-    // diffuse
-    vec3 lightDir = normalize(u_lightPos[index] - v_fragPos);
-    float diff = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = v_diffuseIntensity * diff * u_lightColors[index].xyz;
-    
-
-    // specular
-    vec3 viewDir = normalize(u_camPos - v_fragPos);
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), v_shininess); 
-    vec3 specular =  v_specularIntensity * u_lightColors[index].xyz * spec;
-
+    //calculate both specular and diffuse lighting
+    vec3 diffuseSpecular = CalculateDiffuseSpecular(baseColor, normal, 
+        u_dirLightPos[index], u_dirLightColors[index]);
 
     // calculate shadow
     float shadow = ShadowCalculationDirectionalLight(index);                      
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * baseColor.xyz;    
+    vec3 lighting = (ambient + (1.0 - shadow) * diffuseSpecular) * baseColor.xyz;    
+    
+    return vec4(lighting, 0);
+}
+
+float ShadowCalculationPointLight(int index)
+{
+    vec3 fragToLight = v_fragPos - u_pointLightPos[index];
+    
+    // now get current linear depth as the length between the fragment and light position
+    float currentDepth = length(fragToLight);
+    
+    float shadow = 0.0f;
+    float bias = 0.15f;
+    int samples = 20;
+    float viewDistance = length(u_camPos - v_fragPos);
+    float diskRadius = (1.0f + (viewDistance / u_pointLightFarPlanes[index])) / 25.0f;
+    for(int i = 0; i < samples; ++i)
+    {
+        float closestDepth = texture(u_cubeMapShadowMap[index], fragToLight + gridSamplingDisk[i] * diskRadius).r;
+        closestDepth *= u_pointLightFarPlanes[index];   // undo mapping [0, 1]
+        if(currentDepth - bias > closestDepth)
+        {
+            shadow += 1.0;
+        }
+    }
+    shadow /= float(samples);
+    
+    return shadow;
+}
+
+
+vec4 CalculatePointLight(vec4 baseColor, int index)
+{
+    vec3 normal = normalize(v_normal);
+    
+    // ambient
+    vec3 ambient = CalculateAmbiant(baseColor);
+    
+    //calculate both specular and diffuse lighting
+    vec3 diffuseSpecular = CalculateDiffuseSpecular(baseColor, normal, 
+        u_dirLightPos[index], u_dirLightColors[index]);
+
+    // calculate shadow
+    float shadow = ShadowCalculationPointLight(index);                      
+    vec3 lighting = (ambient + (1.0 - shadow) * diffuseSpecular) * baseColor.xyz;    
     
     return vec4(lighting, 0);
 }
@@ -182,9 +252,14 @@ vec4 CalculateLighting(vec4 baseColor)
 {
     vec4 result = vec4(0, 0, 0, 1);
 
-    for (int i = 0; i < v_numLights; i++)
+    for (int i = 0; i < v_numDirLights; i++)
     {
         result += CalculateDirectionalLight(baseColor, i);
+    }
+
+    for (int i = 0; i < u_numPointLights; i++)
+    {
+        result += CalculatePointLight(baseColor, i);
     }
 
     return result;

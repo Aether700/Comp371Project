@@ -33,7 +33,8 @@ public:
 	//creates an empty cubemap of the provided width and height with the specified internalDataFormat
 	OpenGLCubeMap(unsigned int size, unsigned int internalDataFormat, unsigned int type = GL_UNSIGNED_BYTE);
 
-	
+	OpenGLCubeMap(unsigned int rendererID, unsigned int size);
+
 	~OpenGLCubeMap();
 
 	virtual unsigned int GetRendererID() const { return m_rendererID; }

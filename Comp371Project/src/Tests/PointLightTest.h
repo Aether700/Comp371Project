@@ -27,7 +27,8 @@ class PointLightTest : public Script
 public:
 	void OnStart()
 	{
-		Application::SetBackgroundColor({ 1, 1, 1, 1 });
+		Application::SetBackgroundColor({ 0, 0, 0, 1 });
+		Renderer3D::UseShadows(true);
 		PrepareCubeAndPlane();
 			
 		m_shader = std::make_shared<OpenGLShader>("Resources/Shaders/PointLightShader.glsl");
@@ -40,22 +41,22 @@ public:
 
 	void OnUpdate()
 	{
-		if (Input::IsKeyPressed(GLFW_KEY_W))
+		if (Input::IsKeyPressed(GLFW_KEY_UP))
 		{
 			m_light.position.z -= 5*Time::GetDeltaTime();
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_S))
+		if (Input::IsKeyPressed(GLFW_KEY_DOWN))
 		{
 			m_light.position.z += 5*Time::GetDeltaTime();
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_A))
+		if (Input::IsKeyPressed(GLFW_KEY_LEFT))
 		{
 			m_light.position.x -= 5 * Time::GetDeltaTime();
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_D))
+		if (Input::IsKeyPressed(GLFW_KEY_RIGHT))
 		{
 			m_light.position.x += 5 * Time::GetDeltaTime();
 		}
@@ -65,23 +66,12 @@ public:
 
 	void OnRender()
 	{
-		GenerateShadowMap();
+		Renderer3D::DrawVoxel(m_cube.GetTransformMatrix());
+		Renderer3D::DrawVoxel(m_plane.GetTransformMatrix());
+		Renderer3D::AddPointLight(m_light.position);
 
 		/*
-		auto camera = Application::GetCamera();
-		glm::mat4 camTransform = camera->GetTransform();
-		glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camTransform;
-
-		m_shader->Bind();
-		m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
-		m_shader->SetMat4("u_lightSpaceMatrix", glm::mat4(1.0f));
-		m_shader->SetInt("u_shadowMap", 0);
-		m_shader->SetFloat3("viewPos", Application::GetCameraController()->GetCamPos());
-		
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_shadowMapID);
-		*/
+		GenerateShadowMap();
 
 		//clean up
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -104,6 +94,7 @@ public:
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, m_shadowMapID);
 		RenderScene();
+		*/
 	}
 
 private:
@@ -380,6 +371,6 @@ private:
 	unsigned int m_fboSize = 1024;
 	unsigned int m_shadowMapID;
 
-	float m_farPlane = 1;
-	float m_nearPlane = 25;
+	float m_nearPlane = 1;
+	float m_farPlane = 25;
 };

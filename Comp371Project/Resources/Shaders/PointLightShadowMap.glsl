@@ -23,8 +23,12 @@ void main()
 {
     for (int face = 0; face < 6; ++face)
     {
-        gl_Layer = face; // built-in variable that specifies to which face we render.
-        for (int i = 0; i < 3; ++i) // for each triangle's vertices
+        //tell opengl which face of the cubemap to render to
+        gl_Layer = face; 
+        
+        //for every vertex of the triangle duplicate it and cast it into the different 
+        //light spaces to see what each of the directions of the point light
+        for (int i = 0; i < 3; ++i) 
         {
             v_fragPos = gl_in[i].gl_Position;
             gl_Position = u_lightSpaceMatrices[face] * v_fragPos;
@@ -37,7 +41,7 @@ void main()
 #type fragment
 #version 330 core
 
-// fragPos from GS 
+//fragPos taken from the geometry shader 
 in vec4 v_fragPos;
 
 uniform vec3 u_lightPos;
@@ -47,7 +51,7 @@ void main()
 {
     float lightDistance = length(v_fragPos.xyz - u_lightPos);
     
-    // map to [0;1] range by dividing by far_plane
+    // map to [0, 1] range by dividing by far_plane
     lightDistance = lightDistance / u_farPlane;
     
     // write this as modified depth
