@@ -70,31 +70,31 @@ public:
 		Renderer3D::DrawVoxel(m_plane.GetTransformMatrix());
 		Renderer3D::AddPointLight(m_light.position);
 
-		/*
-		GenerateShadowMap();
-
-		//clean up
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		int width, height;
-		glfwGetWindowSize(Application::GetWindow(), &width, &height);
-		glViewport(0, 0, width, height);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		m_shader->Bind();
-		auto camera = Application::GetCamera();
-		glm::mat4 camTransform = camera->GetTransform();
-		glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camTransform;
-
-		m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
 		
-		// set lighting uniforms
-		m_shader->SetFloat3("u_lightPos", m_light.position);
-		m_shader->SetFloat3("u_viewPos", Application::GetCameraController()->GetCamPos());
-		m_shader->SetFloat("u_farPlane", m_farPlane);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, m_shadowMapID);
-		RenderScene();
-		*/
+		//GenerateShadowMap();
+
+		////clean up
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//int width, height;
+		//glfwGetWindowSize(Application::GetWindow(), &width, &height);
+		//glViewport(0, 0, width, height);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		//m_shader->Bind();
+		//auto camera = Application::GetCamera();
+		//glm::mat4 camTransform = camera->GetTransform();
+		//glm::mat4 viewProjectionMatrix = camera->GetProjectionMatrix() * camTransform;
+
+		//m_shader->SetMat4("u_viewProjMatrix", viewProjectionMatrix);
+		//
+		//// set lighting uniforms
+		//m_shader->SetFloat3("u_lightPos", m_light.position);
+		//m_shader->SetFloat3("u_viewPos", Application::GetCameraController()->GetCamPos());
+		//m_shader->SetFloat("u_farPlane", m_farPlane);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, m_shadowMapID);
+		//RenderScene();
+		
 	}
 
 private:
@@ -365,7 +365,7 @@ private:
 
 	Transform m_cube = Transform({0, 0, -3});
 	Transform m_plane = Transform({ 0, -3, -3 }, { 0, 0, 0 }, {10, 0.5f, 10});
-	Transform m_light = Transform({ 0, 3, -3 }, { 0, 0, 0 }, {0.1f, 0.1f, 0.1f});
+	Transform m_light = Transform({ 0, 3, -5 }, { 0, 0, 0 }, {0.1f, 0.1f, 0.1f});
 
 	unsigned int m_fbo;
 	unsigned int m_fboSize = 1024;
