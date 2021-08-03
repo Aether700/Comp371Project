@@ -42,6 +42,8 @@ public:
 	{
 		s_shader->Bind();
 		SetLightMatricesUniforms();
+		s_shader->SetFloat("u_farPlane", m_farPlane);
+		s_shader->SetFloat3("u_lightPos", m_position);
 
 		glViewport(0, 0, m_size, m_size);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
@@ -59,7 +61,7 @@ public:
 
 	std::shared_ptr<OpenGLCubeMap> GetShadowMap() const
 	{
-		return std::make_shared<OpenGLCubeMap>(m_shadowMapID, m_size, m_size);
+		return std::make_shared<OpenGLCubeMap>(m_shadowMapID);
 	}
 
 	std::vector<glm::mat4> GetLightSpaceMatrices()
