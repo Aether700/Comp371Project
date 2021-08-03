@@ -239,7 +239,7 @@ vec4 CalculatePointLight(vec4 baseColor, int index)
     
     //calculate both specular and diffuse lighting
     vec3 diffuseSpecular = CalculateDiffuseSpecular(baseColor, normal, 
-        u_dirLightPos[index], u_pointLightColors[index]);
+        u_pointLightPos[index], u_pointLightColors[index]);
 
     // calculate shadow
     float shadow = ShadowCalculationPointLight(index);                      
@@ -287,11 +287,4 @@ void main()
     {
         color = baseColor;
     }
-    
-    /*
-    vec3 fragToLight = v_fragPos - u_pointLightPos[0];
-    float closestDepth = texture(u_cubeMapShadowMap[0], fragToLight).r;
-    closestDepth *= u_pointLightFarPlanes[0];   // undo mapping [0, 1]
-    color = vec4(closestDepth, 0, 0, 1);
-    */
 }

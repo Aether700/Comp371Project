@@ -40,6 +40,10 @@ public:
 	void OnStart()
 	{
 		SetModelsPos();
+		for (Model* m : m_models)
+		{
+			m->SetLightPos();
+		}
 	}
 
 	void OnUpdate()

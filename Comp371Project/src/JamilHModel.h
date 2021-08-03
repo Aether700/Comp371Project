@@ -26,6 +26,11 @@ public:
 		SetModelCubesTransform();
 		SetWallCubesTransform();
 	}
+	
+	void SetLightPos()
+	{
+		m_lightPos = GetModelPosition() + glm::vec3(0, 30, 0);
+	}
 
 	void OnRender()
 	{
@@ -39,10 +44,13 @@ public:
 			RenderWall(m_wallCubes[i]->GetTransformMatrix());
 		}
 
-		//draw light
-		glm::vec3 lightPos = GetModelPosition() + glm::vec3(0, 30, 0);
-		Renderer3D::AddDirectionalLight(lightPos, {0, -1, 0});
- 	}
+
+		//draw light only if the model is selected
+		if (IsSelected())
+		{
+			Renderer3D::AddPointLight(m_lightPos);
+		}
+	}
 
 	//shuffles the cube as per the bonus marks requirements of the assignment
 	virtual void Shuffle() override
@@ -183,6 +191,8 @@ private:
 		}
 		return false;
 	}
+
+	glm::vec3 m_lightPos;
 
 	std::shared_ptr<Transform> m_modelCubes[14];
 

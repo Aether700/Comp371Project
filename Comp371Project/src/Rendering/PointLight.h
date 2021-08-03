@@ -164,7 +164,7 @@ private:
 	}
 
 	float m_nearPlane = 1.0f;
-	float m_farPlane = 25.0f;
+	float m_farPlane = 100;//25.0f;
 	glm::vec3 m_position;
 	glm::vec4 m_color;
 	bool m_drawLightCube;
