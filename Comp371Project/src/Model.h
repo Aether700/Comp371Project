@@ -18,7 +18,8 @@ public:
 
 	virtual ~Model() { }
 
-	
+	virtual void SetLightPos() { }
+
 	std::shared_ptr<Transform>& GetTransform() { return m_transform; }
 	std::shared_ptr<Transform>& GetModelTransform() { return m_modelTransform; }
 	std::shared_ptr<Transform>& GetWallTransform() { return m_wallTransform; }
