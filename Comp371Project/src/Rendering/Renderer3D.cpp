@@ -741,9 +741,9 @@ void Renderer3D::AddPointLight(const glm::vec3& position, const glm::vec4& light
 	PointLight currLight(position, lightColor);
 
 	s_shader->Bind();
-	s_shader->SetFloat4("u_pointLightColors[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetColor());
-	s_shader->SetFloat3("u_pointLightPos[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetPosition());
-	s_shader->SetFloat("u_pointLightFarPlanes[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetFarPlane());
+	s_shader->SetFloat4("u_pointLightColors[" + std::to_string(s_pointLightIndex) + "]", currLight.GetColor());
+	s_shader->SetFloat3("u_pointLightPos[" + std::to_string(s_pointLightIndex) + "]", currLight.GetPosition());
+	s_shader->SetFloat("u_pointLightFarPlanes[" + std::to_string(s_pointLightIndex) + "]", currLight.GetFarPlane());
 
 	if (s_pointLightArr[s_pointLightIndex] != currLight)
 	{
