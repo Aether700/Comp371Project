@@ -36,7 +36,7 @@ public:
 	{
 		for (auto& transform : m_modelCubes)
 		{
-			RenderCube(transform->GetTransformMatrix(), color);
+			RenderCube(transform->GetTransformMatrix(), m_color);
 		}
 
 		for (unsigned int i = 0; i < m_wallCubeCount; i++)
@@ -70,7 +70,7 @@ protected:
 	{
 		if (GetRenderingPrimitive() == RenderingPrimitive::Triangles)
 		{
-			Renderer3D::DrawVoxel(transform, modelTexture);
+			Renderer3D::DrawVoxel(transform, modelTexture, 1, m_color);
 		}
 		else if (GetRenderingPrimitive() == RenderingPrimitive::Lines)
 		{
@@ -202,7 +202,7 @@ private:
 
 	float m_wallZOffset = -10.0f;
 
-	glm::vec4 color = { 1, 0, 0, 1 };
+	glm::vec4 m_color = { 1, 0, 0, 1 };
 	Material m_glowMat = Material(true);
 	float m_outlineScale = 1.001f;
 };

@@ -122,6 +122,16 @@ public:
 		return *this;
 	}
 
+	bool operator==(const DirectionalLight& other) const
+	{
+		return m_position == other.m_position && m_direction == other.m_direction;
+	}
+
+	bool operator!=(const DirectionalLight& other) const
+	{
+		return !(*this == other);
+	}
+
 private:
 	static std::shared_ptr<OpenGLShader> s_shader;
 	static Material s_glowMat;

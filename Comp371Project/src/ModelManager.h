@@ -98,6 +98,7 @@ public:
 				{
 					m_models[m_currModel]->GetModelTransform()->position.y -= m_translationSpeed * Time::GetDeltaTime();
 				}
+				Renderer3D::UpdateLights();
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_W))
@@ -110,6 +111,7 @@ public:
 				{
 					m_models[m_currModel]->GetModelTransform()->position.y += m_translationSpeed * Time::GetDeltaTime();
 				}
+				Renderer3D::UpdateLights();
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_D))
@@ -122,6 +124,7 @@ public:
 				{
 					m_models[m_currModel]->GetModelTransform()->position.x += m_translationSpeed * Time::GetDeltaTime();
 				}
+				Renderer3D::UpdateLights();
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_A))
@@ -134,21 +137,25 @@ public:
 				{
 					m_models[m_currModel]->GetModelTransform()->position.x -= m_translationSpeed * Time::GetDeltaTime();
 				}
+				Renderer3D::UpdateLights();
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_Q))
 			{
 				m_models[m_currModel]->GetModelTransform()->rotation.z -= m_rotationSpeed * Time::GetDeltaTime();
+				Renderer3D::UpdateLights();
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_E))
 			{
 				m_models[m_currModel]->GetModelTransform()->rotation.z += m_rotationSpeed * Time::GetDeltaTime();
+				Renderer3D::UpdateLights();
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_O)) //one small step foward
 			{
 				m_models[m_currModel]->GetModelTransform()->position.z -= m_translationSpeed * Time::GetDeltaTime();
+				Renderer3D::UpdateLights();
 			}
 
 			if (m_currMovementToggle >= m_toggleMovementCooldown && Input::IsKeyPressed(GLFW_KEY_I)) // toggle continuos step fowards
@@ -171,7 +178,9 @@ public:
 				{
 					m_models[m_currModel]->GetModelTransform()->position.z -= m_translationSpeed * Time::GetDeltaTime();
 				}
+				Renderer3D::UpdateLights();
 			}
+
 			/*pressing the C key toggle between translation and
 			  rotation mode which will change how the awsd keys behave
 			*/
@@ -198,16 +207,19 @@ public:
 		if (Input::IsKeyPressed(GLFW_KEY_P))
 		{
 			m_models[m_currModel]->SetRenderingPrimitive(RenderingPrimitive::Points);
+			Renderer3D::UpdateLights();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_T))
 		{
 			m_models[m_currModel]->SetRenderingPrimitive(RenderingPrimitive::Triangles);
+			Renderer3D::UpdateLights();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_L))
 		{
 			m_models[m_currModel]->SetRenderingPrimitive(RenderingPrimitive::Lines);
+			Renderer3D::UpdateLights();
 		}
 
 		//pressing U and J will scale up and down the model as specified in the assignment
@@ -215,15 +227,14 @@ public:
 		{
 			m_models[m_currModel]->GetModelTransform()->scale += Time::GetDeltaTime()
 				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
-
-			//m_models[m_currModel]->GetWallTransform()->scale += Time::GetDeltaTime()
-			//	* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
+			Renderer3D::UpdateLights();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_J))
 		{
 			m_models[m_currModel]->GetModelTransform()->scale -= Time::GetDeltaTime()
 				* m_scaleSpeed * glm::vec3{ 1, 1, 1 };
+			Renderer3D::UpdateLights();
 		}
 
 		//reset the model to original position
@@ -238,6 +249,7 @@ public:
 			m_models[m_currModel]->GetWallTransform()->position = positions[m_currModel];
 			m_models[m_currModel]->GetWallTransform()->rotation = rotations[m_currModel];
 			m_models[m_currModel]->GetWallTransform()->scale = { 1.0,1.0,1.0 };
+			Renderer3D::UpdateLights();
 		}
 
 		//reset all models to original position
@@ -258,6 +270,7 @@ public:
 			m_worldTransform->position = glm::vec3(0, 0, 0);
 			m_worldTransform->rotation = glm::vec3(0, 0, 0);
 			m_worldTransform->scale = glm::vec3(1, 1, 1);
+			Renderer3D::UpdateLights();
 		}
 
 		if (m_currTextureTime >= m_textureCooldown && Input::IsKeyPressed(GLFW_KEY_X))
@@ -268,6 +281,7 @@ public:
 			}
 			m_grid[0]->ToggleTexture();
 			m_currTextureTime = 0.0f;
+			Renderer3D::UpdateLights();
 		}
 		else if (m_currTextureTime < m_textureCooldown)
 		{
@@ -282,6 +296,7 @@ public:
 		{
 			m_models[m_currModel]->Shuffle();
 			m_currShuffle = 0.0f;
+			Renderer3D::UpdateLights();
 		}
 		else if (m_currShuffle < m_shuffleCooldown)
 		{
@@ -291,43 +306,51 @@ public:
 		if (Input::IsKeyPressed(GLFW_KEY_UP))
 		{
 			m_worldTransform->position.z += m_translationSpeed * Time::GetDeltaTime();
+			Renderer3D::UpdateLights();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_DOWN))
 		{
 			m_worldTransform->position.z -= m_translationSpeed * Time::GetDeltaTime();
+			Renderer3D::UpdateLights();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_LEFT))
 		{
 			m_worldTransform->position.x -= m_translationSpeed * Time::GetDeltaTime();
+			Renderer3D::UpdateLights();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_RIGHT))
 		{
 			m_worldTransform->position.x += m_translationSpeed * Time::GetDeltaTime();
+			Renderer3D::UpdateLights();
 		}
-		
+
 		if (Input::IsKeyPressed(GLFW_KEY_9))
 		{
 			m_worldTransform->rotation.y -= m_translationSpeed * Time::GetDeltaTime();
+			Renderer3D::UpdateLights();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_0))
 		{
 			m_worldTransform->rotation.y += m_translationSpeed * Time::GetDeltaTime();
+			Renderer3D::UpdateLights();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_7))
 		{
 			m_worldTransform->rotation.x -= m_translationSpeed * Time::GetDeltaTime();
+			Renderer3D::UpdateLights();
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_8))
 		{
 			m_worldTransform->rotation.x += m_translationSpeed * Time::GetDeltaTime();
+			Renderer3D::UpdateLights();
 		}
-		
+
 		if (m_currShadowToggle >= m_toggleShadowsCooldown && Input::IsKeyPressed(GLFW_KEY_N))
 		{
 			m_usesShadows = !m_usesShadows;
