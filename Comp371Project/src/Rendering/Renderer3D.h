@@ -144,6 +144,9 @@ public:
 	static void BeginScene();
 	static void EndScene();
 
+	//requests that all the light's shadow maps be recalculated for this frame
+	static void UpdateLights();
+
 	static void UseShadows(bool value) { s_useShadows = value; }
 
 	static std::shared_ptr<OpenGLCubeMap> GetDefaultWhiteCubeMap();
@@ -334,5 +337,6 @@ private:
 	static PointLight* s_pointLightArr;
 	static unsigned int s_pointLightIndex;
 
+	static bool s_updateLights;
 	
 };

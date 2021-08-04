@@ -123,6 +123,16 @@ public:
 		return *this;
 	}
 
+	bool operator==(const PointLight& other) const
+	{
+		return m_position == other.m_position;
+	}
+
+	bool operator!=(const PointLight& other) const
+	{
+		return !(*this == other);
+	}
+
 private:
 	static std::shared_ptr<OpenGLShader> s_shader;
 	static Material s_glowMat;

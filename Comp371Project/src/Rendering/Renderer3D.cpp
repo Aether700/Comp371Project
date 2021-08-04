@@ -23,6 +23,7 @@ DirectionalLight* Renderer3D::s_directionalLightArr;
 unsigned int Renderer3D::s_directionalLightIndex;
 PointLight* Renderer3D::s_pointLightArr;
 unsigned int Renderer3D::s_pointLightIndex;
+bool Renderer3D::s_updateLights;
 
 unsigned int RenderingBatch::s_maxVertices = 16000;
 unsigned int RenderingBatch::s_maxIndices = 72000;
@@ -340,7 +341,11 @@ void Renderer3D::EndScene()
 {
 	if (s_useShadows && (s_directionalLightIndex != 0 || s_pointLightIndex != 0))
 	{
-		GenerateShadowMaps();
+		if (s_updateLights)
+		{
+			GenerateShadowMaps();
+			s_updateLights = false;
+		}
 		DrawLights();
 		s_shader->Bind();
 		s_shader->SetInt("u_useShadows", 1);
@@ -357,6 +362,12 @@ void Renderer3D::EndScene()
 	}
 	
 	ResetBatches();
+}
+
+//requests that all the light's shadow maps be recalculated for this frame
+void Renderer3D::UpdateLights()
+{
+	s_updateLights = true;
 }
 
 std::shared_ptr<OpenGLCubeMap> Renderer3D::GetDefaultWhiteCubeMap() { return s_defaultWhiteCubeMap; }
@@ -710,7 +721,12 @@ void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3&
 	s_shader->SetMat4("u_dirLightSpaceMatrices[" + std::to_string(s_directionalLightIndex) + "]", 
 		currLight.GetLightSpaceMatrix());
 	
-	s_directionalLightArr[s_directionalLightIndex] = std::move(currLight);
+	if (s_directionalLightArr[s_directionalLightIndex] != currLight)
+	{
+		s_updateLights = true;
+		s_directionalLightArr[s_directionalLightIndex] = std::move(currLight);
+	}
+
 	s_directionalLightIndex++;
 }
 
@@ -725,7 +741,12 @@ void Renderer3D::AddPointLight(const glm::vec3& position, const glm::vec4& light
 	s_shader->SetFloat3("u_pointLightPos[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetPosition());
 	s_shader->SetFloat("u_pointLightFarPlanes[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetFarPlane());
 
-	s_pointLightArr[s_pointLightIndex] = std::move(currLight);
+	if (s_pointLightArr[s_pointLightIndex] != currLight)
+	{
+		s_updateLights = true;
+		s_pointLightArr[s_pointLightIndex] = std::move(currLight);
+	}
+
 	s_pointLightIndex++;
 }
 
