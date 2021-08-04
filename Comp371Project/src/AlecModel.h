@@ -19,6 +19,8 @@ public:
 		}
 
 		m_wireframe_glow_material = Material(true);
+
+		m_lightTransform.SetParent(worldTransform);
 	}
 
 	void OnStart()
@@ -105,14 +107,16 @@ public:
 		// Light should only appear and cast light/shadows if this model is selected
 		if (IsSelected())
 		{
-			Renderer3D::AddPointLight(m_lightPos);
+			//
+			glm::mat4 tr_matrix = m_lightTransform.GetTransformMatrix();
+			Renderer3D::AddPointLight(glm::vec3(tr_matrix[3][0], tr_matrix[3][1], tr_matrix[3][2]));
 		}
 	}
 
 	//Light position is set only once, at beginning
 	void SetLightPos()
 	{
-		m_lightPos = (glm::vec3)(GetModelTransform()->GetTransformMatrix())[3] + glm::vec3{ 0, 30, 0 };
+		m_lightTransform.position = (glm::vec3)(GetModelTransform()->GetTransformMatrix())[3] + glm::vec3{ 0, 30, 0 };
 	}
 
 protected:
@@ -155,7 +159,8 @@ private:
 
 	glm::vec4 color = { 0.1, 0.9, 0.1, 1 };
 
-	glm::vec3 m_lightPos;
+	//glm::vec3 m_lightPos;
+	Transform m_lightTransform;
 
 	Material m_wireframe_glow_material;
 };
