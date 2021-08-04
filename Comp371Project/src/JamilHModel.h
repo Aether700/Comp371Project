@@ -19,6 +19,7 @@ public:
 			transform = std::make_shared<Transform>();
 			transform->SetParent(GetWallTransform());
 		}
+		m_lightPos.SetParent(worldTransform);
 	}
 
 	void OnStart()
@@ -29,7 +30,7 @@ public:
 	
 	void SetLightPos()
 	{
-		m_lightPos = GetModelPosition() + glm::vec3(0, 30, 0);
+		m_lightPos.position = GetModelWorldPosition() + glm::vec3(0, 30, 0);
 	}
 
 	void OnRender()
@@ -48,7 +49,7 @@ public:
 		//draw light only if the model is selected
 		if (IsSelected())
 		{
-			Renderer3D::AddPointLight(m_lightPos);
+			Renderer3D::AddPointLight(GetLightWorldPosition());
 		}
 	}
 
@@ -94,9 +95,15 @@ protected:
 	}
 
 private:
-	glm::vec3 GetModelPosition()
+	glm::vec3 GetModelWorldPosition()
 	{
 		glm::mat4 transformMatrix = GetModelTransform()->GetTransformMatrix();
+		return { transformMatrix[3][0], transformMatrix[3][1], transformMatrix[3][2] };
+	}
+
+	glm::vec3 GetLightWorldPosition()
+	{
+		glm::mat4 transformMatrix = m_lightPos.GetTransformMatrix();
 		return { transformMatrix[3][0], transformMatrix[3][1], transformMatrix[3][2] };
 	}
 
@@ -192,7 +199,7 @@ private:
 		return false;
 	}
 
-	glm::vec3 m_lightPos;
+	Transform m_lightPos;
 
 	std::shared_ptr<Transform> m_modelCubes[14];
 
