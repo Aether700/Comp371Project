@@ -346,6 +346,7 @@ void Renderer3D::EndScene()
 			GenerateShadowMaps();
 			s_updateLights = false;
 		}
+
 		DrawLights();
 		s_shader->Bind();
 		s_shader->SetInt("u_useShadows", 1);
@@ -435,7 +436,10 @@ void Renderer3D::GenerateShadowMaps()
 	for (unsigned int i = 0; i < s_pointLightIndex; i++)
 	{
 		s_pointLightArr[i].PrepareForShadowMapGeneration();
-		FlushBatch();
+		//Cannot call FlushBatch directly, because the point light uses a geometry shader which expects only triangles
+		//FlushBatch also draws lines, which causes an error with the geometry shader when glDrawElements is eventually called
+
+		s_renderingBatches[GL_TRIANGLES].Draw(GL_TRIANGLES);
 	}
 
 	CleanUpAfterShadowMapGeneration();
