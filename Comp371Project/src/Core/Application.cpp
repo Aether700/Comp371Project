@@ -84,7 +84,8 @@ void Application::Run()
 
 			Renderer3D::EndScene();
 
-			std::cout << "num draw calls: " << Renderer3D::GetStats().numDrawCalls << "\n";
+			//std::cout << "num draw calls: " << Renderer3D::GetStats().numDrawCalls << "\n";
+			std::cout << "num triangles drawn: " << Renderer3D::GetStats().numTriangles << "\n";
 
 			glfwPollEvents();
 			glfwSwapBuffers(app.m_window);

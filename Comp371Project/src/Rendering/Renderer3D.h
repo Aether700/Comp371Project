@@ -61,12 +61,14 @@ struct Renderer3DStatistics
 	unsigned int numDrawCalls = 0;
 	unsigned int numVertices = 0;
 	unsigned int numIndices = 0;
+	unsigned int numTriangles = 0;
 
 	void Reset()
 	{
 		numDrawCalls = 0;
 		numVertices = 0;
 		numIndices = 0;
+		numTriangles = 0;
 	}
 };
 

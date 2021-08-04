@@ -245,6 +245,10 @@ void RenderingBatch::Draw(unsigned int renderTarget)
 	glDrawElements(renderTarget, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 	Renderer3D::s_stats.numDrawCalls++;
+	if (renderTarget == GL_TRIANGLES)
+	{
+		Renderer3D::s_stats.numTriangles += m_ibo->GetCount() / 3;
+	}
 }
 
 bool RenderingBatch::IsEmpty() const
