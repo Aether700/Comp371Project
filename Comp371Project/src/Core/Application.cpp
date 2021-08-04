@@ -65,6 +65,8 @@ void Application::Run()
 
 	while (app.m_isRunning && !glfwWindowShouldClose(app.m_window))
 	{
+		glfwGetWindowSize(Application::GetWindow(), &scr_width, &scr_height);
+
 		//If the window size has become 0 (eg minimized), don't draw
 		if (scr_width != 0 && scr_height != 0)
 		{

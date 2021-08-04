@@ -750,12 +750,6 @@ void Renderer3D::AddPointLight(const glm::vec3& position, const glm::vec4& light
 		s_updateLights = true;
 		s_pointLightArr[s_pointLightIndex] = std::move(currLight);
 	}
-
-	if (s_pointLightArr[s_pointLightIndex] != currLight)
-	{
-		s_updateLights = true;
-		s_pointLightArr[s_pointLightIndex] = std::move(currLight);
-	}
 	s_pointLightIndex++;
 }
 
