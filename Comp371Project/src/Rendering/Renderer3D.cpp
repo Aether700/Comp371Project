@@ -346,6 +346,7 @@ void Renderer3D::EndScene()
 			GenerateShadowMaps();
 			s_updateLights = false;
 		}
+
 		DrawLights();
 		s_shader->Bind();
 		s_shader->SetInt("u_useShadows", 1);
@@ -435,7 +436,10 @@ void Renderer3D::GenerateShadowMaps()
 	for (unsigned int i = 0; i < s_pointLightIndex; i++)
 	{
 		s_pointLightArr[i].PrepareForShadowMapGeneration();
-		FlushBatch();
+		//Cannot call FlushBatch directly, because the point light uses a geometry shader which expects only triangles
+		//FlushBatch also draws lines, which causes an error with the geometry shader when glDrawElements is eventually called
+
+		s_renderingBatches[GL_TRIANGLES].Draw(GL_TRIANGLES);
 	}
 
 	CleanUpAfterShadowMapGeneration();
@@ -737,9 +741,9 @@ void Renderer3D::AddPointLight(const glm::vec3& position, const glm::vec4& light
 	PointLight currLight(position, lightColor);
 
 	s_shader->Bind();
-	s_shader->SetFloat4("u_pointLightColors[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetColor());
-	s_shader->SetFloat3("u_pointLightPos[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetPosition());
-	s_shader->SetFloat("u_pointLightFarPlanes[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetFarPlane());
+	s_shader->SetFloat4("u_pointLightColors[" + std::to_string(s_pointLightIndex) + "]", currLight.GetColor());
+	s_shader->SetFloat3("u_pointLightPos[" + std::to_string(s_pointLightIndex) + "]", currLight.GetPosition());
+	s_shader->SetFloat("u_pointLightFarPlanes[" + std::to_string(s_pointLightIndex) + "]", currLight.GetFarPlane());
 
 	if (s_pointLightArr[s_pointLightIndex] != currLight)
 	{
@@ -747,6 +751,11 @@ void Renderer3D::AddPointLight(const glm::vec3& position, const glm::vec4& light
 		s_pointLightArr[s_pointLightIndex] = std::move(currLight);
 	}
 
+	if (s_pointLightArr[s_pointLightIndex] != currLight)
+	{
+		s_updateLights = true;
+		s_pointLightArr[s_pointLightIndex] = std::move(currLight);
+	}
 	s_pointLightIndex++;
 }
 

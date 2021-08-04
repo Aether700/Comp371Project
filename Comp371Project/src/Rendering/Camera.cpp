@@ -27,8 +27,12 @@ void Camera::SetPerspective(float fov, float nearClip, float farClip)
 //sets the viewport size of this camera and recalculates the projection matrix
 void Camera::SetViewportSize(unsigned int width, unsigned int height)
 {
-	m_aspectRatio = (float)width / (float)height;
-	RecalculateProjection();
+	if (width != 0 && height != 0)
+	{
+		m_aspectRatio = (float)width / (float)height;
+		RecalculateProjection();
+	}
+
 }
 
 //helper function which recalculates the projection matrix 

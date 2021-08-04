@@ -61,24 +61,41 @@ void Application::Run()
 
 	app.CallOnStartScripts();
 
+	int scr_width, scr_height;
+
 	while (app.m_isRunning && !glfwWindowShouldClose(app.m_window))
 	{
-		//reset stats for the frame
-		Renderer3D::ResetStats();
+		//If the window size has become 0 (eg minimized), don't draw
+		if (scr_width != 0 && scr_height != 0)
+		{
+			//reset stats for the frame
+			Renderer3D::ResetStats();
 
-		Time::UpdateTime();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(app.m_backgroundColor.r, app.m_backgroundColor.g, app.m_backgroundColor.b, app.m_backgroundColor.a);
+			Time::UpdateTime();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		Renderer3D::BeginScene();
-		app.CallOnRenderScripts();
-		Renderer3D::EndScene();
-		std::cout << "num draw calls: " << Renderer3D::GetStats().numDrawCalls << "\n";
+			glClearColor(app.m_backgroundColor.r, app.m_backgroundColor.g, app.m_backgroundColor.b, app.m_backgroundColor.a);
+			
+			Renderer3D::BeginScene();
 
-		glfwPollEvents();
-		glfwSwapBuffers(app.m_window);
-		
-		app.CallOnUpdateScripts();
+			app.CallOnRenderScripts();
+
+			Renderer3D::EndScene();
+
+			std::cout << "num draw calls: " << Renderer3D::GetStats().numDrawCalls << "\n";
+
+			glfwPollEvents();
+			glfwSwapBuffers(app.m_window);
+
+			app.CallOnUpdateScripts();
+		}
+		else
+		{
+			//but still poll events
+			glfwPollEvents();
+		}
+
+		Debug::CheckOpenGLError();
 	}
 }
 
