@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 
+#include "ImGui/ImGuiManager.h"
 #include "../Dependencies/glfw-3.3.4/include/GLFW/glfw3.h"
 #include "../Dependencies/glm-0.9.9.8/glm/glm.hpp"
 #include "../Rendering/Camera.h"
@@ -56,6 +57,7 @@ private:
 	//helper functions to call the different functions of the script in the application loop
 	void CallOnStartScripts();
 	void CallOnRenderScripts();
+	void CallOnImGuiRenderScripts();
 	void CallOnUpdateScripts();
 
 	//intermediate function which calls 
@@ -68,4 +70,5 @@ private:
 	glm::vec4 m_backgroundColor = glm::vec4(0, 0, 0, 1);
 	std::shared_ptr<Camera> m_camera;
 	CameraController* m_cameraController;
+	ImGuiManager* m_imguiManager;
 };

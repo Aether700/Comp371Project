@@ -4,7 +4,7 @@
 #include "Core/Application.h"
 #include "Core/Script.h"
 
-#include "Tests/AudioTest.h"
+#include "Game/HyperCubeGame.h"
 
 /*Task seperation
 * 
@@ -36,7 +36,8 @@ int main()
 	//Add Scripts here   
 	
 	//Application::AddScript(new ModelManager());
-	Application::AddScript(new AudioTest());
+	//Application::AddScript(new PointLightTest());
+	Application::AddScript(new HyperCubeGame());
 
 	///////////////////
 
