@@ -19,6 +19,9 @@ public:
 	//is called every frame to render to the screen/window
 	virtual void OnRender() { }
 
+	//is called every frame to draw UI elements using Dear ImGui
+	virtual void OnImGuiRender() { }
+
 	//is called every frame for input management and such
 	virtual void OnUpdate() { }
 
