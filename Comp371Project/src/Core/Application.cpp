@@ -7,6 +7,7 @@
 #include "Debug.h"
 #include "Random.h"
 #include "../Model.h"
+#include "SoundManager.h"
 
 #include <iostream>
 
@@ -184,9 +185,8 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 	m_camera = std::make_shared<Camera>();
 	Renderer3D::Init();
 	Random::Init();
-	Debug::CheckOpenGLError();
 	Model::Init();
-	Debug::CheckOpenGLError();
+	SoundManager::Init();
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_DEPTH_TEST);
@@ -202,7 +202,10 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 //Application destructor, will delete all the scripts the application contains
 Application::~Application()
 {
-	delete m_imguiManager;
+	Renderer3D::Shutdown();
+	SoundManager::Shutdown();
+
+  delete m_imguiManager;
 	glfwDestroyWindow(m_window);
 	glfwTerminate();
 

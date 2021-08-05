@@ -4,9 +4,6 @@
 #include "Core/Application.h"
 #include "Core/Script.h"
 
-#include "Core/Debug.h"
-
-#include "Tests/PointLightTest.h"
 #include "Game/HyperCubeGame.h"
 
 /*Task seperation

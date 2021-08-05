@@ -1,5 +1,6 @@
 #pragma once
 #include "../Dependencies/glm-0.9.9.8/glm/glm.hpp"
+#include "../Dependencies/glfw-3.3.4/include/GLFW/glfw3.h"
 
 /*static class which provides functions to handle user input
 */
