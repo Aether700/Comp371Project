@@ -5,8 +5,10 @@
 #include "Core/Input.h"
 #include "Model.h"
 #include "Core/Time.h"
+#include "../Core/Debug.h"
 
 #include <vector>
+#include <random>
 
 //TODO: We should be able to call Application::GetCameraController and then set position and lookAt so that we can have the camera follow the cube object
 class HyperCubeGame : public Script
@@ -36,7 +38,6 @@ public:
 		wall_tr.position = glm::vec3{ 0, 2, -10 };
 		wall_tr.scale = glm::vec3{ 4, 4, 1 };
 		
-
 	}
 
 	void OnUpdate()
@@ -95,13 +96,17 @@ public:
 			//Cube model spawned, a random non-solution orientation chosen
 			case GameState::Spawn:
 				cube_tr.position = { 0,1,-1 };
-				cube_tr.rotation = { 0, 0, 0 };
+				cube_tr.rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
+				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
 				cube_tr.scale = { 1,1,1 };
 				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
 				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
 				m_state = GameState::Rotations;
 				Application::GetCameraController()->setLookIsOn(false);
 				Application::GetCameraController()->setMovementIsOn(false);
+
+				//TODO: wait a bit before starting to move
+
 				break;
 
 			//Player doing rotations, cube moving forward
@@ -110,10 +115,19 @@ public:
  				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
 
 				//TODO: probably want some function that evaluates whether the cube has reached the wall
-				if (cube_tr.position.z <= wall_tr.position.z)
+				if (cube_tr.position.z + wall_thickness <= wall_tr.position.z)
 				{
-					//go to fit state where the cube fitting or not will be evaluated
-					m_state = GameState::Fit;
+					//go to fit state if cube fits
+					if (glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z } == glm::vec3{ 0,0,0 })
+					{
+						m_state = GameState::Fit;
+					}
+					//otherwise to drop state
+					else
+					{
+						m_state = GameState::Drop;
+					}
+
 				}
 				else
 				{
@@ -130,14 +144,20 @@ public:
 
 			//Cube model fits into wall (correct orientation), so bring it through
 			case GameState::Fit:
+				std::cout << "Fit!" << std::endl;
 				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
 				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
 				Application::GetCameraController()->setLookIsOn(true);
 				Application::GetCameraController()->setMovementIsOn(true);
+				m_state = GameState::Spawn;
 				break;
 
 			//Cube model doesn't fit into wall (incorrect orientation), so drop it down
 			case GameState::Drop:
+				std::cout << "Drop!" << std::endl;
+				Application::GetCameraController()->setLookIsOn(true);
+				Application::GetCameraController()->setMovementIsOn(true);
+				m_state = GameState::Spawn;
 				break;
 
 			default:
@@ -163,6 +183,8 @@ private:
 	float rotationInputTimer = 0.0f;
 	float rotationInputCooldown = 0.3f; //limit rotations per second
 
+	float wall_thickness = 1.0;
+
 	Transform cube_tr;
 	Transform wall_tr;
 	Transform light_pos;
@@ -175,6 +197,17 @@ private:
 
 	enum class GameState { Spawn, Rotations, Advance, Fit, Drop };
 	GameState m_state = GameState::Spawn;
+
+
+	//return a random orientation in radians
+	//https://stackoverflow.com/a/7560564/9421977
+	float GetRandomRotation()
+	{
+		std::random_device rd; // obtain a random number from hardware
+		std::mt19937 gen(rd()); // seed the generator
+		std::uniform_int_distribution<> distr(0, 3); // define the range
+		return distr(gen) * glm::radians(90.0f);
+	}
 
 };
 
