@@ -193,6 +193,8 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 //Application destructor, will delete all the scripts the application contains
 Application::~Application()
 {
+	Renderer3D::Shutdown();
+
 	glfwTerminate();
 
 	for (Script* s : m_scripts)
