@@ -7,6 +7,7 @@
 #include "Core/Debug.h"
 
 #include "Tests/PointLightTest.h"
+#include "Game/HyperCubeGame.h"
 
 /*Task seperation
 * 
@@ -37,8 +38,9 @@ int main()
 
 	//Add Scripts here   
 	
-	Application::AddScript(new ModelManager());
+	//Application::AddScript(new ModelManager());
 	//Application::AddScript(new PointLightTest());
+	Application::AddScript(new HyperCubeGame());
 
 	///////////////////
 
