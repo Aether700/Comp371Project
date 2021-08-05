@@ -436,23 +436,23 @@ private:
                 std::bind(&ImGuiManager::ImGui_ImplGlfw_MouseButtonCallback, this,
                     std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
             m_prevUserCallbackMousebutton = glfwSetMouseButtonCallback(window, 
-                (GLFWmousebuttonfun)(void*)&mouseFunc);
+                (GLFWmousebuttonfun)mouseFunc.target<GLFWmousebuttonfun>());
 
             auto scrollFunc = (std::function<void(GLFWwindow*, double, double)>)
                 std::bind(&ImGuiManager::ImGui_ImplGlfw_ScrollCallback, this,
                     std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-            m_prevUserCallbackScroll = glfwSetScrollCallback(window, (GLFWscrollfun)(void*)&scrollFunc);
+            m_prevUserCallbackScroll = glfwSetScrollCallback(window, (GLFWscrollfun)scrollFunc.target<GLFWscrollfun>());
 
             auto keyFunc = (std::function<void(GLFWwindow*, int, int, int, int)>)
                 std::bind(&ImGuiManager::ImGui_ImplGlfw_KeyCallback, this,
                     std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
                     std::placeholders::_4, std::placeholders::_5);
-            m_prevUserCallbackKey = glfwSetKeyCallback(window, (GLFWkeyfun)(void*)&keyFunc);
+            m_prevUserCallbackKey = glfwSetKeyCallback(window, (GLFWkeyfun)keyFunc.target<GLFWkeyfun>());
 
             auto charFunc = (std::function<void(GLFWwindow*, unsigned int)>)
                 std::bind(&ImGuiManager::ImGui_ImplGlfw_CharCallback, this,
                     std::placeholders::_1, std::placeholders::_2);
-            m_prevUserCallbackChar = glfwSetCharCallback(window, (GLFWcharfun)(void*)&charFunc);
+            m_prevUserCallbackChar = glfwSetCharCallback(window, (GLFWcharfun)charFunc.target<GLFWcharfun>());
         }
 
         m_clientApi = client_api;

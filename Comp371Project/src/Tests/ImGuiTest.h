@@ -1,6 +1,7 @@
 #pragma once
 #include "../Dependencies/imgui-1.76/imgui.h"
 #include "../Core/Script.h"
+#include <sstream>
 
 class ImGuiTest : public Script
 {
@@ -20,8 +21,16 @@ public:
 		}
 
 		ImGui::End();
+		timer += Time::GetDeltaTime();
+		ImGui::Begin("Timer");
+
+		std::stringstream ss;
+		ss << "Time: " << std::to_string(timer).c_str();
+		ImGui::Text(ss.str().c_str());
+		ImGui::End();
 	}
 
 private:
 	bool more = false;
+	float timer = 0.0f;
 };
