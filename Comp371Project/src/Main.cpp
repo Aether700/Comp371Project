@@ -4,10 +4,6 @@
 #include "Core/Application.h"
 #include "Core/Script.h"
 
-#include "Core/Debug.h"
-
-#include "Tests/PointLightTest.h"
-
 /*Task seperation
 * 
 * Lighting and Shadows (Jamil Hanachian, Alec, Madelaine, Jean)
@@ -38,7 +34,6 @@ int main()
 	//Add Scripts here   
 	
 	Application::AddScript(new ModelManager());
-	//Application::AddScript(new PointLightTest());
 
 	///////////////////
 
