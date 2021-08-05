@@ -35,7 +35,7 @@ public:
 		cube_tr.position = glm::vec3{ 0, 1, -1 };
 
 		//Wall position
-		wall_tr.position = glm::vec3{ 0, 2, -10 };
+		wall_tr.position = glm::vec3{ 0, 2, -15 };
 		wall_tr.scale = glm::vec3{ 4, 4, 1 };
 		
 	}
@@ -49,33 +49,46 @@ public:
 			//rotation about x axis (forward/back)
 			if (Input::IsKeyPressed(GLFW_KEY_W))
 			{
-				cube_tr.rotation.z += glm::radians(90.0f);
+				cube_tr.rotation.x += glm::radians(90.0f);
 				rotationInputTimer = 0.0f;
+				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_S))
 			{
-				cube_tr.rotation.z -= glm::radians(90.0f);
+				cube_tr.rotation.x -= glm::radians(90.0f);
 				rotationInputTimer = 0.0f;
+				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
 			}
 
 			//rotation about y axis (left/right)
 			if (Input::IsKeyPressed(GLFW_KEY_A))
 			{
-				cube_tr.rotation.y += glm::radians(90.0f);
+				cube_tr.rotation.y -= glm::radians(90.0f);
 				rotationInputTimer = 0.0f;
+				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_D))
 			{
-				cube_tr.rotation.y -= glm::radians(90.0f);
+				cube_tr.rotation.y += glm::radians(90.0f);
 				rotationInputTimer = 0.0f;
+				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
 			}
 
 		}
 		else
 		{
 			rotationInputTimer += Time::GetDeltaTime();
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_SPACE))
+		{
+			cube_move_speed_per_second = 10.0f;
+		}
+		else
+		{
+			cube_move_speed_per_second = 1.0f;
 		}
 
 	}
@@ -105,8 +118,6 @@ public:
 				Application::GetCameraController()->setLookIsOn(false);
 				Application::GetCameraController()->setMovementIsOn(false);
 
-				//TODO: wait a bit before starting to move
-
 				break;
 
 			//Player doing rotations, cube moving forward
@@ -115,16 +126,18 @@ public:
  				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
 
 				//TODO: probably want some function that evaluates whether the cube has reached the wall
-				if (cube_tr.position.z + wall_thickness <= wall_tr.position.z)
+				if ( (cube_tr.position.z - wall_thickness) <= wall_tr.position.z)
 				{
 					//go to fit state if cube fits
 					if (glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z } == glm::vec3{ 0,0,0 })
 					{
+						std::cout << "Fit!" << std::endl;
 						m_state = GameState::Fit;
 					}
 					//otherwise to drop state
 					else
 					{
+						std::cout << "Drop!" << std::endl;
 						m_state = GameState::Drop;
 					}
 
@@ -144,20 +157,26 @@ public:
 
 			//Cube model fits into wall (correct orientation), so bring it through
 			case GameState::Fit:
-				std::cout << "Fit!" << std::endl;
+				//TODO: slowly move through the slot
 				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
 				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
+				
 				Application::GetCameraController()->setLookIsOn(true);
 				Application::GetCameraController()->setMovementIsOn(true);
-				m_state = GameState::Spawn;
+				
+				//m_state = GameState::Spawn;
 				break;
 
 			//Cube model doesn't fit into wall (incorrect orientation), so drop it down
 			case GameState::Drop:
-				std::cout << "Drop!" << std::endl;
+				//TODO: drop down in a gravity-like fashion
+				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
+				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
+				
 				Application::GetCameraController()->setLookIsOn(true);
 				Application::GetCameraController()->setMovementIsOn(true);
-				m_state = GameState::Spawn;
+				
+				//m_state = GameState::Spawn;
 				break;
 
 			default:
