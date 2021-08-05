@@ -14,14 +14,19 @@ class HyperCubeGame : public Script
 public:
 	void OnStart()
 	{
+		//World transform
 		std::shared_ptr<Transform> m_worldTransform = std::make_shared<Transform>();
 		Application::AddScript(new Axes(m_worldTransform));
+
+		//Grid
 		m_grid = new Grid(m_worldTransform);
 		m_grid->ToggleTexture();
 		Application::AddScript(m_grid);
 
+		//Cube object initial position
 		cube_tr.position = glm::vec3{ 0, 1, -1 };
 
+		//Wall position
 		wall_tr.position = glm::vec3{ 0, 2, -10 };
 		wall_tr.scale = glm::vec3{ 4, 4, 1 };
 		
@@ -63,7 +68,7 @@ public:
 
 		switch(m_state)
 		{
-			//Cube model spawned
+			//Cube model spawned, a random non-solution orientation chosen
 			case GameState::Spawn:
 				cube_tr.position = { 0,1,-1 };
 				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cube_color);
@@ -80,11 +85,14 @@ public:
 				if (cube_tr.position.z <= wall_tr.position.z)
 				{
 					//go to fit state where the cube fitting or not will be evaluated
+					m_state = GameState::Fit;
 				}
 				else
 				{
 					cube_tr.position.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
 				}
+
+				Application::GetCameraController()->SetCamera(cube_tr.position + glm::vec3{ 0, 1, 4 }, cube_tr.position + glm::vec3{0, 1, 0}, 0.0f, 20.0f);
 
 				break;
 
@@ -94,6 +102,8 @@ public:
 
 			//Cube model fits into wall (correct orientation), so bring it through
 			case GameState::Fit:
+				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cube_color);
+				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
 				break;
 
 			//Cube model doesn't fit into wall (incorrect orientation), so drop it down
