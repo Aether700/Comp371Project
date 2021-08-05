@@ -148,6 +148,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\Random.cpp" />
+    <ClCompile Include="src\Dependencies\imgui-1.76\imgui.cpp" />
+    <ClCompile Include="src\Dependencies\imgui-1.76\imgui_demo.cpp" />
+    <ClCompile Include="src\Dependencies\imgui-1.76\imgui_draw.cpp" />
+    <ClCompile Include="src\Dependencies\imgui-1.76\imgui_widgets.cpp" />
     <ClCompile Include="src\Dependencies\stb_image\stb_image.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLCubeMap.cpp" />
     <ClCompile Include="src\GraphicsAPI\OpenGLFramebuffer.cpp" />
@@ -169,7 +173,14 @@
   <ItemGroup>
     <ClInclude Include="src\AlecModel.h" />
     <ClInclude Include="src\Axes.h" />
+    <ClInclude Include="src\Core\ImGui\ImGuiManager.h" />
     <ClInclude Include="src\Core\Random.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imconfig.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imgui.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imgui_internal.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imstb_rectpack.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imstb_textedit.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imstb_truetype.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLFramebuffer.h" />
     <ClInclude Include="src\Grid.h" />
     <ClInclude Include="src\JamilHModel.h" />
@@ -187,6 +198,7 @@
     <ClInclude Include="src\GraphicsAPI\OpenGLCubeMap.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLTexture2D.h" />
     <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\Tests\ImGuiTest.h" />
     <ClInclude Include="src\Tests\LightRadiusTest.h" />
     <ClInclude Include="src\Tests\MaterialTest.h" />
     <ClInclude Include="src\Tests\ParentTransformTest.h" />
