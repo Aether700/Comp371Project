@@ -49,8 +49,8 @@ public:
 
 		//handle the camera orientation
 
-		//only try to rotate the camera if the mouse is locked
-		if (m_mouseIsLocked)
+		//only try to rotate the camera if the mouse is locked and looking around is enabled
+		if (m_mouseIsLocked && lookIsOn)
 		{
 			glm::vec2 currMousePos = Input::GetMousePosition();
 
@@ -76,10 +76,10 @@ public:
 		}
 
 		//Don't move if M is held down, that's when ModelManager is using WASD to control model rotation/movement
-		//isOn = !Input::IsKeyPressed(GLFW_KEY_M);
+		//movementIsOn = !Input::IsKeyPressed(GLFW_KEY_M);
 		if (m_currCameraToggle >= m_toggleCameraCooldown && Input::IsKeyPressed(GLFW_KEY_M))
 		{
-			isOn = !isOn;
+			movementIsOn = !movementIsOn;
 
 			m_currCameraToggle = 0.0f;
 		}
@@ -89,7 +89,7 @@ public:
 		}
 
 
-		if(isOn)
+		if(movementIsOn)
 		{
 			//handle camera movement relative to the look direction of the camera
 			if (Input::IsKeyPressed(GLFW_KEY_A))
@@ -164,6 +164,7 @@ public:
 		return true;
 	}
 
+	//TODO: this function is not great
 	void SetCamera(glm::vec3 pos, glm::vec3 lookat, float y_rot, float up_rot)
 	{
 		Application::GetCamera()->SetPerspectiveVerticalFOV(m_defaultVerticalFOV);
@@ -204,6 +205,16 @@ public:
 
 		OnUpdate();
 
+	}
+
+	void setMovementIsOn(bool s)
+	{
+		movementIsOn = s;
+	}
+
+	void setLookIsOn(bool s)
+	{
+		lookIsOn = s;
 	}
 
 private:
@@ -275,7 +286,8 @@ private:
 	glm::vec3 m_camPos = { 0, 0, 0 };
 	glm::vec3 m_camUp = { 0, 1, 0 };
 
-	bool isOn = true;
+	bool movementIsOn = true;
+	bool lookIsOn = true;
 
 	float m_toggleCameraCooldown = 0.2f;
 	float m_currCameraToggle = 0.0f;

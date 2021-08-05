@@ -12,6 +12,12 @@
 class HyperCubeGame : public Script
 {
 public:
+	HyperCubeGame()
+	{
+		cubeTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg");
+		wallTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/Bricks.PNG");
+	}
+
 	void OnStart()
 	{
 		//World transform
@@ -35,22 +41,40 @@ public:
 
 	void OnUpdate()
 	{
-		//rotation about x axis (forward/back)
-		if (Input::IsKeyPressed(GLFW_KEY_W))
-		{
-		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_S))
+		//Cooldown for cube rotations, also only do rotations during the rotations state
+		if ( (rotationInputTimer >= rotationInputCooldown) && (m_state == GameState::Rotations) )
 		{
-		}
+			//rotation about x axis (forward/back)
+			if (Input::IsKeyPressed(GLFW_KEY_W))
+			{
+				cube_tr.rotation.z += glm::radians(90.0f);
+				rotationInputTimer = 0.0f;
+			}
 
-		//rotation about y axis (left/right)
-		if (Input::IsKeyPressed(GLFW_KEY_A))
-		{
-		}
+			if (Input::IsKeyPressed(GLFW_KEY_S))
+			{
+				cube_tr.rotation.z -= glm::radians(90.0f);
+				rotationInputTimer = 0.0f;
+			}
 
-		if (Input::IsKeyPressed(GLFW_KEY_D))
+			//rotation about y axis (left/right)
+			if (Input::IsKeyPressed(GLFW_KEY_A))
+			{
+				cube_tr.rotation.y += glm::radians(90.0f);
+				rotationInputTimer = 0.0f;
+			}
+
+			if (Input::IsKeyPressed(GLFW_KEY_D))
+			{
+				cube_tr.rotation.y -= glm::radians(90.0f);
+				rotationInputTimer = 0.0f;
+			}
+
+		}
+		else
 		{
+			rotationInputTimer += Time::GetDeltaTime();
 		}
 
 	}
@@ -71,14 +95,18 @@ public:
 			//Cube model spawned, a random non-solution orientation chosen
 			case GameState::Spawn:
 				cube_tr.position = { 0,1,-1 };
-				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cube_color);
+				cube_tr.rotation = { 0, 0, 0 };
+				cube_tr.scale = { 1,1,1 };
+				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
 				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
 				m_state = GameState::Rotations;
+				Application::GetCameraController()->setLookIsOn(false);
+				Application::GetCameraController()->setMovementIsOn(false);
 				break;
 
 			//Player doing rotations, cube moving forward
 			case GameState::Rotations:
-				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cube_color);
+				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
  				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
 
 				//TODO: probably want some function that evaluates whether the cube has reached the wall
@@ -102,8 +130,10 @@ public:
 
 			//Cube model fits into wall (correct orientation), so bring it through
 			case GameState::Fit:
-				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cube_color);
+				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
 				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
+				Application::GetCameraController()->setLookIsOn(true);
+				Application::GetCameraController()->setMovementIsOn(true);
 				break;
 
 			//Cube model doesn't fit into wall (incorrect orientation), so drop it down
@@ -130,6 +160,9 @@ private:
 
 	float cube_move_speed_per_second = 1.0;
 
+	float rotationInputTimer = 0.0f;
+	float rotationInputCooldown = 0.3f; //limit rotations per second
+
 	Transform cube_tr;
 	Transform wall_tr;
 	Transform light_pos;
@@ -137,11 +170,13 @@ private:
 	glm::vec4 cube_color = { 0.1, 0.9, 0.1, 1 };
 	glm::vec4 wall_color = { 0.1, 0.2, 0.87, 1 };
 
+	std::shared_ptr<OpenGLCubeMap> cubeTexture;
+	std::shared_ptr<OpenGLCubeMap> wallTexture;
+
 	enum class GameState { Spawn, Rotations, Advance, Fit, Drop };
 	GameState m_state = GameState::Spawn;
 
 };
-
 
 //Nice to have:
 //Skybox, fairly muted color
