@@ -1,11 +1,18 @@
 #pragma once
 #include "Axes.h"
+#include "Model.h"
 #include "Core/Application.h"
 #include "Core/Script.h"
 #include "Core/Input.h"
-#include "Model.h"
 #include "Core/Time.h"
 
+/*
+#include "ModelOne.h"
+#include "ModelTwo.h"
+#include "ModelThree.h"
+#include "ModelFour.h"
+#include "ModelFive.h"
+*/
 #include "JamilHModel.h"
 #include "JamilModel.h"
 #include "JeanModel.h"
@@ -25,6 +32,11 @@ public:
 		m_worldTransform = std::make_shared<Transform>();
 
 		Application::AddScript(new Axes(m_worldTransform));
+		//AddModel(new ModelOne(m_worldTransform));
+		//AddModel(new ModelTwo(m_worldTransform));
+		//AddModel(new ModelThree(m_worldTransform));
+		//AddModel(new ModelFour(m_worldTransform));
+		//AddModel(new ModelFive(m_worldTransform));
 
 		AddModel(new JamilHModel(m_worldTransform));
 		AddModel(new JeanModel(m_worldTransform));
@@ -405,8 +417,6 @@ private:
 			m_models[i]->GetWallTransform()->position = positions[i];
 			m_models[i]->GetWallTransform()->rotation = rotations[i];
 		}
-
-
 	}
 
 	std::vector<Model*> m_models;
