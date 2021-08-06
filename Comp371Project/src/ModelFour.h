@@ -3,11 +3,11 @@
 #include "Model.h"
 #include "Core/Random.h"
 
-class ModelOne : public Model
+class ModelFour : public Model
 {
 public:
 
-	ModelOne(std::shared_ptr<Transform> worldTransform) : Model(worldTransform)
+	ModelFour(std::shared_ptr<Transform> worldTransform) : Model(worldTransform)
 	{
 		for (auto& transform : m_cubeModel)
 		{
@@ -59,6 +59,7 @@ protected:
 		}
 	}
 
+
 	virtual void RenderWallWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
 	{
 		Renderer3D::DrawVoxel(transform, wallTexture, 1.0f, color);
@@ -75,18 +76,28 @@ protected:
 
 private:
 
-	std::shared_ptr<Transform> m_cubeModel[5];
+	std::shared_ptr<Transform> m_cubeModel[14];
 	std::shared_ptr<Transform>  m_wallCubes[100];
 
 
 	void SetModelCubesTransform()
 	{
-		//original cube
-		m_cubeModel[0]->position = { 0,  0,  -1 };
-		m_cubeModel[1]->position = { 0,  0,  0 };
-		m_cubeModel[2]->position = { 0, 0,  1 };
-		m_cubeModel[3]->position = { 0,  1,  0 };
-		m_cubeModel[4]->position = { 1,  0,  0 };
+		//original cube jamil
+		m_cubeModel[0]->position = { 0,  0,  0 };
+		m_cubeModel[1]->position = { 0,  1,  0 };
+		m_cubeModel[2]->position = { 0, -1,  0 };
+		m_cubeModel[3]->position = { 1,  0,  0 };
+		m_cubeModel[4]->position = { -1,  0,  0 };
+		m_cubeModel[5]->position = { -1,  1,  0 };
+		m_cubeModel[6]->position = { -1,  2,  0 };
+		m_cubeModel[7]->position = { -1, -1,  0 };
+		m_cubeModel[8]->position = { 1, -1,  0 };
+		m_cubeModel[9]->position = { 2, -1,  0 };
+		m_cubeModel[10]->position = { 0,  0, -1 };
+		m_cubeModel[11]->position = { 2, -1, -1 };
+		m_cubeModel[12]->position = { -1,  2, -1 };
+		m_cubeModel[13]->position = { -1, -1, -1 };
+
 	}
 
 	void SetWallCubesTransform()
@@ -107,7 +118,7 @@ private:
 
 	bool checkWallHolePlacement(int axis1, int axis2)
 	{
-		
+
 		for (auto& transform : m_cubeModel)
 		{
 			if (transform->position.x == axis1 && transform->position.y == axis2)
