@@ -1,17 +1,23 @@
 #pragma once
 #include "Axes.h"
+#include "Model.h"
 #include "Core/Application.h"
 #include "Core/Script.h"
 #include "Core/Input.h"
-#include "Model.h"
 #include "Core/Time.h"
 
+/*
 #include "ModelOne.h"
 #include "ModelTwo.h"
 #include "ModelThree.h"
 #include "ModelFour.h"
 #include "ModelFive.h"
-
+*/
+#include "JamilHModel.h"
+#include "JamilModel.h"
+#include "JeanModel.h"
+#include "MadelaineModel.h"
+#include "AlecModel.h"
 
 #include "Grid.h"
 
@@ -26,11 +32,18 @@ public:
 		m_worldTransform = std::make_shared<Transform>();
 
 		Application::AddScript(new Axes(m_worldTransform));
-		AddModel(new ModelOne(m_worldTransform));
-		AddModel(new ModelTwo(m_worldTransform));
-		AddModel(new ModelThree(m_worldTransform));
-		AddModel(new ModelFour(m_worldTransform));
-		AddModel(new ModelFive(m_worldTransform));
+		//AddModel(new ModelOne(m_worldTransform));
+		//AddModel(new ModelTwo(m_worldTransform));
+		//AddModel(new ModelThree(m_worldTransform));
+		//AddModel(new ModelFour(m_worldTransform));
+		//AddModel(new ModelFive(m_worldTransform));
+
+		AddModel(new JamilHModel(m_worldTransform));
+		AddModel(new JeanModel(m_worldTransform));
+		AddModel(new MadelaineModel(m_worldTransform));
+		AddModel(new AlecModel(m_worldTransform));
+		AddModel(new JamilModel(m_worldTransform));
+
 		AddGrid(new Grid(m_worldTransform));
 
 		m_models[m_currModel]->Select();
