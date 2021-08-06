@@ -233,9 +233,13 @@ private:
 	bool IsRotationCorrect()
 	{
 		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z };
-		if ( glm::abs(cube_rotation_sin.x - 0) < 0.001 && glm::abs(cube_rotation_sin.y) < 0.001)
+		if ( glm::abs(cube_rotation_sin.x - 0.0) < 0.001 && glm::abs(cube_rotation_sin.y - 0.0) < 0.001)
 		{
 			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 
