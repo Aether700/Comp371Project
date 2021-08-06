@@ -6,6 +6,7 @@
 #include "Model.h"
 #include "Core/Time.h"
 #include "../Core/Debug.h"
+#include "../Rendering/CameraController.h"
 
 #include <vector>
 #include <random>

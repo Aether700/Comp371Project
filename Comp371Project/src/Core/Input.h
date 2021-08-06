@@ -1,4 +1,5 @@
 #pragma once
+#include "../Dependencies/glew-2.1.0/include/GL/glew.h"
 #include "../Dependencies/glm-0.9.9.8/glm/glm.hpp"
 #include "../Dependencies/glfw-3.3.4/include/GLFW/glfw3.h"
 
