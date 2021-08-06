@@ -34,9 +34,7 @@ int main()
 	Application::Init();
 
 	//Add Scripts here   
-	
-	//Application::AddScript(new ModelManager());
-	//Application::AddScript(new PointLightTest());
+
 	Application::AddScript(new HyperCubeGame());
 
 	///////////////////
