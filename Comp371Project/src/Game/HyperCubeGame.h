@@ -129,7 +129,8 @@ public:
 				if ( (cube_tr.position.z - wall_thickness) <= wall_tr.position.z)
 				{
 					//go to fit state if cube fits
-					if (glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z } == glm::vec3{ 0,0,0 })
+					//if (glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z } == glm::vec3{ 0,0,0 })
+					if(IsRotationCorrect())
 					{
 						std::cout << "Fit!" << std::endl;
 						m_state = GameState::Fit;
@@ -226,6 +227,16 @@ private:
 		std::mt19937 gen(rd()); // seed the generator
 		std::uniform_int_distribution<> distr(0, 3); // define the range
 		return distr(gen) * glm::radians(90.0f);
+	}
+
+	//Since rotation stored as float, need to make approximate comparisons, not exact
+	bool IsRotationCorrect()
+	{
+		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z };
+		if ( glm::abs(cube_rotation_sin.x - 0) < 0.001 && glm::abs(cube_rotation_sin.y) < 0.001)
+		{
+			return true;
+		}
 	}
 
 };
