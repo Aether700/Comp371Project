@@ -6,6 +6,8 @@
 
 #include "Game/HyperCubeGame.h"
 
+#include "Tests/MeshTest.h"
+
 /*Task seperation
 * 
 * Lighting and Shadows (Jamil Hanachian, Alec, Madelaine, Jean)
@@ -35,7 +37,8 @@ int main()
 
 	//Add Scripts here   
 
-	Application::AddScript(new HyperCubeGame());
+	//Application::AddScript(new HyperCubeGame());
+	Application::AddScript(new MeshTest());
 
 	///////////////////
 

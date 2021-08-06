@@ -1,234 +1,82 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="src\Core\Random.cpp" />
+    <ClCompile Include="src\Core\SoundManager.cpp" />
+    <ClCompile Include="src\Dependencies\imgui-1.76\imgui.cpp" />
+    <ClCompile Include="src\Dependencies\imgui-1.76\imgui_demo.cpp" />
+    <ClCompile Include="src\Dependencies\imgui-1.76\imgui_draw.cpp" />
+    <ClCompile Include="src\Dependencies\imgui-1.76\imgui_widgets.cpp" />
+    <ClCompile Include="src\Dependencies\stb_image\stb_image.cpp" />
+    <ClCompile Include="src\GraphicsAPI\OpenGLCubeMap.cpp" />
+    <ClCompile Include="src\GraphicsAPI\OpenGLFramebuffer.cpp" />
+    <ClCompile Include="src\GraphicsAPI\OpenGLTexture2D.cpp" />
+    <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\Rendering\Camera.cpp" />
+    <ClCompile Include="src\Core\Input.cpp" />
+    <ClCompile Include="src\GraphicsAPI\OpenGLShader.cpp" />
+    <ClCompile Include="src\GraphicsAPI\OpenGLVertexArray.cpp" />
+    <ClCompile Include="src\GraphicsAPI\OpenGLBuffer.cpp" />
+    <ClCompile Include="src\Core\Application.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Core\Time.cpp" />
+    <ClCompile Include="src\Rendering\DirectionalLight.cpp" />
+    <ClCompile Include="src\Rendering\PointLight.cpp" />
+    <ClCompile Include="src\Rendering\Renderer3D.cpp" />
+    <ClCompile Include="src\Tests\AlecPointLightTest.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GraphicsAPI\OpenGLBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GraphicsAPI\OpenGLVertexArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GraphicsAPI\OpenGLShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\Time.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Renderer3D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GraphicsAPI\OpenGLTexture2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GraphicsAPI\OpenGLCubeMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Dependencies\stb_image\stb_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\Random.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GraphicsAPI\OpenGLFramebuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Tests\AlecPointLightTest.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\DirectionalLight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\PointLight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\SoundManager.cpp">
-    <ClCompile Include="src\Dependencies\imgui-1.76\imgui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Dependencies\imgui-1.76\imgui_demo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Dependencies\imgui-1.76\imgui_draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Dependencies\imgui-1.76\imgui_widgets.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Core\Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\Script.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GraphicsAPI\OpenGLBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GraphicsAPI\OpenGLVertexArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GraphicsAPI\OpenGLShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\Input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\Time.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Rendering\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Rendering\Transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Rendering\Renderer3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GraphicsAPI\OpenGLTexture2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GraphicsAPI\OpenGLCubeMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GraphicsAPI\OpenGLTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Dependencies\stb_image\stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\Debug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Rendering\CameraController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tests\CameraControllerTestScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tests\CubeRenderingTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tests\EmptySquareTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tests\ParentTransformTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tests\TriangleTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\JamilHModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\Random.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Grid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\JeanModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ModelManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MadelaineModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\AlecModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Axes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tests\PointLightTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\JamilModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GraphicsAPI\OpenGLFramebuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tests\TextureTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Rendering\DirectionalLight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tests\RendererDirectionalLightTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tests\LightRadiusTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tests\MaterialTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Rendering\PointLight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-
-    <ClInclude Include="src\Tests\AudioTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\SoundManager.h">
-    <ClInclude Include="src\Dependencies\imgui-1.76\imconfig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Dependencies\imgui-1.76\imgui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Dependencies\imgui-1.76\imgui_internal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Dependencies\imgui-1.76\imstb_rectpack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Dependencies\imgui-1.76\imstb_textedit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Dependencies\imgui-1.76\imstb_truetype.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\ImGui\ImGuiManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tests\ImGuiTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="src\AlecModel.h" />
+    <ClInclude Include="src\Axes.h" />
+    <ClInclude Include="src\Core\ImGui\ImGuiManager.h" />
+    <ClInclude Include="src\Core\Random.h" />
+    <ClInclude Include="src\Core\SoundManager.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imconfig.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imgui.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imgui_internal.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imstb_rectpack.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imstb_textedit.h" />
+    <ClInclude Include="src\Dependencies\imgui-1.76\imstb_truetype.h" />
+    <ClInclude Include="src\GraphicsAPI\OpenGLFramebuffer.h" />
+    <ClInclude Include="src\Grid.h" />
+    <ClInclude Include="src\JamilHModel.h" />
+    <ClInclude Include="src\JamilModel.h" />
+    <ClInclude Include="src\JeanModel.h" />
+    <ClInclude Include="src\MadelaineModel.h" />
+    <ClInclude Include="src\ModelManager.h" />
+    <ClInclude Include="src\Rendering\DirectionalLight.h" />
+    <ClInclude Include="src\Rendering\PointLight.h" />
+    <ClInclude Include="src\Tests\AudioTest.h" />
+    <ClInclude Include="src\Tests\CameraControllerTestScene.h" />
+    <ClInclude Include="src\Core\Debug.h" />
+    <ClInclude Include="src\Tests\CubeRenderingTest.h" />
+    <ClInclude Include="src\Dependencies\stb_image\stb_image.h" />
+    <ClInclude Include="src\Tests\EmptySquareTest.h" />
+    <ClInclude Include="src\GraphicsAPI\OpenGLCubeMap.h" />
+    <ClInclude Include="src\GraphicsAPI\OpenGLTexture2D.h" />
+    <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\Tests\ImGuiTest.h" />
+    <ClInclude Include="src\Tests\LightRadiusTest.h" />
+    <ClInclude Include="src\Tests\MaterialTest.h" />
+    <ClInclude Include="src\Tests\ParentTransformTest.h" />
+    <ClInclude Include="src\Rendering\Camera.h" />
+    <ClInclude Include="src\Core\Input.h" />
+    <ClInclude Include="src\GraphicsAPI\OpenGLShader.h" />
+    <ClInclude Include="src\GraphicsAPI\OpenGLVertexArray.h" />
+    <ClInclude Include="src\GraphicsAPI\OpenGLBuffer.h" />
+    <ClInclude Include="src\Core\Application.h" />
+    <ClInclude Include="src\Core\Script.h" />
+    <ClInclude Include="src\Rendering\CameraController.h" />
+    <ClInclude Include="src\Rendering\Renderer3D.h" />
+    <ClInclude Include="src\Rendering\Transform.h" />
+    <ClInclude Include="src\Tests\PointLightTest.h" />
+    <ClInclude Include="src\Tests\RendererDirectionalLightTest.h" />
+    <ClInclude Include="src\Tests\TextureTest.h" />
+    <ClInclude Include="src\Tests\TriangleTest.h" />
+    <ClInclude Include="src\Core\Time.h" />
+    <ClInclude Include="src\GraphicsAPI\OpenGLTexture.h" />
+    <ClInclude Include="src\Rendering\Mesh.h" />
+    <ClInclude Include="src\Tests\MeshTest.h" />
+    <ClInclude Include="src\Game\HyperCubeGame.h" />
   </ItemGroup>
 </Project>

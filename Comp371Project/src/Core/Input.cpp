@@ -1,3 +1,4 @@
+#include "../Dependencies/glew-2.1.0/include/GL/glew.h"
 #include "Input.h"
 #include "Application.h"
 #include "../Dependencies/glfw-3.3.4/include/GLFW/glfw3.h"

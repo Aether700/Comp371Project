@@ -8,6 +8,7 @@
 #include "CameraController.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
+#include "Mesh.h"
 
 #include <array>
 
@@ -75,12 +76,12 @@ RenderingBatch::~RenderingBatch()
 	delete[] m_cubemapSlots;
 }
 
-void RenderingBatch::Add(VertexData* vertices, unsigned int numVertices, unsigned int* indices,
+void RenderingBatch::Add(const VertexData* vertices, unsigned int numVertices, const unsigned int* indices,
 	unsigned int numIndices, unsigned int renderTarget)
 {
 	for (unsigned int i = 0; i < numVertices; i++)
 	{
-		VertexData& temp = vertices[i];
+		const VertexData& temp = vertices[i];
 		m_vertexDataArr.push_back(vertices[i]);
 	}
 
@@ -712,6 +713,12 @@ void Renderer3D::DrawVertexData(unsigned int renderTarget, const glm::vec3& posi
 		indices, indexCount, texture, textureCoords, tileFactor, tintColor);
 }
 
+void Renderer3D::DrawMesh(const glm::mat4& transform, std::shared_ptr<Mesh>& mesh, std::shared_ptr<OpenGLTexture2D> texture,
+	float tileFactor, const glm::vec4& tintColor)
+{
+	
+}
+
 void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& lightColor)
 {
 	assert(s_directionalLightIndex < RenderingBatch::s_maxTexture2DShadowMapSlots);
@@ -1158,4 +1165,30 @@ void Renderer3D::UploadVertexData(unsigned int renderTarget, const glm::mat4& tr
 		indexCount, renderTarget);
 
 	delete[] vertexData;
+}
+
+void Renderer3D::UploadMesh(const glm::mat4& transform, const Material& mat, std::shared_ptr<Mesh>& mesh,
+	std::shared_ptr<OpenGLTexture2D> texture, float tileFactor, const glm::vec4& tintColor)
+{
+	constexpr unsigned int renderTarget = GL_TRIANGLES;
+	int textureIndex = s_renderingBatches[renderTarget].AddTexture2D(texture, renderTarget);
+
+	std::vector<VertexData> vertexData;
+	vertexData.reserve(mesh->GetPositions().size());
+
+	for (unsigned int i = 0; i < mesh->GetPositions().size(); i++)
+	{
+		VertexData currVertex;
+		currVertex.position = mesh->GetPositions()[i];
+		currVertex.textureCoords = glm::vec3(mesh->GetTextureCoords()[i], 0);
+		currVertex.color = tintColor;
+		currVertex.normal = mesh->GetNormals()[i];
+		currVertex.textureIndex = textureIndex;
+		currVertex.tillingFactor = tileFactor;
+		currVertex.uses3DTexture = 0;
+		currVertex.mat = mat;
+	}
+
+	s_renderingBatches[renderTarget].Add(&vertexData[0], vertexData.size(), &mesh->GetIndices()[0],
+		mesh->GetIndices().size(), renderTarget);
 }

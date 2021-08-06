@@ -1,4 +1,6 @@
 #pragma once
+#include "../Dependencies/glew-2.1.0/include/GL/glew.h"
+#include "../Rendering/CameraController.h"
 #include "Axes.h"
 #include "Core/Application.h"
 #include "Core/Script.h"

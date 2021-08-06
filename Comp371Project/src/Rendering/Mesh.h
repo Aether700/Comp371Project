@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../Dependencies/glm-0.9.9.8/glm/glm.hpp"
 
 #include <vector>
@@ -54,7 +55,7 @@ private:
 			return "";
 		}
 
-		return filepath.substr(lastDot, filepath.size() - lastDot);
+		return filepath.substr(lastDot + 1, filepath.size() - lastDot + 1);
 	}
 
 	static std::shared_ptr<Mesh> LoadFromOBJ(const std::string& filepath)
@@ -78,7 +79,7 @@ private:
 		{
 			if (file.eof())
 			{
-				return;
+				return nullptr;
 			}
 
 			char buffer[200];
@@ -88,8 +89,8 @@ private:
 			{
 				//get rest of line
 				file.getline(buffer, 200);
-				glm::vec3 position;
-				int result = sscanf(buffer, "%f %f %f\n", position.x, position.y, position.z);
+				glm::vec3 position = glm::vec3(0, 0, 0);
+				int result = sscanf_s(buffer, "%f %f %f\n", position.x, position.y, position.z);
 
 				if (result != 3)
 				{
@@ -102,8 +103,8 @@ private:
 			{
 				//get rest of line
 				file.getline(buffer, 200);
-				glm::vec2 texCoord;
-				int result = sscanf(buffer, "%f %f\n", texCoord.x, texCoord.y);
+				glm::vec2 texCoord = glm::vec2(0, 0);
+				int result = sscanf_s(buffer, "%f %f\n", texCoord.x, texCoord.y);
 
 				if (result != 2)
 				{
@@ -116,8 +117,8 @@ private:
 			{
 				//get rest of line
 				file.getline(buffer, 200);
-				glm::vec3 normal;
-				int result = sscanf(buffer, "%f %f %f\n", normal.x, normal.y, normal.z);
+				glm::vec3 normal = glm::vec3(0, 0, 0);
+				int result = sscanf_s(buffer, "%f %f %f\n", normal.x, normal.y, normal.z);
 
 				if (result != 2)
 				{
@@ -139,20 +140,20 @@ private:
 				bool hasNormals = true;
 
 				//try format pos/tex/normal
-				int result = sscanf(buffer, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &posIndex[0], &textureCoordsIndex[0],
+				int result = sscanf_s(buffer, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &posIndex[0], &textureCoordsIndex[0],
 					&normalIndex[0], &posIndex[1], &textureCoordsIndex[1], &normalIndex[1], &posIndex[2],
 					&textureCoordsIndex[2], &normalIndex[2]);
 
 				if (result != 9)
 				{
 					//try format pos//normal
-					result = sscanf(buffer, "%d//%d %d//%d %d//%d\n", &posIndex[0], &normalIndex[0], &posIndex[1],
+					result = sscanf_s(buffer, "%d//%d %d//%d %d//%d\n", &posIndex[0], &normalIndex[0], &posIndex[1],
 						&normalIndex[1], &posIndex[2], &normalIndex[2]);
 
 					if (result != 6)
 					{
 						//try format pos/tex
-						int result = sscanf(buffer, "%d/%d %d/%d %d/%d\n", &posIndex[0], &textureCoordsIndex[0],
+						int result = sscanf_s(buffer, "%d/%d %d/%d %d/%d\n", &posIndex[0], &textureCoordsIndex[0],
 							&posIndex[1], &textureCoordsIndex[1], &posIndex[2], &textureCoordsIndex[2]);
 
 						if (result != 6)
