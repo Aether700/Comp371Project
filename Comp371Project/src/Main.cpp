@@ -29,6 +29,10 @@
 * - tiles: https://creativemarket.com/ThreeDiCube/2753544-Paving-tiles-seamless-texture
 * - shinyMetal: https://www.deviantart.com/grevenlx/art/Metal-Texture-PLUS-Metal-Grid-9940521
 */
+
+/*mp3 files obtained location listed below
+* - breakout.mp3: https://learnopengl.com/audio/in-practice/breakout/breakout.mp3
+*/
 int main()
 {
 	Application::Init();
