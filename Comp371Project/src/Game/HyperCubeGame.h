@@ -6,6 +6,7 @@
 #include "Model.h"
 #include "Core/Time.h"
 #include "../Core/Debug.h"
+#include "../Core/SoundManager.h"
 
 #include <vector>
 #include <random>
@@ -38,6 +39,8 @@ public:
 		wall_tr.position = glm::vec3{ 0, 2, -15 };
 		wall_tr.scale = glm::vec3{ 4, 4, 1 };
 		
+		SoundManager::Play("Resources/Audio/", true);
+
 	}
 
 	void OnUpdate()
