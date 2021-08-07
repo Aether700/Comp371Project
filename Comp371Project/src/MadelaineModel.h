@@ -43,7 +43,7 @@ public:
 		
 		//draw light above model
 		glm::vec3 temp = (GetModelTransform()->GetTransformMatrix())[3];
-		Renderer3D::AddDirectionalLight({ temp[0],temp[1] +30 ,temp[2] }, { 0, -1, 0 }, { 1,1,1,1 });
+		//Renderer3D::AddDirectionalLight({ temp[0],temp[1] +30 ,temp[2] }, { 0, -1, 0 }, { 1,1,1,1 });
 	}
 
 	//implements the bonus mechanic of shuffling the model
