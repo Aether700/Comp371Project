@@ -81,7 +81,6 @@ void RenderingBatch::Add(const VertexData* vertices, unsigned int numVertices, c
 {
 	for (unsigned int i = 0; i < numVertices; i++)
 	{
-		const VertexData& temp = vertices[i];
 		m_vertexDataArr.push_back(vertices[i]);
 	}
 
@@ -716,7 +715,7 @@ void Renderer3D::DrawVertexData(unsigned int renderTarget, const glm::vec3& posi
 void Renderer3D::DrawMesh(const glm::mat4& transform, std::shared_ptr<Mesh>& mesh, std::shared_ptr<OpenGLTexture2D> texture,
 	float tileFactor, const glm::vec4& tintColor)
 {
-	
+	UploadMesh(transform, s_defaultMaterial, mesh, texture, tileFactor, tintColor);
 }
 
 void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& lightColor)
@@ -1187,6 +1186,7 @@ void Renderer3D::UploadMesh(const glm::mat4& transform, const Material& mat, std
 		currVertex.tillingFactor = tileFactor;
 		currVertex.uses3DTexture = 0;
 		currVertex.mat = mat;
+		vertexData.push_back(currVertex);
 	}
 
 	s_renderingBatches[renderTarget].Add(&vertexData[0], vertexData.size(), &mesh->GetIndices()[0],

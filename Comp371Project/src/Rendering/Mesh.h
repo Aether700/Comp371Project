@@ -79,7 +79,7 @@ private:
 		{
 			if (file.eof())
 			{
-				return nullptr;
+				break;
 			}
 
 			char buffer[200];
@@ -90,7 +90,7 @@ private:
 				//get rest of line
 				file.getline(buffer, 200);
 				glm::vec3 position = glm::vec3(0, 0, 0);
-				int result = sscanf_s(buffer, "%f %f %f\n", position.x, position.y, position.z);
+				int result = sscanf_s(buffer, "%f %f %f\n", &position.x, &position.y, &position.z);
 
 				if (result != 3)
 				{
@@ -104,7 +104,7 @@ private:
 				//get rest of line
 				file.getline(buffer, 200);
 				glm::vec2 texCoord = glm::vec2(0, 0);
-				int result = sscanf_s(buffer, "%f %f\n", texCoord.x, texCoord.y);
+				int result = sscanf_s(buffer, "%f %f\n", &texCoord.x, &texCoord.y);
 
 				if (result != 2)
 				{
@@ -118,9 +118,9 @@ private:
 				//get rest of line
 				file.getline(buffer, 200);
 				glm::vec3 normal = glm::vec3(0, 0, 0);
-				int result = sscanf_s(buffer, "%f %f %f\n", normal.x, normal.y, normal.z);
+				int result = sscanf_s(buffer, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
 
-				if (result != 2)
+				if (result != 3)
 				{
 					std::cout << "unexpected internal format\n";
 					return nullptr;
@@ -201,7 +201,7 @@ private:
 		std::vector<unsigned int> outIndices;
 		
 		int index = 0;
-		for (unsigned int i = 0; i < positions.size(); i++)
+		for (unsigned int i = 0; i < posIndices.size(); i++)
 		{
 			glm::vec2 texCoords;
 			if (textureCoords.size() != 0)
@@ -216,7 +216,7 @@ private:
 			}
 
 			int currIndex = FindVertexData(outPositions, outTextureCoords, outNormals, 
-				positions[i], texCoords, normal);
+				positions[posIndices[i]], texCoords, normal);
 
 			if (currIndex == -1)
 			{
@@ -224,7 +224,7 @@ private:
 				index++;
 
 				//add a vertex point
-				outPositions.push_back(positions[i]);
+				outPositions.push_back(positions[posIndices[i]]);
 				outTextureCoords.push_back(texCoords);
 				outNormals.push_back(normal);
 			}
