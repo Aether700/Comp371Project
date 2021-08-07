@@ -83,14 +83,13 @@ private:
 			}
 
 			char buffer[200];
-			file.getline(buffer, 200, ' ');//read first word
+			file.getline(buffer, 200);//read line
 
-			if (strcmp(buffer, "v") == 0) //defining a postion
+
+			if (buffer[0] == 'v' && buffer[1] == ' ') //defining a postion
 			{
-				//get rest of line
-				file.getline(buffer, 200);
 				glm::vec3 position = glm::vec3(0, 0, 0);
-				int result = sscanf_s(buffer, "%f %f %f\n", &position.x, &position.y, &position.z);
+				int result = sscanf_s(buffer, "v %f %f %f\n", &position.x, &position.y, &position.z);
 
 				if (result != 3)
 				{
@@ -99,12 +98,10 @@ private:
 				}
 				positions.push_back(position);
 			}
-			else if (strcmp(buffer, "vt") == 0) //defining a texture coordinate
+			else if (buffer[0] == 'v' && buffer[1] == 't' && buffer[2] == ' ') //defining a texture coordinate
 			{
-				//get rest of line
-				file.getline(buffer, 200);
 				glm::vec2 texCoord = glm::vec2(0, 0);
-				int result = sscanf_s(buffer, "%f %f\n", &texCoord.x, &texCoord.y);
+				int result = sscanf_s(buffer, "vt %f %f\n", &texCoord.x, &texCoord.y);
 
 				if (result != 2)
 				{
@@ -113,12 +110,10 @@ private:
 				}
 				textureCoords.push_back(texCoord);
 			}
-			else if (strcmp(buffer, "vn") == 0) //defining a normal
+			else if (buffer[0] == 'v' && buffer[1] == 'n' && buffer[2] == ' ') //defining a normal
 			{
-				//get rest of line
-				file.getline(buffer, 200);
 				glm::vec3 normal = glm::vec3(0, 0, 0);
-				int result = sscanf_s(buffer, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
+				int result = sscanf_s(buffer, "vn %f %f %f\n", &normal.x, &normal.y, &normal.z);
 
 				if (result != 3)
 				{
@@ -127,11 +122,8 @@ private:
 				}
 				normals.push_back(normal);
 			}
-			else if (strcmp(buffer, "f") == 0) //defining a face
+			else if (buffer[0] == 'f' && buffer[1] == ' ') //defining a face
 			{
-				//get rest of line
-				file.getline(buffer, 200);
-
 				int posIndex[3];
 				int textureCoordsIndex[3];
 				int normalIndex[3];
@@ -140,20 +132,20 @@ private:
 				bool hasNormals = true;
 
 				//try format pos/tex/normal
-				int result = sscanf_s(buffer, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &posIndex[0], &textureCoordsIndex[0],
+				int result = sscanf_s(buffer, "f %d/%d/%d %d/%d/%d %d/%d/%d\n", &posIndex[0], &textureCoordsIndex[0],
 					&normalIndex[0], &posIndex[1], &textureCoordsIndex[1], &normalIndex[1], &posIndex[2],
 					&textureCoordsIndex[2], &normalIndex[2]);
 
 				if (result != 9)
 				{
 					//try format pos//normal
-					result = sscanf_s(buffer, "%d//%d %d//%d %d//%d\n", &posIndex[0], &normalIndex[0], &posIndex[1],
+					result = sscanf_s(buffer, "f %d//%d %d//%d %d//%d\n", &posIndex[0], &normalIndex[0], &posIndex[1],
 						&normalIndex[1], &posIndex[2], &normalIndex[2]);
 
 					if (result != 6)
 					{
 						//try format pos/tex
-						int result = sscanf_s(buffer, "%d/%d %d/%d %d/%d\n", &posIndex[0], &textureCoordsIndex[0],
+						int result = sscanf_s(buffer, "f %d/%d %d/%d %d/%d\n", &posIndex[0], &textureCoordsIndex[0],
 							&posIndex[1], &textureCoordsIndex[1], &posIndex[2], &textureCoordsIndex[2]);
 
 						if (result != 6)
@@ -188,17 +180,13 @@ private:
 					texCoordIndices.push_back(textureCoordsIndex[2] - 1);
 				}
 			}
-			else
-			{
-				//skip line
-				file.getline(buffer, 200);
-			}
 		}
 
 		std::vector<glm::vec3> outPositions;
 		std::vector<glm::vec2> outTextureCoords;
 		std::vector<glm::vec3> outNormals;
 		std::vector<unsigned int> outIndices;
+		
 		
 		int index = 0;
 		for (unsigned int i = 0; i < posIndices.size(); i++)

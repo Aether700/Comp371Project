@@ -1178,7 +1178,7 @@ void Renderer3D::UploadMesh(const glm::mat4& transform, const Material& mat, std
 	for (unsigned int i = 0; i < mesh->GetPositions().size(); i++)
 	{
 		VertexData currVertex;
-		currVertex.position = mesh->GetPositions()[i];
+		currVertex.position = (glm::vec3)(transform * glm::vec4(mesh->GetPositions()[i], 1));
 		currVertex.textureCoords = glm::vec3(mesh->GetTextureCoords()[i], 0);
 		currVertex.color = tintColor;
 		currVertex.normal = mesh->GetNormals()[i];
