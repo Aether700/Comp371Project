@@ -105,6 +105,7 @@ public:
 	}
 
 	//Set light to be above model
+	//This happens only at the beginning of the program, so the light does move with the world but not with the model
 	void SetLightPos()
 	{
 		m_lightTransform.position = (glm::vec3)(GetModelTransform()->GetTransformMatrix())[3] + glm::vec3{ 0, 30, 0 };
