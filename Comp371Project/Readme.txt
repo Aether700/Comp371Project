@@ -44,6 +44,9 @@ each primitive used unless the batch renderer's capacity has been exeeded in whi
 filled in "batch" is flushed and drawn to the screen before continuing to process input otherwise 
 the renderer is flushed at the end of every frame.
 
+NOTE FOR ASSIGNMENT 2: Madeleine and Jamil Hirsch partially completed their individual parts, but did not implement point lighting or lighting-only-on-selection. 
+As the previous directional lighting interferes with seeing the point light effects, their light code has been disabled.
+
 The models are color coded as following
 
 Jamil Hanchian: Red
@@ -55,7 +58,7 @@ Jamil Hirsh: light blue
 The tasks have been seperated as following
 
 - Application/Script framework, camera + camera controller, batch renderer (Jamil Hanachian)
-- Coordinate axis (Alec, Jamil Hirsh)
+- Coordinate axis (Alec)
 - Model Manager (Madelaine, Jamil Hanachian)
 - Grid, Grid Tiles (Jean)
 - Lighting and Shadows (Jamil Hanachian, Alec, Madelaine, Jean)
