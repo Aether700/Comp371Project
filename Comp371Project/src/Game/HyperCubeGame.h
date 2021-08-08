@@ -166,7 +166,7 @@ public:
 			/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
 
 			//if ((cube_tr.position.z - wall_thickness) <= wall_tr.position.z)
-			if ((getCurrentModelPosition().z + wall_thickness ) <= getCurrentWallPosition().z)
+			if ((getCurrentModelPosition().z + wall_thickness*4 ) <= getCurrentWallPosition().z)
 			{
 				//reset animation frame time
 				animation_frame_time = 0.0;
@@ -374,7 +374,10 @@ private:
 	{
 		glm::vec3 cube_rot = getCurrentModelRotation();
 		std::cout << "Cube orientation is " << cube_rot.x << ", " << cube_rot.y << ", " << cube_rot.z << std::endl;
-		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(2*cube_rot.x), glm::sin(2*cube_rot.y), cube_rot.z };
+		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_rot.x/2.0), glm::sin(cube_rot.y/2.0), cube_rot.z };
+
+		//glm::vec3 cube_rotation_normalized = glm::vec3{ glm::mod(cube_rot.x, glm::pi<float>()), glm::sin(2 * cube_rot.y), cube_rot.z };
+		
 		if ( glm::abs(cube_rotation_sin.x - 0.0) < 0.001 && glm::abs(cube_rotation_sin.y - 0.0) < 0.001)
 		{
 			return true;
