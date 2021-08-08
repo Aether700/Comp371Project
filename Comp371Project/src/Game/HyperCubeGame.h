@@ -28,7 +28,7 @@ public:
 	HyperCubeGame()
 	{
 		m_worldTransform = std::make_shared<Transform>();
-		
+
 		cubeTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg");
 		wallTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/Bricks.PNG");
 
@@ -50,12 +50,14 @@ public:
 		Application::AddScript(m_grid);
 
 		//Cube object initial position
-		cube_tr.position = glm::vec3{ 0, 1, -1 };
+		//cube_tr.position = glm::vec3{ 0, 1, -1 };
+		setCurrentModelPosition(glm::vec3{ 0,1,-1 });
 
 		//Wall position
-		wall_tr.position = glm::vec3{ 0, 2, -15 };
-		wall_tr.scale = glm::vec3{ 4, 4, 1 };
-		
+		//wall_tr.position = glm::vec3{ 0, 2, -15 };
+		//wall_tr.scale = glm::vec3{ 4, 4, 1 };
+		setCurrentWallPosition(glm::vec3{ 0,1,-15 });
+
 		for (int i = 0; i < m_models.size(); i++)
 		{
 			m_models[i]->GetModelTransform()->position = glm::vec3{ 0, 4, -1 };
@@ -68,36 +70,45 @@ public:
 	void OnUpdate()
 	{
 		//Cooldown for cube rotations, also only do rotations during the rotations state
-		if ( (rotationInputTimer >= rotationInputCooldown) && (m_state == GameState::Rotations) )
+		if ((rotationInputTimer >= rotationInputCooldown) && (m_state == GameState::Rotations))
 		{
+			glm::vec3 model_rotation = getCurrentModelRotation();
 			//rotation about x axis (forward/back)
 			if (Input::IsKeyPressed(GLFW_KEY_W))
 			{
-				cube_tr.rotation.x += glm::radians(90.0f);
+				//cube_tr.rotation.x += glm::radians(90.0f);
+				model_rotation.x += glm::radians(90.0f);
+				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				//std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_S))
 			{
-				cube_tr.rotation.x -= glm::radians(90.0f);
+				//cube_tr.rotation.x -= glm::radians(90.0f);
+				model_rotation.x -= glm::radians(90.0f);
+				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				//std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
 			}
 
 			//rotation about y axis (left/right)
 			if (Input::IsKeyPressed(GLFW_KEY_A))
 			{
-				cube_tr.rotation.y -= glm::radians(90.0f);
+				//cube_tr.rotation.y -= glm::radians(90.0f);
+				model_rotation.y -= glm::radians(90.0f);
+				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				//std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_D))
 			{
-				cube_tr.rotation.y += glm::radians(90.0f);
+				//cube_tr.rotation.y += glm::radians(90.0f);
+				model_rotation.y += glm::radians(90.0f);
+				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				//std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
 			}
 
 		}
@@ -106,7 +117,7 @@ public:
 			rotationInputTimer += Time::GetDeltaTime();
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_SPACE))
+		if (Input::IsKeyPressed(GLFW_KEY_SPACE) && (m_state==GameState::Rotations))
 		{
 			cube_move_speed_per_second = 10.0f;
 		}
@@ -128,85 +139,113 @@ public:
 		Renderer3D::UseShadows(true);
 		Renderer3D::UpdateLights();
 
-		switch(m_state)
+		switch (m_state)
 		{
 			//Cube model spawned, a random non-solution orientation chosen
-			case GameState::Spawn:
-				selectDisplayModel();
-				cube_tr.position = { 0,1,-1 };
-				cube_tr.rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
-				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
-				cube_tr.scale = { 1,1,1 };
-				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
-				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
-				m_state = GameState::Rotations;
-				Application::GetCameraController()->setLookIsOn(false);
-				Application::GetCameraController()->setMovementIsOn(false);
+		case GameState::Spawn:
+			selectDisplayModel();
+			setCurrentModelPosition(glm::vec3{ 0,5,-1 });
+			//cube_tr.position = { 0,1,-1 };
+			//cube_tr.rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
+			//std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+			//cube_tr.scale = { 1,1,1 };
+			//Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
+			//Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
+			m_state = GameState::Rotations;
 
-				break;
+			//Camera is locked to cube movement
+			Application::GetCameraController()->setLookIsOn(false);
+			Application::GetCameraController()->setMovementIsOn(false);
+
+			break;
 
 			//Player doing rotations, cube moving forward
-			case GameState::Rotations:
-				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
- 				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
+		case GameState::Rotations:
+			/*Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);*/
+			/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
 
-				//TODO: probably want some function that evaluates whether the cube has reached the wall
-				if ( (cube_tr.position.z - wall_thickness) <= wall_tr.position.z)
+			//if ((cube_tr.position.z - wall_thickness) <= wall_tr.position.z)
+			if ((getCurrentModelPosition().z + wall_thickness ) <= getCurrentWallPosition().z)
+			{
+				//reset animation frame time
+				animation_frame_time = 0.0;
+
+				//go to fit state if cube fits
+				if (IsRotationCorrect())
 				{
-					//go to fit state if cube fits
-					//if (glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z } == glm::vec3{ 0,0,0 })
-					if(IsRotationCorrect())
-					{
-						std::cout << "Fit!" << std::endl;
-						m_state = GameState::Fit;
-					}
-					//otherwise to drop state
-					else
-					{
-						std::cout << "Drop!" << std::endl;
-						m_state = GameState::Drop;
-					}
-
+					std::cout << "Fit!" << std::endl;
+					m_state = GameState::Fit;
 				}
+				//otherwise to drop state
 				else
 				{
-					cube_tr.position.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
+					std::cout << "Drop!" << std::endl;
+					m_state = GameState::Drop;
 				}
 
-				Application::GetCameraController()->SetCamera(cube_tr.position + glm::vec3{ 0, 1, 4 }, cube_tr.position + glm::vec3{0, 1, 0}, 0.0f, 20.0f);
+			}
+			else
+			{
+				//cube_tr.position.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
+				glm::vec3 model_pos = getCurrentModelPosition();
+				model_pos.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
+				setCurrentModelPosition(model_pos);
+			}
 
-				break;
+			Application::GetCameraController()->SetCamera(getCurrentModelPosition() + glm::vec3{ -1, 3, 9 }, getCurrentModelPosition() + glm::vec3{ 0, 0, 0 }, 15.0f, -40.0f);
+
+			break;
 
 			//Player hit forward button
-			case GameState::Advance:
-				break;
+		case GameState::Advance:
+			break;
 
 			//Cube model fits into wall (correct orientation), so bring it through
-			case GameState::Fit:
-				//TODO: slowly move through the slot
-				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
-				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
-				
-				Application::GetCameraController()->setLookIsOn(true);
-				Application::GetCameraController()->setMovementIsOn(true);
-				
-				//m_state = GameState::Spawn;
-				break;
+		case GameState::Fit:
+			/*Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);*/
+			/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
+			if (animation_frame_time < animation_frame_time_limit)
+			{
+				glm::vec3 model_pos = getCurrentModelPosition();
+				model_pos.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
+				setCurrentModelPosition(model_pos);
+				animation_frame_time += Time::GetDeltaTime();
+			}
+			else
+			{
+				selectDisplayModel();
+				m_state = GameState::Spawn;
+			}
+
+			break;
 
 			//Cube model doesn't fit into wall (incorrect orientation), so drop it down
-			case GameState::Drop:
-				//TODO: drop down in a gravity-like fashion
-				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
-				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
-				
-				Application::GetCameraController()->setLookIsOn(true);
-				Application::GetCameraController()->setMovementIsOn(true);
-				
-				//m_state = GameState::Spawn;
-				break;
+		case GameState::Drop:
+			/*Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);*/
+			/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
+			if (animation_frame_time < animation_frame_time_limit / 2)
+			{
+				glm::vec3 model_pos = getCurrentModelPosition();
+				model_pos.y -= Time::GetDeltaTime() * cube_move_speed_per_second;
+				setCurrentModelPosition(model_pos);
+				animation_frame_time += Time::GetDeltaTime();
+			}
+			else
+			{
+				selectDisplayModel();
+				m_state = GameState::Spawn;
+			}
 
-			default:
-				break;
+			break;
+
+		case GameState::Debug:
+			Application::GetCameraController()->setLookIsOn(true);
+			Application::GetCameraController()->setMovementIsOn(true);
+
+			break;
+
+		default:
+			break;
 
 		}
 	}
@@ -217,11 +256,9 @@ protected:
 private:
 	Grid* m_grid;
 
-	//rotation in z is not allowed, and would not be compatible with the typical 4-way control systems (eg WASD, arrows, controller stick)
-	int y_rot_count = 0;
-	int x_rot_count = 0;
-	float y_rot = 0.0f;
-	float x_rot = 0.0f;
+	float score = 0.0;
+
+	float start_time = 0.0;
 
 	float cube_move_speed_per_second = 1.0;
 
@@ -230,8 +267,11 @@ private:
 
 	float wall_thickness = 1.0;
 
-	Transform cube_tr;
-	Transform wall_tr;
+	float animation_frame_time = 0; //used when doing drop or fit animations
+	float animation_frame_time_limit = 1.5; //number of seconds to do animation for
+
+	//Transform cube_tr;
+	//Transform wall_tr;
 	Transform light_pos;
 
 	glm::vec4 cube_color = { 0.1, 0.9, 0.1, 1 };
@@ -245,7 +285,7 @@ private:
 	std::vector<GameModel*> m_models;
 	int m_currModel;
 
-	enum class GameState { Spawn, Rotations, Advance, Fit, Drop };
+	enum class GameState { Spawn, Rotations, Advance, Fit, Drop, Debug };
 	GameState m_state = GameState::Spawn;
 
 
@@ -274,15 +314,65 @@ private:
 	{
 		m_models[m_currModel]->Unselect();
 		m_currModel = GetRandom();
-		std::shared_ptr<Transform> m_modelTransform = m_models[m_currModel]->GetModelTransform();
-		m_modelTransform->rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
+		//std::shared_ptr<Transform> m_modelTransform = m_models[m_currModel]->GetModelTransform();
+		//m_modelTransform->rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
+		setCurrentModelRotation(glm::vec3{ GetRandomRotation(), GetRandomRotation(), 0 });
 		m_models[m_currModel]->Select();
+	}
+
+	void setCurrentModelPosition(glm::vec3 v)
+	{
+		std::shared_ptr<Transform> m_modelTransform = m_models[m_currModel]->GetModelTransform();
+		m_modelTransform->position = v;
+	}
+
+	void setCurrentModelRotation(glm::vec3 v)
+	{
+		std::shared_ptr<Transform> m_modelTransform = m_models[m_currModel]->GetModelTransform();
+		m_modelTransform->rotation = v;
+	}
+
+	glm::vec3 getCurrentModelPosition()
+	{
+		std::shared_ptr<Transform> m_modelTransform = m_models[m_currModel]->GetModelTransform();
+		return m_modelTransform->position;
+	}
+
+	glm::vec3 getCurrentModelRotation()
+	{
+		std::shared_ptr<Transform> m_modelTransform = m_models[m_currModel]->GetModelTransform();
+		return m_modelTransform->rotation;
+	}
+
+	void setCurrentWallPosition(glm::vec3 v)
+	{
+		std::shared_ptr<Transform> m_WallTransform = m_models[m_currModel]->GetWallTransform();
+		m_WallTransform->position = v;
+	}
+
+	void setCurrentWallRotation(glm::vec3 v)
+	{
+		std::shared_ptr<Transform> m_WallTransform = m_models[m_currModel]->GetWallTransform();
+		m_WallTransform->rotation = v;
+	}
+
+	glm::vec3 getCurrentWallPosition()
+	{
+		std::shared_ptr<Transform> m_WallTransform = m_models[m_currModel]->GetWallTransform();
+		return m_WallTransform->position;
+	}
+
+	glm::vec3 getCurrentWallRotation()
+	{
+		std::shared_ptr<Transform> m_WallTransform = m_models[m_currModel]->GetWallTransform();
+		return m_WallTransform->rotation;
 	}
 
 	//Since rotation stored as float, need to make approximate comparisons, not exact
 	bool IsRotationCorrect()
 	{
-		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z };
+		glm::vec3 cube_rot = getCurrentModelRotation();
+		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_rot.x), glm::sin(cube_rot.y), cube_rot.z };
 		if ( glm::abs(cube_rotation_sin.x - 0.0) < 0.001 && glm::abs(cube_rotation_sin.y - 0.0) < 0.001)
 		{
 			return true;
