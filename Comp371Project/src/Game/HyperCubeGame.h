@@ -36,24 +36,28 @@ public:
 		m_worldTransform = std::make_shared<Transform>();
 		Application::AddScript(new Axes(m_worldTransform));
 
+		//Cube transform
+		cube_tr = std::make_shared<Transform>();
+
 		//Grid
 		m_grid = new Grid(m_worldTransform);
 		m_grid->ToggleTexture();
 		Application::AddScript(m_grid);
 
 		//Cube object initial position
-		cube_tr.position = glm::vec3{ 0, 1, -1 };
+		cube_tr.get()->position = glm::vec3{ 0, 1, -1 };
+		cube_tr.get()->SetParent(m_worldTransform);
 
 		//Wall position
 		wall_tr.position = glm::vec3{ 0, 2, -15 };
 		wall_tr.scale = glm::vec3{ 4, 4, 1 };
 
 		//Models
-		m_Models.push_back(new ModelOne(m_worldTransform));
-		m_Models.push_back(new ModelTwo(m_worldTransform));
-		m_Models.push_back(new ModelThree(m_worldTransform));
-		m_Models.push_back(new ModelFour(m_worldTransform));
-		m_Models.push_back(new ModelFive(m_worldTransform));
+		m_Models.push_back(new ModelOne(cube_tr));
+		m_Models.push_back(new ModelTwo(cube_tr));
+		m_Models.push_back(new ModelThree(cube_tr));
+		m_Models.push_back(new ModelFour(cube_tr));
+		m_Models.push_back(new ModelFive(cube_tr));
 
 		//Add initial model
 		Application::AddScript(m_Models.at(0));
@@ -72,31 +76,31 @@ public:
 			//rotation about x axis (forward/back)
 			if (Input::IsKeyPressed(GLFW_KEY_W))
 			{
-				cube_tr.rotation.x += glm::radians(90.0f);
+				cube_tr.get()->rotation.x += glm::radians(90.0f);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				std::cout << "Cube orientation is " << cube_tr.get()->rotation.x << ", " << cube_tr.get()->rotation.y << ", " << cube_tr.get()->rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_S))
 			{
-				cube_tr.rotation.x -= glm::radians(90.0f);
+				cube_tr.get()->rotation.x -= glm::radians(90.0f);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				std::cout << "Cube orientation is " << cube_tr.get()->rotation.x << ", " << cube_tr.get()->rotation.y << ", " << cube_tr.get()->rotation.z << std::endl;
 			}
 
 			//rotation about y axis (left/right)
 			if (Input::IsKeyPressed(GLFW_KEY_A))
 			{
-				cube_tr.rotation.y -= glm::radians(90.0f);
+				cube_tr.get()->rotation.y -= glm::radians(90.0f);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				std::cout << "Cube orientation is " << cube_tr.get()->rotation.x << ", " << cube_tr.get()->rotation.y << ", " << cube_tr.get()->rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_D))
 			{
-				cube_tr.rotation.y += glm::radians(90.0f);
+				cube_tr.get()->rotation.y += glm::radians(90.0f);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				std::cout << "Cube orientation is " << cube_tr.get()->rotation.x << ", " << cube_tr.get()->rotation.y << ", " << cube_tr.get()->rotation.z << std::endl;
 			}
 
 		}
@@ -132,13 +136,13 @@ public:
 		{
 			//Cube model spawned, a random non-solution orientation chosen
 			case GameState::Spawn:
-				cube_tr.position = { 0,1,-1 };
-				cube_tr.rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
-				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
-				cube_tr.scale = { 1,1,1 };
-				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
-				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
-				m_state = GameState::Rotations;
+				cube_tr.get()->position = { 0,1,-1 };
+				cube_tr.get()->rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
+				std::cout << "Cube orientation is " << cube_tr.get()->rotation.x << ", " << cube_tr.get()->rotation.y << ", " << cube_tr.get()->rotation.z << std::endl;
+				cube_tr.get()->scale = { 1,1,1 };
+				/*Renderer3D::DrawVoxel(cube_tr.get()->GetTransformMatrix(), cubeTexture, 1, cube_color);*/
+				/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
+				m_state = GameState::Debug;
 
 				//Camera is locked to cube movement
 				Application::GetCameraController()->setLookIsOn(false);
@@ -148,10 +152,10 @@ public:
 
 			//Player doing rotations, cube moving forward
 			case GameState::Rotations:
-				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
- 				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
+				/*Renderer3D::DrawVoxel(cube_tr.get()->GetTransformMatrix(), cubeTexture, 1, cube_color);*/
+ 				/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
 
-				if ( (cube_tr.position.z - wall_thickness) <= wall_tr.position.z)
+				if ( (cube_tr.get()->position.z - wall_thickness) <= wall_tr.position.z)
 				{
 					//reset animation frame time
 					animation_frame_time = 0.0;
@@ -172,10 +176,10 @@ public:
 				}
 				else
 				{
-					cube_tr.position.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
+					cube_tr.get()->position.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
 				}
 
-				Application::GetCameraController()->SetCamera(cube_tr.position + glm::vec3{ 0, 1, 7 }, cube_tr.position + glm::vec3{0, 1, 0}, 0.0f, 20.0f);
+				Application::GetCameraController()->SetCamera(cube_tr.get()->position + glm::vec3{ 0, 1, 7 }, cube_tr.get()->position + glm::vec3{0, 1, 0}, 0.0f, 20.0f);
 
 				break;
 
@@ -185,11 +189,11 @@ public:
 
 			//Cube model fits into wall (correct orientation), so bring it through
 			case GameState::Fit:
-				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
-				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
+				/*Renderer3D::DrawVoxel(cube_tr.get()->GetTransformMatrix(), cubeTexture, 1, cube_color);*/
+				/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
 				if (animation_frame_time < animation_frame_time_limit)
 				{
-					cube_tr.position.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
+					cube_tr.get()->position.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
 					animation_frame_time += Time::GetDeltaTime();
 				}
 				else
@@ -202,11 +206,11 @@ public:
 
 			//Cube model doesn't fit into wall (incorrect orientation), so drop it down
 			case GameState::Drop:
-				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
-				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
+				/*Renderer3D::DrawVoxel(cube_tr.get()->GetTransformMatrix(), cubeTexture, 1, cube_color);*/
+				/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
 				if (animation_frame_time < animation_frame_time_limit / 2)
 				{
-					cube_tr.position.y -= Time::GetDeltaTime() * cube_move_speed_per_second;
+					cube_tr.get()->position.y -= Time::GetDeltaTime() * cube_move_speed_per_second;
 					animation_frame_time += Time::GetDeltaTime();
 				}
 				else
@@ -215,6 +219,12 @@ public:
 					m_state = GameState::Spawn;
 				}
 				
+				break;
+
+			case GameState::Debug:
+				Application::GetCameraController()->setLookIsOn(true);
+				Application::GetCameraController()->setMovementIsOn(true);
+
 				break;
 
 			default:
@@ -235,6 +245,10 @@ private:
 	//float y_rot = 0.0f;
 	//float x_rot = 0.0f;
 
+	float score;
+
+	float start_time;
+
 	float cube_move_speed_per_second = 1.0;
 
 	float rotationInputTimer = 0.0f;
@@ -245,7 +259,7 @@ private:
 	float animation_frame_time = 0; //used when doing drop or fit animations
 	float animation_frame_time_limit = 1.5; //number of seconds to do animation for
 
-	Transform cube_tr;
+	std::shared_ptr<Transform> cube_tr;
 	Transform wall_tr;
 	Transform light_tr;
 	std::shared_ptr<Transform> m_worldTransform;
@@ -259,7 +273,7 @@ private:
 	std::vector<Model*> m_Models;
 	int current_model_index;
 
-	enum class GameState { Spawn, Rotations, Advance, Fit, Drop };
+	enum class GameState { Spawn, Rotations, Advance, Fit, Drop, Debug };
 	GameState m_state = GameState::Spawn;
 
 
@@ -276,7 +290,7 @@ private:
 	//Since rotation stored as float, need to make approximate comparisons, not exact
 	bool IsRotationCorrect()
 	{
-		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z };
+		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_tr.get()->rotation.x), glm::sin(cube_tr.get()->rotation.y), cube_tr.get()->rotation.z };
 		if ( glm::abs(cube_rotation_sin.x - 0.0) < 0.001 && glm::abs(cube_rotation_sin.y - 0.0) < 0.001)
 		{
 			return true;
