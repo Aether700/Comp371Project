@@ -175,12 +175,14 @@ public:
 				if (IsRotationCorrect())
 				{
 					std::cout << "Fit!" << std::endl;
+					SoundManager::Play("Resources/Audio/109663__grunz__success-low.wav", false);
 					m_state = GameState::Fit;
 				}
 				//otherwise to drop state
 				else
 				{
 					std::cout << "Drop!" << std::endl;
+					SoundManager::Play("Resources/Audio/31126__calethos__bump.wav", false);
 					m_state = GameState::Drop;
 				}
 
@@ -205,6 +207,7 @@ public:
 		case GameState::Fit:
 			/*Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);*/
 			/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
+
 			if (animation_frame_time < animation_frame_time_limit)
 			{
 				glm::vec3 model_pos = getCurrentModelPosition();
