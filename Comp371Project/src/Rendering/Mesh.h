@@ -71,9 +71,13 @@ private:
 		std::vector<glm::vec3> positions;
 		std::vector<glm::vec2> textureCoords;
 		std::vector<glm::vec3> normals;
+
 		std::vector<unsigned int> posIndices;
-		std::vector<unsigned int> texCoordIndices;
-		std::vector<unsigned int> normalIndices;
+		//index of the face first then the actual value
+		std::vector<std::pair<unsigned int, unsigned int>> texCoordIndices;
+		std::vector<std::pair<unsigned int, unsigned int>> normalIndices;
+
+		unsigned int faceIndex = 0;
 
 		while (true)
 		{
@@ -168,17 +172,19 @@ private:
 
 				if (hasNormals)
 				{
-					normalIndices.push_back(normalIndex[0] - 1);
-					normalIndices.push_back(normalIndex[1] - 1);
-					normalIndices.push_back(normalIndex[2] - 1);
+					normalIndices.push_back(std::make_pair(faceIndex, (unsigned int)normalIndex[0] - 1U));
+					normalIndices.push_back(std::make_pair(faceIndex, (unsigned int)normalIndex[1] - 1U));
+					normalIndices.push_back(std::make_pair(faceIndex, (unsigned int)normalIndex[2] - 1U));
 				}
 
 				if (hasTexCoords)
 				{
-					texCoordIndices.push_back(textureCoordsIndex[0] - 1);
-					texCoordIndices.push_back(textureCoordsIndex[1] - 1);
-					texCoordIndices.push_back(textureCoordsIndex[2] - 1);
+					texCoordIndices.push_back(std::make_pair(faceIndex, (unsigned int)textureCoordsIndex[0] - 1U));
+					texCoordIndices.push_back(std::make_pair(faceIndex, (unsigned int)textureCoordsIndex[1] - 1U));
+					texCoordIndices.push_back(std::make_pair(faceIndex, (unsigned int)textureCoordsIndex[2] - 1U));
 				}
+				
+				faceIndex++;
 			}
 		}
 
@@ -186,21 +192,25 @@ private:
 		std::vector<glm::vec2> outTextureCoords;
 		std::vector<glm::vec3> outNormals;
 		std::vector<unsigned int> outIndices;
-				
+		
+		int textureIndex = 0;
+		int normalIndex = 0;
+		
 		int index = 0;
 		for (unsigned int i = 0; i < posIndices.size(); i++)
 		{
 			glm::vec2 texCoords;
-			if (textureCoords.size() != 0)
+			if (textureCoords.size() != 0 && texCoordIndices[textureIndex].first == i)
 			{
-				std::cout << texCoordIndices[i] << "\n";
-				texCoords = textureCoords[texCoordIndices[i]];
+				texCoords = textureCoords[texCoordIndices[textureIndex].second];
+				textureIndex++;
 			}
 
 			glm::vec3 normal;
-			if (normals.size() != 0)
+			if (normals.size() != 0 && normalIndices[normalIndex].first == i)
 			{
-				normal = normals[normalIndices[i]];
+				normal = normals[normalIndices[normalIndex].second];
+				normalIndex++;
 			}
 
 			int currIndex = FindVertexData(outPositions, outTextureCoords, outNormals, 
@@ -210,8 +220,6 @@ private:
 			{
 				currIndex = index;
 				index++;
-				
-				std::cout << index << "\n";
 
 				//add a vertex point
 				outPositions.push_back(positions[posIndices[i]]);

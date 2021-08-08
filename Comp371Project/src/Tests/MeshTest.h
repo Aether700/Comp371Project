@@ -9,8 +9,8 @@ class MeshTest : public Script
 public:
 	void OnStart()
 	{
-		//m_mesh = Mesh::LoadFromFile("Resources/Models/Lowest_poly_thinker.obj");
-		m_mesh = Mesh::LoadFromFile("Resources/Models/heracles.obj");
+		m_mesh = Mesh::LoadFromFile("Resources/Models/Lowest_poly_thinker.obj");
+		//m_mesh = Mesh::LoadFromFile("Resources/Models/heracles.obj");
 		//m_mesh = Mesh::LoadFromFile("Resources/Models/cube.obj");
 
 		if (m_mesh == nullptr)
@@ -21,9 +21,8 @@ public:
 
 	void OnRender()
 	{
-		Renderer3D::DrawMesh(m_meshTransform.GetTransformMatrix(), m_mesh, Renderer3D::GetDefaultWhiteTexture());
+		Renderer3D::DrawMesh(m_meshTransform.GetTransformMatrix(), m_mesh, Renderer3D::GetDefaultWhiteTexture(), 1, {0, 0, 1, 1});
 		Renderer3D::DrawVoxel(m_cube.GetTransformMatrix(), glm::vec4{1, 0, 0, 1});
-
 	}
 
 private:
