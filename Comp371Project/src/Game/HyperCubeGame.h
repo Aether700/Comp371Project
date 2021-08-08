@@ -10,6 +10,14 @@
 #include "../Core/SoundManager.h"
 #include "../Rendering/CameraController.h"
 
+
+#include "../GameModel/GameModel.h"
+#include "../GameModel/ModelOne.h"
+#include "../GameModel/ModelTwo.h"
+#include "../GameModel/ModelThree.h"
+#include "../GameModel/ModelFour.h"
+#include "../GameModel/ModelFive.h"
+
 #include <vector>
 #include <random>
 
@@ -19,14 +27,21 @@ class HyperCubeGame : public Script
 public:
 	HyperCubeGame()
 	{
+		m_worldTransform = std::make_shared<Transform>();
+		
 		cubeTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg");
 		wallTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/Bricks.PNG");
+
+		AddModel(new ModelOne(m_worldTransform));
+		AddModel(new ModelTwo(m_worldTransform));
+		AddModel(new ModelThree(m_worldTransform));
+		AddModel(new ModelFour(m_worldTransform));
+		AddModel(new ModelFive(m_worldTransform));
 	}
 
 	void OnStart()
 	{
 		//World transform
-		std::shared_ptr<Transform> m_worldTransform = std::make_shared<Transform>();
 		Application::AddScript(new Axes(m_worldTransform));
 
 		//Grid
@@ -41,14 +56,17 @@ public:
 		wall_tr.position = glm::vec3{ 0, 2, -15 };
 		wall_tr.scale = glm::vec3{ 4, 4, 1 };
 		
+		for (int i = 0; i < m_models.size(); i++)
+		{
+			m_models[i]->GetModelTransform()->position = glm::vec3{ 0, 4, -1 };
+			m_models[i]->GetWallTransform()->position = glm::vec3{ 0, 5, -15 };
+		}
 		//start looping background music
 		SoundManager::Play("Resources/Audio/breakout.mp3", true);
-
 	}
 
 	void OnUpdate()
 	{
-
 		//Cooldown for cube rotations, also only do rotations during the rotations state
 		if ( (rotationInputTimer >= rotationInputCooldown) && (m_state == GameState::Rotations) )
 		{
@@ -114,6 +132,7 @@ public:
 		{
 			//Cube model spawned, a random non-solution orientation chosen
 			case GameState::Spawn:
+				selectDisplayModel();
 				cube_tr.position = { 0,1,-1 };
 				cube_tr.rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
 				std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
@@ -221,6 +240,11 @@ private:
 	std::shared_ptr<OpenGLCubeMap> cubeTexture;
 	std::shared_ptr<OpenGLCubeMap> wallTexture;
 
+	std::shared_ptr<Transform> m_worldTransform;
+
+	std::vector<GameModel*> m_models;
+	int m_currModel;
+
 	enum class GameState { Spawn, Rotations, Advance, Fit, Drop };
 	GameState m_state = GameState::Spawn;
 
@@ -235,6 +259,24 @@ private:
 		return distr(gen) * glm::radians(90.0f);
 	}
 
+	int GetRandom() //get random int from 0 to 4
+	{
+		return (glm::abs(Random::GetInt()) % 4);
+	}
+
+	void AddModel(GameModel* m)
+	{
+		Application::AddScript(m);
+		m_models.push_back(m);
+	}
+
+	void selectDisplayModel()
+	{
+		m_models[m_currModel]->Unselect();
+		m_currModel = GetRandom();
+		std::shared_ptr<Transform> m_modelTransform = m_models[m_currModel]->GetModelTransform();
+		m_modelTransform->rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
+		m_models[m_currModel]->Select();
 	//Since rotation stored as float, need to make approximate comparisons, not exact
 	bool IsRotationCorrect()
 	{

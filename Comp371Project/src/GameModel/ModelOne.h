@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Model.h"
+#include "GameModel.h"
 #include "Core/Random.h"
 
-class ModelOne : public Model
+class ModelOne : public GameModel
 {
 public:
 
-	ModelOne(std::shared_ptr<Transform> worldTransform) : Model(worldTransform)
+	ModelOne(std::shared_ptr<Transform> worldTransform) : GameModel(worldTransform)
 	{
 		for (auto& transform : m_cubeModel)
 		{
@@ -30,48 +30,23 @@ public:
 
 	void OnRender()
 	{
-		for (auto& transform : m_cubeModel)
+		if (m_isSelected)
 		{
-			RenderCube(transform->GetTransformMatrix());
-		}
+			for (auto& transform : m_cubeModel)
+			{
+				RenderCube(transform->GetTransformMatrix());
+			}
 
-		for (int count = 0; count < wallcount; count++)
-		{
-			RenderWall(m_wallCubes[count]->GetTransformMatrix());
+			for (int count = 0; count < wallcount; count++)
+			{
+				RenderWall(m_wallCubes[count]->GetTransformMatrix());
+			}
 		}
 	}
+
 
 protected:
 
-	virtual void RenderCubeWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
-	{
-		if (GetRenderingPrimitive() == RenderingPrimitive::Triangles)
-		{
-			Renderer3D::DrawVoxel(transform, modelTexture, 1.0f, color);
-		}
-		else if (GetRenderingPrimitive() == RenderingPrimitive::Lines)
-		{
-			Renderer3D::DrawWireCube(transform, color);
-		}
-		else if (GetRenderingPrimitive() == RenderingPrimitive::Points)
-		{
-			Renderer3D::DrawPointCube(transform, color);
-		}
-	}
-
-	virtual void RenderWallWithTexture(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
-	{
-		Renderer3D::DrawVoxel(transform, wallTexture, 1.0f, color);
-	}
-
-	virtual void DrawOnSelected(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 }) override
-	{
-		glm::mat4 WireTransform = transform;
-		WireTransform[0][0] = WireTransform[0][0] * 1.0005f;//x
-		WireTransform[1][1] = WireTransform[1][1] * 1.0005f;//y
-		WireTransform[2][2] = WireTransform[2][2] * 1.0005f;//z
-		Renderer3D::DrawWireCube(WireTransform, m_wireMaterial, glm::vec4(1 - color.x, 1 - color.y, 1 - color.z, color.w));// opposite color
-	}
 
 private:
 
@@ -117,7 +92,4 @@ private:
 		}
 		return true;
 	}
-
-	Material m_wireMaterial = Material(true);
-	int wallcount = 0;
 };
