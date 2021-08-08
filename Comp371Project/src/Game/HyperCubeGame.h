@@ -7,6 +7,12 @@
 #include "Core/Time.h"
 #include "../Core/Debug.h"
 
+#include "../GameModel/ModelOne.h"
+#include "../GameModel/ModelTwo.h"
+#include "../GameModel/ModelThree.h"
+#include "../GameModel/ModelFour.h"
+#include "../GameModel/ModelFive.h"
+
 #include "../Core/SoundManager.h"
 #include "../Rendering/CameraController.h"
 
@@ -21,12 +27,13 @@ public:
 	{
 		cubeTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg");
 		wallTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/Bricks.PNG");
+
 	}
 
 	void OnStart()
 	{
 		//World transform
-		std::shared_ptr<Transform> m_worldTransform = std::make_shared<Transform>();
+		m_worldTransform = std::make_shared<Transform>();
 		Application::AddScript(new Axes(m_worldTransform));
 
 		//Grid
@@ -40,6 +47,16 @@ public:
 		//Wall position
 		wall_tr.position = glm::vec3{ 0, 2, -15 };
 		wall_tr.scale = glm::vec3{ 4, 4, 1 };
+
+		//Models
+		m_Models.push_back(new ModelOne(m_worldTransform));
+		m_Models.push_back(new ModelTwo(m_worldTransform));
+		m_Models.push_back(new ModelThree(m_worldTransform));
+		m_Models.push_back(new ModelFour(m_worldTransform));
+		m_Models.push_back(new ModelFive(m_worldTransform));
+
+		//Add initial model
+		Application::AddScript(m_Models.at(0));
 		
 		//start looping background music
 		SoundManager::Play("Resources/Audio/breakout.mp3", true);
@@ -88,7 +105,8 @@ public:
 			rotationInputTimer += Time::GetDeltaTime();
 		}
 
-		if (Input::IsKeyPressed(GLFW_KEY_SPACE))
+		//If in rotations state, user can speed up cube model movement
+		if (Input::IsKeyPressed(GLFW_KEY_SPACE) && m_state == GameState::Rotations)
 		{
 			cube_move_speed_per_second = 10.0f;
 		}
@@ -121,6 +139,8 @@ public:
 				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
 				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
 				m_state = GameState::Rotations;
+
+				//Camera is locked to cube movement
 				Application::GetCameraController()->setLookIsOn(false);
 				Application::GetCameraController()->setMovementIsOn(false);
 
@@ -131,11 +151,12 @@ public:
 				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
  				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
 
-				//TODO: probably want some function that evaluates whether the cube has reached the wall
 				if ( (cube_tr.position.z - wall_thickness) <= wall_tr.position.z)
 				{
+					//reset animation frame time
+					animation_frame_time = 0.0;
+
 					//go to fit state if cube fits
-					//if (glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z } == glm::vec3{ 0,0,0 })
 					if(IsRotationCorrect())
 					{
 						std::cout << "Fit!" << std::endl;
@@ -154,7 +175,7 @@ public:
 					cube_tr.position.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
 				}
 
-				Application::GetCameraController()->SetCamera(cube_tr.position + glm::vec3{ 0, 1, 4 }, cube_tr.position + glm::vec3{0, 1, 0}, 0.0f, 20.0f);
+				Application::GetCameraController()->SetCamera(cube_tr.position + glm::vec3{ 0, 1, 7 }, cube_tr.position + glm::vec3{0, 1, 0}, 0.0f, 20.0f);
 
 				break;
 
@@ -164,26 +185,36 @@ public:
 
 			//Cube model fits into wall (correct orientation), so bring it through
 			case GameState::Fit:
-				//TODO: slowly move through the slot
 				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
 				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
-				
-				Application::GetCameraController()->setLookIsOn(true);
-				Application::GetCameraController()->setMovementIsOn(true);
-				
-				//m_state = GameState::Spawn;
+				if (animation_frame_time < animation_frame_time_limit)
+				{
+					cube_tr.position.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
+					animation_frame_time += Time::GetDeltaTime();
+				}
+				else
+				{
+					ChooseNextModel();
+					m_state = GameState::Spawn;
+				}
+
 				break;
 
 			//Cube model doesn't fit into wall (incorrect orientation), so drop it down
 			case GameState::Drop:
-				//TODO: drop down in a gravity-like fashion
 				Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
 				Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
+				if (animation_frame_time < animation_frame_time_limit / 2)
+				{
+					cube_tr.position.y -= Time::GetDeltaTime() * cube_move_speed_per_second;
+					animation_frame_time += Time::GetDeltaTime();
+				}
+				else
+				{
+					ChooseNextModel();
+					m_state = GameState::Spawn;
+				}
 				
-				Application::GetCameraController()->setLookIsOn(true);
-				Application::GetCameraController()->setMovementIsOn(true);
-				
-				//m_state = GameState::Spawn;
 				break;
 
 			default:
@@ -199,10 +230,10 @@ private:
 	Grid* m_grid;
 
 	//rotation in z is not allowed, and would not be compatible with the typical 4-way control systems (eg WASD, arrows, controller stick)
-	int y_rot_count = 0;
-	int x_rot_count = 0;
-	float y_rot = 0.0f;
-	float x_rot = 0.0f;
+	//int y_rot_count = 0;
+	//int x_rot_count = 0;
+	//float y_rot = 0.0f;
+	//float x_rot = 0.0f;
 
 	float cube_move_speed_per_second = 1.0;
 
@@ -211,15 +242,22 @@ private:
 
 	float wall_thickness = 1.0;
 
+	float animation_frame_time = 0; //used when doing drop or fit animations
+	float animation_frame_time_limit = 1.5; //number of seconds to do animation for
+
 	Transform cube_tr;
 	Transform wall_tr;
-	Transform light_pos;
+	Transform light_tr;
+	std::shared_ptr<Transform> m_worldTransform;
 
 	glm::vec4 cube_color = { 0.1, 0.9, 0.1, 1 };
 	glm::vec4 wall_color = { 0.1, 0.2, 0.87, 1 };
 
 	std::shared_ptr<OpenGLCubeMap> cubeTexture;
 	std::shared_ptr<OpenGLCubeMap> wallTexture;
+
+	std::vector<Model*> m_Models;
+	int current_model_index;
 
 	enum class GameState { Spawn, Rotations, Advance, Fit, Drop };
 	GameState m_state = GameState::Spawn;
@@ -249,6 +287,22 @@ private:
 		}
 	}
 
+	//Choose the index of the next model, and also handle switching out the Application script
+	void ChooseNextModel()
+	{
+		Application::RemoveScript(m_Models.at(current_model_index));
+
+		if (current_model_index >= m_Models.size()-1)
+		{
+			current_model_index = 0;
+		}
+		else
+		{
+			current_model_index++;
+		}
+
+		Application::AddScript(m_Models.at(current_model_index));
+	}
 };
 
 //Nice to have:
