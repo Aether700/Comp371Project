@@ -6,6 +6,8 @@
 #include "Model.h"
 #include "Core/Time.h"
 #include "../Core/Debug.h"
+
+#include "../Core/SoundManager.h"
 #include "../Rendering/CameraController.h"
 
 
@@ -59,6 +61,8 @@ public:
 			m_models[i]->GetModelTransform()->position = glm::vec3{ 0, 4, -1 };
 			m_models[i]->GetWallTransform()->position = glm::vec3{ 0, 5, -15 };
 		}
+		//start looping background music
+		SoundManager::Play("Resources/Audio/breakout.mp3", true);
 	}
 
 	void OnUpdate()
@@ -150,7 +154,8 @@ public:
 				if ( (cube_tr.position.z - wall_thickness) <= wall_tr.position.z)
 				{
 					//go to fit state if cube fits
-					if (glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z } == glm::vec3{ 0,0,0 })
+					//if (glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z } == glm::vec3{ 0,0,0 })
+					if(IsRotationCorrect())
 					{
 						std::cout << "Fit!" << std::endl;
 						m_state = GameState::Fit;
@@ -272,6 +277,18 @@ private:
 		std::shared_ptr<Transform> m_modelTransform = m_models[m_currModel]->GetModelTransform();
 		m_modelTransform->rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
 		m_models[m_currModel]->Select();
+	//Since rotation stored as float, need to make approximate comparisons, not exact
+	bool IsRotationCorrect()
+	{
+		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_tr.rotation.x), glm::sin(cube_tr.rotation.y), cube_tr.rotation.z };
+		if ( glm::abs(cube_rotation_sin.x - 0.0) < 0.001 && glm::abs(cube_rotation_sin.y - 0.0) < 0.001)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 };
