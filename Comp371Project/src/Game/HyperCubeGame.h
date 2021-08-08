@@ -277,6 +277,8 @@ private:
 		std::shared_ptr<Transform> m_modelTransform = m_models[m_currModel]->GetModelTransform();
 		m_modelTransform->rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
 		m_models[m_currModel]->Select();
+	}
+
 	//Since rotation stored as float, need to make approximate comparisons, not exact
 	bool IsRotationCorrect()
 	{
