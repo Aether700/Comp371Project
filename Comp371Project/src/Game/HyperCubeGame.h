@@ -80,7 +80,7 @@ public:
 				model_rotation.x += glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				//std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_S))
@@ -89,7 +89,7 @@ public:
 				model_rotation.x -= glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				//std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
 
 			//rotation about y axis (left/right)
@@ -99,7 +99,7 @@ public:
 				model_rotation.y -= glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				//std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_D))
@@ -108,8 +108,9 @@ public:
 				model_rotation.y += glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				//std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
+				std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
+			
 
 		}
 		else
@@ -372,7 +373,8 @@ private:
 	bool IsRotationCorrect()
 	{
 		glm::vec3 cube_rot = getCurrentModelRotation();
-		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_rot.x), glm::sin(cube_rot.y), cube_rot.z };
+		std::cout << "Cube orientation is " << cube_rot.x << ", " << cube_rot.y << ", " << cube_rot.z << std::endl;
+		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(2*cube_rot.x), glm::sin(2*cube_rot.y), cube_rot.z };
 		if ( glm::abs(cube_rotation_sin.x - 0.0) < 0.001 && glm::abs(cube_rotation_sin.y - 0.0) < 0.001)
 		{
 			return true;
