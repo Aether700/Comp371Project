@@ -186,14 +186,14 @@ private:
 		std::vector<glm::vec2> outTextureCoords;
 		std::vector<glm::vec3> outNormals;
 		std::vector<unsigned int> outIndices;
-		
-		
+				
 		int index = 0;
 		for (unsigned int i = 0; i < posIndices.size(); i++)
 		{
 			glm::vec2 texCoords;
 			if (textureCoords.size() != 0)
 			{
+				std::cout << texCoordIndices[i] << "\n";
 				texCoords = textureCoords[texCoordIndices[i]];
 			}
 
@@ -210,6 +210,8 @@ private:
 			{
 				currIndex = index;
 				index++;
+				
+				std::cout << index << "\n";
 
 				//add a vertex point
 				outPositions.push_back(positions[posIndices[i]]);

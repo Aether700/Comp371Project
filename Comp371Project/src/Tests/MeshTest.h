@@ -9,8 +9,8 @@ class MeshTest : public Script
 public:
 	void OnStart()
 	{
-		m_mesh = Mesh::LoadFromFile("Resources/Models/Lowest_poly_thinker.obj");
-		//m_mesh = Mesh::LoadFromFile("Resources/Models/heracles.obj");
+		//m_mesh = Mesh::LoadFromFile("Resources/Models/Lowest_poly_thinker.obj");
+		m_mesh = Mesh::LoadFromFile("Resources/Models/heracles.obj");
 		//m_mesh = Mesh::LoadFromFile("Resources/Models/cube.obj");
 
 		if (m_mesh == nullptr)
