@@ -65,6 +65,9 @@ public:
 		}
 		//start looping background music
 		SoundManager::Play("Resources/Audio/breakout.mp3", true);
+
+		//set starting time
+		start_time = Time::GetTime();
 	}
 
 	void OnUpdate()
@@ -207,7 +210,7 @@ public:
 		case GameState::Fit:
 			/*Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);*/
 			/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
-
+			AddModelScore();
 			if (animation_frame_time < animation_frame_time_limit)
 			{
 				glm::vec3 model_pos = getCurrentModelPosition();
@@ -227,7 +230,7 @@ public:
 		case GameState::Drop:
 			/*Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);*/
 			/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
-			if (animation_frame_time < animation_frame_time_limit / 2)
+   			if (animation_frame_time < animation_frame_time_limit / 2)
 			{
 				glm::vec3 model_pos = getCurrentModelPosition();
 				model_pos.y -= Time::GetDeltaTime() * cube_move_speed_per_second;
@@ -391,6 +394,16 @@ private:
 		}
 	}
 
+	//Add the score from the current model
+	void AddModelScore()
+	{
+		score += m_models[m_currModel]->getScore();
+	}
+
+	float getTimeSinceStart()
+	{
+		return (Time::GetTime() - start_time);
+	}
 };
 
 //Nice to have:

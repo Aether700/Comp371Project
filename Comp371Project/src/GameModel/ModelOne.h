@@ -44,6 +44,11 @@ public:
 		}
 	}
 
+	float getScore()
+	{
+		return 2.0;
+	}
+
 
 protected:
 
