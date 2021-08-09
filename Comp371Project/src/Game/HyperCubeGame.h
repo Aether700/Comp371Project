@@ -60,6 +60,10 @@ public:
 			m_models[i]->GetModelTransform()->position = glm::vec3{ 0, 4, -1 };
 			m_models[i]->GetWallTransform()->position = glm::vec3{ 0, 5, -15 };
 		}
+
+		//light position
+		light_tr.position = { -3, 20, 5 };
+
 		//start looping background music
 		SoundManager::Play("Resources/Audio/breakout.mp3", true);
 
@@ -133,7 +137,7 @@ public:
 	{
 
 		//update lighting every frame for now
-		Renderer3D::AddPointLight(glm::vec3(-10, 10, 0));
+		Renderer3D::AddPointLight(light_tr.position);
 		Renderer3D::UpdateLights();
 
 		switch (m_state)
@@ -160,14 +164,14 @@ public:
 				//go to fit state if cube fits
 				if (IsRotationCorrect())
 				{
-					std::cout << "Fit!" << std::endl;
+					//std::cout << "Fit!" << std::endl;
 					SoundManager::Play("Resources/Audio/109663__grunz__success-low.wav", false);
 					m_state = GameState::Fit;
 				}
 				//otherwise to drop state
 				else
 				{
-					std::cout << "Drop!" << std::endl;
+					//std::cout << "Drop!" << std::endl;
 					SoundManager::Play("Resources/Audio/31126__calethos__bump.wav", false);
 					score = 0.0f; //failure->score reset
 					m_state = GameState::Drop;
@@ -257,7 +261,7 @@ private:
 	float animation_frame_time = 0; //used when doing drop or fit animations
 	float animation_frame_time_limit = 1.5; //number of seconds to do animation for
 
-	Transform light_pos;
+	Transform light_tr;
 
 	glm::vec4 cube_color = { 0.1, 0.9, 0.1, 1 };
 	glm::vec4 wall_color = { 0.1, 0.2, 0.87, 1 };
@@ -358,7 +362,7 @@ private:
 	bool IsRotationCorrect()
 	{
 		glm::vec3 cube_rot = getCurrentModelRotation();
-		std::cout << "Cube orientation is " << cube_rot.x << ", " << cube_rot.y << ", " << cube_rot.z << std::endl;
+		//std::cout << "Cube orientation is " << cube_rot.x << ", " << cube_rot.y << ", " << cube_rot.z << std::endl;
 		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_rot.x/2.0), glm::sin(cube_rot.y/2.0), cube_rot.z };
 
 		//glm::vec3 cube_rotation_normalized = glm::vec3{ glm::mod(cube_rot.x, glm::pi<float>()), glm::sin(2 * cube_rot.y), cube_rot.z };
