@@ -83,7 +83,7 @@ public:
 				model_rotation.x -= glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
+				//std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_S))
@@ -92,7 +92,7 @@ public:
 				model_rotation.x += glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
+				//std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
 
 			//rotation about y axis (left/right)
@@ -102,7 +102,7 @@ public:
 				model_rotation.y -= glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
+				//std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_D))
@@ -111,7 +111,7 @@ public:
 				model_rotation.y += glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
+				//std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
 			
 
@@ -304,6 +304,7 @@ private:
 		std::random_device rd; // obtain a random number from hardware
 		std::mt19937 gen(rd()); // seed the generator
 		std::uniform_int_distribution<> distr(0, 3); // define the range
+		
 		return distr(gen) * glm::radians(90.0f);
 	}
 
