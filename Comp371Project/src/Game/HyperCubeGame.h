@@ -80,7 +80,7 @@ public:
 			if (Input::IsKeyPressed(GLFW_KEY_W))
 			{
 				//cube_tr.rotation.x += glm::radians(90.0f);
-				model_rotation.x += glm::radians(90.0f);
+				model_rotation.x -= glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
 				std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
@@ -89,7 +89,7 @@ public:
 			if (Input::IsKeyPressed(GLFW_KEY_S))
 			{
 				//cube_tr.rotation.x -= glm::radians(90.0f);
-				model_rotation.x -= glm::radians(90.0f);
+				model_rotation.x += glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
 				std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
