@@ -21,7 +21,6 @@
 #include <vector>
 #include <random>
 
-//TODO: We should be able to call Application::GetCameraController and then set position and lookAt so that we can have the camera follow the cube object
 class HyperCubeGame : public Script
 {
 public:
@@ -180,7 +179,6 @@ public:
 			}
 			else
 			{
-				//cube_tr.position.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
 				glm::vec3 model_pos = getCurrentModelPosition();
 				model_pos.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
 				setCurrentModelPosition(model_pos);
@@ -304,8 +302,6 @@ private:
 	{
 		m_models[m_currModel]->Unselect();
 		m_currModel = GetRandom();
-		//std::shared_ptr<Transform> m_modelTransform = m_models[m_currModel]->GetModelTransform();
-		//m_modelTransform->rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
 		setCurrentModelRotation(glm::vec3{ GetRandomRotation(), GetRandomRotation(), 0 });
 		m_models[m_currModel]->Select();
 	}
@@ -365,8 +361,6 @@ private:
 		//std::cout << "Cube orientation is " << cube_rot.x << ", " << cube_rot.y << ", " << cube_rot.z << std::endl;
 		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_rot.x/2.0), glm::sin(cube_rot.y/2.0), cube_rot.z };
 
-		//glm::vec3 cube_rotation_normalized = glm::vec3{ glm::mod(cube_rot.x, glm::pi<float>()), glm::sin(2 * cube_rot.y), cube_rot.z };
-		
 		if ( glm::abs(cube_rotation_sin.x - 0.0) < 0.001 && glm::abs(cube_rotation_sin.y - 0.0) < 0.001)
 		{
 			return true;
