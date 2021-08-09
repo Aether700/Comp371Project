@@ -19,6 +19,9 @@ public:
 	void Select() { m_isSelected = true; }
 	void Unselect() { m_isSelected = false; }
 
+	//virtual float getScore() = 0;
+	virtual float getScore() { return 0.0f;  }
+
 protected:
 
 	GameModel() : m_modelTransform(std::make_shared<Transform>()),
