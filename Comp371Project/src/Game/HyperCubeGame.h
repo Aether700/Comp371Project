@@ -186,6 +186,7 @@ public:
 				{
 					std::cout << "Drop!" << std::endl;
 					SoundManager::Play("Resources/Audio/31126__calethos__bump.wav", false);
+					score = 0.0f; //failure->score reset
 					m_state = GameState::Drop;
 				}
 
