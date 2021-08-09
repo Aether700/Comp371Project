@@ -50,12 +50,9 @@ public:
 		Application::AddScript(m_grid);
 
 		//Cube object initial position
-		//cube_tr.position = glm::vec3{ 0, 1, -1 };
 		setCurrentModelPosition(glm::vec3{ 0,1,-1 });
 
 		//Wall position
-		//wall_tr.position = glm::vec3{ 0, 2, -15 };
-		//wall_tr.scale = glm::vec3{ 4, 4, 1 };
 		setCurrentWallPosition(glm::vec3{ 0,1,-15 });
 
 		for (int i = 0; i < m_models.size(); i++)
@@ -68,6 +65,9 @@ public:
 
 		//set starting time
 		start_time = Time::GetTime();
+
+		//We do want shadows in this game
+		Renderer3D::UseShadows(true);
 	}
 
 	void OnUpdate()
@@ -79,7 +79,6 @@ public:
 			//rotation about x axis (forward/back)
 			if (Input::IsKeyPressed(GLFW_KEY_W))
 			{
-				//cube_tr.rotation.x += glm::radians(90.0f);
 				model_rotation.x -= glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
@@ -88,7 +87,6 @@ public:
 
 			if (Input::IsKeyPressed(GLFW_KEY_S))
 			{
-				//cube_tr.rotation.x -= glm::radians(90.0f);
 				model_rotation.x += glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
@@ -98,7 +96,6 @@ public:
 			//rotation about y axis (left/right)
 			if (Input::IsKeyPressed(GLFW_KEY_A))
 			{
-				//cube_tr.rotation.y -= glm::radians(90.0f);
 				model_rotation.y -= glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
@@ -107,7 +104,6 @@ public:
 
 			if (Input::IsKeyPressed(GLFW_KEY_D))
 			{
-				//cube_tr.rotation.y += glm::radians(90.0f);
 				model_rotation.y += glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
@@ -132,29 +128,20 @@ public:
 
 	}
 
-	//TODO: have Model objects for wall and cube, so HyperCubeGameWall and HyperCubeGameCube
-	//then we would simply set the position of the cube object to move it
-	//and then wall object would stay in place
+
 	void OnRender()
 	{
 
 		//update lighting every frame for now
 		Renderer3D::AddPointLight(glm::vec3(-10, 10, 0));
-		Renderer3D::UseShadows(true);
 		Renderer3D::UpdateLights();
 
 		switch (m_state)
 		{
-			//Cube model spawned, a random non-solution orientation chosen
+		//Cube model spawned, a random non-solution orientation chosen
 		case GameState::Spawn:
 			selectDisplayModel();
 			setCurrentModelPosition(glm::vec3{ 0,5,-1 });
-			//cube_tr.position = { 0,1,-1 };
-			//cube_tr.rotation = { GetRandomRotation(), GetRandomRotation(), 0 };
-			//std::cout << "Cube orientation is " << cube_tr.rotation.x << ", " << cube_tr.rotation.y << ", " << cube_tr.rotation.z << std::endl;
-			//cube_tr.scale = { 1,1,1 };
-			//Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);
-			//Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);
 			m_state = GameState::Rotations;
 
 			//Camera is locked to cube movement
@@ -165,10 +152,6 @@ public:
 
 			//Player doing rotations, cube moving forward
 		case GameState::Rotations:
-			/*Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);*/
-			/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
-
-			//if ((cube_tr.position.z - wall_thickness) <= wall_tr.position.z)
 			if ((getCurrentModelPosition().z + wall_thickness*4 ) <= getCurrentWallPosition().z)
 			{
 				//reset animation frame time
@@ -209,8 +192,6 @@ public:
 
 			//Cube model fits into wall (correct orientation), so bring it through
 		case GameState::Fit:
-			/*Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);*/
-			/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
 			AddModelScore();
 			if (animation_frame_time < animation_frame_time_limit)
 			{
@@ -229,8 +210,6 @@ public:
 
 			//Cube model doesn't fit into wall (incorrect orientation), so drop it down
 		case GameState::Drop:
-			/*Renderer3D::DrawVoxel(cube_tr.GetTransformMatrix(), cubeTexture, 1, cube_color);*/
-			/*Renderer3D::DrawVoxel(wall_tr.GetTransformMatrix(), wall_color);*/
    			if (animation_frame_time < animation_frame_time_limit / 2)
 			{
 				glm::vec3 model_pos = getCurrentModelPosition();
@@ -278,8 +257,6 @@ private:
 	float animation_frame_time = 0; //used when doing drop or fit animations
 	float animation_frame_time_limit = 1.5; //number of seconds to do animation for
 
-	//Transform cube_tr;
-	//Transform wall_tr;
 	Transform light_pos;
 
 	glm::vec4 cube_color = { 0.1, 0.9, 0.1, 1 };
@@ -407,11 +384,3 @@ private:
 		return (Time::GetTime() - start_time);
 	}
 };
-
-//Nice to have:
-//Skybox, fairly muted color
-//
-
-
-//Too nice to have:
-//maybe fog in the distance?
