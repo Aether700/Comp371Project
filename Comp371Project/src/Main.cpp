@@ -28,6 +28,8 @@
 * - bricks: https://traditionalbrickandstone.co.uk/product/aldeburgh-blend/
 * - tiles: https://creativemarket.com/ThreeDiCube/2753544-Paving-tiles-seamless-texture
 * - shinyMetal: https://www.deviantart.com/grevenlx/art/Metal-Texture-PLUS-Metal-Grid-9940521
+* - block: https://www.istockphoto.com/photo/spaceship-hull-texture-or-pattern-seamless-scifi-panels-futuristic-illustration-gm1163094202-319256293
+* - palmTree: https://hdwallpaperim.com/vaporwave-1980s-texture-neon/
 */
 
 /*mp3 files obtained location listed below

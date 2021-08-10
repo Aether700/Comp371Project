@@ -27,9 +27,9 @@ public:
 	HyperCubeGame()
 	{
 		m_worldTransform = std::make_shared<Transform>();
-
-		cubeTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg");
-		wallTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/Bricks.PNG");
+		backgroundTransform = std::make_shared<Transform>(glm::vec3(0, 25, -90), glm::vec3(0, 0, 0), glm::vec3(100, 100, 1));
+		//cubeTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg");
+		backgroundTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/palmTree.jpg");
 
 		AddModel(new ModelOne(m_worldTransform));
 		AddModel(new ModelTwo(m_worldTransform));
@@ -134,7 +134,8 @@ public:
 
 	void OnRender()
 	{
-
+		//background
+		Renderer3D::DrawQuad(backgroundTransform->GetTransformMatrix(), backgroundTexture);
 		//update lighting every frame for now
 		Renderer3D::AddPointLight(light_tr.position);
 		Renderer3D::UpdateLights();
@@ -265,7 +266,10 @@ private:
 	glm::vec4 wall_color = { 0.1, 0.2, 0.87, 1 };
 
 	std::shared_ptr<OpenGLCubeMap> cubeTexture;
-	std::shared_ptr<OpenGLCubeMap> wallTexture;
+
+	std::shared_ptr<OpenGLTexture2D> backgroundTexture;
+	
+	std::shared_ptr<Transform>  backgroundTransform;
 
 	std::shared_ptr<Transform> m_worldTransform;
 
