@@ -8,3 +8,5 @@ void GameModel::Init()
 {
 	modelTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/Bricks.PNG");
 	wallTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/block.jpg");
+
+}

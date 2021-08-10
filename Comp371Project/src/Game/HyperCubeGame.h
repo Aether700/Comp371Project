@@ -28,7 +28,7 @@ public:
 	{
 		m_worldTransform = std::make_shared<Transform>();
 
-		backgroundTransform = std::make_shared<Transform>(glm::vec3(0, 25, -90), glm::vec3(0, 0, 0), glm::vec3(100, 100, 1));
+		backgroundTransform = std::make_shared<Transform>(glm::vec3(0, 25, -100), glm::vec3(0, 0, 0), glm::vec3(200, 100, 1));
 		//cubeTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg"); NOT BEING USE?
 		backgroundTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/palmTree.jpg");
 
