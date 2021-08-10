@@ -55,7 +55,7 @@ protected:
 
 private:
 
-	std::shared_ptr<Transform> m_cubeModel[5];
+	std::shared_ptr<Transform> m_cubeModel[10];
 	std::shared_ptr<Transform>  m_wallCubes[100];
 
 
@@ -67,6 +67,11 @@ private:
 		m_cubeModel[2]->position = { 0, 0,  1 };
 		m_cubeModel[3]->position = { 0,  1,  0 };
 		m_cubeModel[4]->position = { 1,  0,  0 };
+		m_cubeModel[5]->position = { 2,  0,  0 };
+		m_cubeModel[6]->position = { 3,  0,  0 };
+		m_cubeModel[7]->position = { 0,  0,  -2 };
+		m_cubeModel[8]->position = { 0,  0,  -3 };
+		m_cubeModel[9]->position = { 0,  0,  -4 };
 	}
 
 	void SetWallCubesTransform()
