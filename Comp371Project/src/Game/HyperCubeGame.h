@@ -208,7 +208,6 @@ public:
 			}
 			else
 			{
-				selectDisplayModel();
 				m_state = GameState::Spawn;
 			}
 
@@ -225,7 +224,6 @@ public:
 			}
 			else
 			{
-				selectDisplayModel();
 				m_state = GameState::Spawn;
 			}
 
@@ -296,7 +294,7 @@ private:
 
 	int GetRandom() //get random int from 0 to 4
 	{
-		return (glm::abs(Random::GetInt()) % 4);
+		return (glm::abs(Random::GetInt()) % 5);
 	}
 
 	void AddModel(GameModel* m)
@@ -308,7 +306,11 @@ private:
 	void selectDisplayModel()
 	{
 		m_models[m_currModel]->Unselect();
-		m_currModel = GetRandom();
+		int lastModel = m_currModel;
+		while (lastModel == m_currModel)
+		{
+			m_currModel = GetRandom();
+		}
 		setCurrentModelRotation(glm::vec3{ GetRandomRotation(), GetRandomRotation(), 0 });
 		m_models[m_currModel]->Select();
 	}
