@@ -14,6 +14,7 @@
 
 class DirectionalLight;
 class PointLight;
+class Mesh;
 
 class Material
 {
@@ -78,7 +79,7 @@ public:
 	RenderingBatch();
 	~RenderingBatch();
 
-	void Add(VertexData* vertices, unsigned int numVertices, unsigned int* indices,
+	void Add(const VertexData* vertices, unsigned int numVertices, const unsigned int* indices,
 		unsigned int numIndices, unsigned int renderTarget);
 
 	//returns texture index for the texture
@@ -277,6 +278,9 @@ public:
 		unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, const glm::vec3* textureCoords, 
 		float tileFactor, const glm::vec4& tintColor);
 
+	static void DrawMesh(const glm::mat4& transform, std::shared_ptr<Mesh>& mesh, std::shared_ptr<OpenGLTexture2D> texture,
+		float tileFactor = 1, const glm::vec4& tintColor = { 1, 1, 1, 1 });
+
 	//lighting functions
 	static void AddDirectionalLight(const glm::vec3& position, const glm::vec3& direction, 
 		const glm::vec4& lightColor = { 1, 1, 1, 1 });
@@ -321,6 +325,9 @@ private:
 	static void UploadVertexData(unsigned int renderTarget, const glm::mat4& transform, const Material& mat, const glm::vec3* vertices,
 		unsigned int numVertices, unsigned int* indices, unsigned int indexCount, std::shared_ptr<OpenGLTexture2D> texture, 
 		const glm::vec3* textureCoords, float tileFactor, const glm::vec4& tintColor);
+
+	static void UploadMesh(const glm::mat4& transform, const Material& mat, std::shared_ptr<Mesh>& mesh,
+		std::shared_ptr<OpenGLTexture2D> texture, float tileFactor = 1, const glm::vec4& tintColor = { 1, 1, 1, 1 });
 
 	static Renderer3DStatistics s_stats;
 

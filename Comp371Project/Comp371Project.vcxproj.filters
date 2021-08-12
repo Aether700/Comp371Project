@@ -76,6 +76,9 @@
     <ClInclude Include="src\Tests\TriangleTest.h" />
     <ClInclude Include="src\Core\Time.h" />
     <ClInclude Include="src\GraphicsAPI\OpenGLTexture.h" />
+    <ClInclude Include="src\Rendering\Mesh.h" />
+    <ClInclude Include="src\Tests\MeshTest.h" />
+    <ClInclude Include="src\Game\HyperCubeGame.h" />
     <ClInclude Include="src\Game\HyperCubeGame.h" />
     <ClInclude Include="src\GameModel\GameModel.h" />
     <ClInclude Include="src\GameModel\ModelFive.h" />
