@@ -268,6 +268,24 @@ public:
 		}
 	}
 
+	void OnImGuiRender() override{
+
+
+
+		ImGui::Begin("Score");
+		ImGuiStyle* style = &ImGui::GetStyle();
+		style->Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+		style->Colors[ImGuiCol_WindowBg] = ImVec4(173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f);
+
+		ImGui::Text("Score : %d",(int) score);
+		ImGui::End();
+
+		ImGui::Begin("Time");
+		ImGui::Text("Time : %.2f", getTimeSinceStart());
+		ImGui::End();
+
+	}
+
 protected:
 
 
