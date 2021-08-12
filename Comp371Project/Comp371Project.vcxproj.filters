@@ -24,6 +24,7 @@
     <ClCompile Include="src\Rendering\PointLight.cpp" />
     <ClCompile Include="src\Rendering\Renderer3D.cpp" />
     <ClCompile Include="src\Tests\AlecPointLightTest.h" />
+    <ClCompile Include="src\GameModel\GameModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AlecModel.h" />
@@ -78,5 +79,12 @@
     <ClInclude Include="src\Rendering\Mesh.h" />
     <ClInclude Include="src\Tests\MeshTest.h" />
     <ClInclude Include="src\Game\HyperCubeGame.h" />
+    <ClInclude Include="src\Game\HyperCubeGame.h" />
+    <ClInclude Include="src\GameModel\GameModel.h" />
+    <ClInclude Include="src\GameModel\ModelFive.h" />
+    <ClInclude Include="src\GameModel\ModelFour.h" />
+    <ClInclude Include="src\GameModel\ModelOne.h" />
+    <ClInclude Include="src\GameModel\ModelThree.h" />
+    <ClInclude Include="src\GameModel\ModelTwo.h" />
   </ItemGroup>
 </Project>

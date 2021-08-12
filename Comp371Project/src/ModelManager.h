@@ -1,9 +1,9 @@
 #pragma once
 #include "Axes.h"
+#include "Model.h"
 #include "Core/Application.h"
 #include "Core/Script.h"
 #include "Core/Input.h"
-#include "Model.h"
 #include "Core/Time.h"
 
 #include "JamilHModel.h"
@@ -28,8 +28,10 @@ public:
 
 		AddModel(new JamilHModel(m_worldTransform));
 		AddModel(new JeanModel(m_worldTransform));
-		AddModel(new MadelaineModel(m_worldTransform));
 		AddModel(new AlecModel(m_worldTransform));
+		
+		//Not complete, do not have point lights:
+		AddModel(new MadelaineModel(m_worldTransform));
 		AddModel(new JamilModel(m_worldTransform));
 
 		AddGrid(new Grid(m_worldTransform));
@@ -405,8 +407,6 @@ private:
 			m_models[i]->GetWallTransform()->position = positions[i];
 			m_models[i]->GetWallTransform()->rotation = rotations[i];
 		}
-
-
 	}
 
 	std::vector<Model*> m_models;

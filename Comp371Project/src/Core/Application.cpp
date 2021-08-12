@@ -7,6 +7,7 @@
 #include "Debug.h"
 #include "Random.h"
 #include "../Model.h"
+#include "../GameModel/GameModel.h"
 #include "SoundManager.h"
 
 #include <iostream>
@@ -187,6 +188,7 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 	Random::Init();
 	Model::Init();
 	SoundManager::Init();
+	GameModel::Init();
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_DEPTH_TEST);
