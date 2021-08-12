@@ -77,7 +77,7 @@ private:
 		std::vector<std::pair<unsigned int, unsigned int>> texCoordIndices;
 		std::vector<std::pair<unsigned int, unsigned int>> normalIndices;
 
-		unsigned int faceIndex = 0;
+		unsigned int vertexIndex = 0;
 
 		while (true)
 		{
@@ -180,19 +180,19 @@ private:
 
 				if (hasNormals)
 				{
-					normalIndices.push_back(std::make_pair(faceIndex, (unsigned int)normalIndex[0] - 1U));
-					normalIndices.push_back(std::make_pair(faceIndex, (unsigned int)normalIndex[1] - 1U));
-					normalIndices.push_back(std::make_pair(faceIndex, (unsigned int)normalIndex[2] - 1U));
+					normalIndices.push_back(std::make_pair(vertexIndex, (unsigned int)normalIndex[0] - 1U));
+					normalIndices.push_back(std::make_pair(vertexIndex + 1, (unsigned int)normalIndex[1] - 1U));
+					normalIndices.push_back(std::make_pair(vertexIndex + 2, (unsigned int)normalIndex[2] - 1U));
 				}
 
 				if (hasTexCoords)
 				{
-					texCoordIndices.push_back(std::make_pair(faceIndex, (unsigned int)textureCoordsIndex[0] - 1U));
-					texCoordIndices.push_back(std::make_pair(faceIndex, (unsigned int)textureCoordsIndex[1] - 1U));
-					texCoordIndices.push_back(std::make_pair(faceIndex, (unsigned int)textureCoordsIndex[2] - 1U));
+					texCoordIndices.push_back(std::make_pair(vertexIndex, (unsigned int)textureCoordsIndex[0] - 1U));
+					texCoordIndices.push_back(std::make_pair(vertexIndex + 1, (unsigned int)textureCoordsIndex[1] - 1U));
+					texCoordIndices.push_back(std::make_pair(vertexIndex + 2, (unsigned int)textureCoordsIndex[2] - 1U));
 				}
 				
-				faceIndex++;
+				vertexIndex += 3;
 			}
 		}
 
@@ -215,19 +215,10 @@ private:
 			}
 
 			glm::vec3 normal;
-			if (normals.size() != 0/* && normalIndices[normalIndex].first == i*/)
+			if (normals.size() != 0 && normalIndices[normalIndex].first == i)
 			{
 				normal = normals[normalIndices[normalIndex].second];
 				normalIndex++;
-			}
-			else
-			{
-				//generate normals from positions of the triangles
-				int mod = i % 3;
-				glm::vec3 v1 = positions[posIndices[i - mod]] - positions[posIndices[i - mod + 1]];
-				glm::vec3 v2 = positions[posIndices[i - mod + 2]] - positions[posIndices[i - mod + 1]];
-				
-				normal = glm::normalize(glm::cross(glm::normalize(v1), glm::normalize(v2)));
 			}
 
 			int currIndex = FindVertexData(outPositions, outTextureCoords, outNormals, 
