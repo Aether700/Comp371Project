@@ -2,11 +2,8 @@
 #include "ModelManager.h"
 
 #include "Core/Application.h"
-#include "Core/Script.h"
 
 #include "Game/HyperCubeGame.h"
-
-#include "Tests/MeshTest.h"
 
 /*Task seperation
 * 
@@ -41,6 +38,8 @@
 
 /*mp3 files obtained location listed below
 * - breakout.mp3: https://learnopengl.com/audio/in-practice/breakout/breakout.mp3
+* - 109663__grunz__success-low.wav: https://freesound.org/people/grunz/sounds/109663/
+* - 31126__calethos__bump.wav: https://freesound.org/people/Calethos/sounds/31126/
 */
 int main()
 {
@@ -48,8 +47,7 @@ int main()
 
 	//Add Scripts here   
 
-	//Application::AddScript(new HyperCubeGame());
-	Application::AddScript(new MeshTest());
+	Application::AddScript(new HyperCubeGame());
 
 	///////////////////
 
