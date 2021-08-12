@@ -41,6 +41,8 @@
 
 /*mp3 files obtained location listed below
 * - breakout.mp3: https://learnopengl.com/audio/in-practice/breakout/breakout.mp3
+* - success_low.wav: https://freesound.org/people/grunz/sounds/109663/
+* - bump.wav: https://freesound.org/people/Calethos/sounds/31126/
 */
 int main()
 {
