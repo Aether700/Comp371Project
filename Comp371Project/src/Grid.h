@@ -13,7 +13,7 @@ public:
 	{
 		m_texture = std::make_shared<OpenGLTexture2D>("Resources/Textures/Tiles.PNG");
 		m_transformMesh = std::make_shared<Transform>(glm::vec3( 0, 0, 0 ), glm::vec3( 0, 0, 0 ), glm::vec3(1, 1, 1 ));
-		m_transformQuad = std::make_shared<Transform>(glm::vec3(0, -0.01, 0 ), glm::vec3(-glm::radians(90.0f), 0, 0 ), glm::vec3(100, 100, 1 ));
+		m_transformQuad = std::make_shared<Transform>(glm::vec3(0, -0.5f, 0 ), glm::vec3(-glm::radians(90.0f), 0, 0 ), glm::vec3(100, 100, 1 ));
 		m_transformQuad->SetParent(worldTransform);
 		m_transformMesh->SetParent(worldTransform);
 	}
@@ -29,8 +29,8 @@ public:
 			// started at -50 since it need to be center at origin assuming(0,0) being origin
 			for (int displacement = -50; displacement <= 50; displacement++) 
 			{
-				Renderer3D::DrawLine(m_transformMesh->GetTransformMatrix(), { displacement, 0, -50 }, { displacement, 0, 50 });
-				Renderer3D::DrawLine(m_transformMesh->GetTransformMatrix(), { -50, 0, displacement }, { 50, 0, displacement });
+				Renderer3D::DrawLine(m_transformMesh->GetTransformMatrix(), { displacement, -0.5f, -50 }, { displacement, -0.5f, 50 });
+				Renderer3D::DrawLine(m_transformMesh->GetTransformMatrix(), { -50, -0.5f, displacement }, { 50, -0.5f, displacement });
 			}
 		}
 	}

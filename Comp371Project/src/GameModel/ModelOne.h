@@ -62,16 +62,16 @@ private:
 	void SetModelCubesTransform()
 	{
 		//original cube
-		m_cubeModel[0]->position = { 0,  0,  -1 };
-		m_cubeModel[1]->position = { 0,  0,  0 };
-		m_cubeModel[2]->position = { 0, 0,  1 };
-		m_cubeModel[3]->position = { 0,  1,  0 };
-		m_cubeModel[4]->position = { 1,  0,  0 };
-		m_cubeModel[5]->position = { 2,  0,  0 };
-		m_cubeModel[6]->position = { 3,  0,  0 };
-		m_cubeModel[7]->position = { 0,  0,  -2 };
-		m_cubeModel[8]->position = { 0,  0,  -3 };
-		m_cubeModel[9]->position = { 0,  0,  -4 };
+		m_cubeModel[0]->position = { -1,  0,  -1 };
+		m_cubeModel[1]->position = { -1,  0,  0 };
+		m_cubeModel[2]->position = { -1, 0,  1 };
+		m_cubeModel[3]->position = { -1,  1,  0 };
+		m_cubeModel[4]->position = { 0,  0,  0 };
+		m_cubeModel[5]->position = { 1,  0,  0 };
+		m_cubeModel[6]->position = { 2,  0,  0 };
+		m_cubeModel[7]->position = { -1,  0,  -2 };
+		m_cubeModel[8]->position = { -1,  0,  -3 };
+		m_cubeModel[9]->position = { -1,  0,  -4 };
 	}
 
 	void SetWallCubesTransform()

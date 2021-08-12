@@ -55,34 +55,27 @@ protected:
 
 private:
 
-	std::shared_ptr<Transform> m_cubeModel[19];
+	std::shared_ptr<Transform> m_cubeModel[12];
 	std::shared_ptr<Transform> m_wallCubes[100];
 
 
 	void SetModelCubesTransform()
 	{
 		//original cube
-		m_cubeModel[0]->position = { 0, 0, -1};
-		m_cubeModel[1]->position = { 0, 0, 0};
-		m_cubeModel[2]->position = { 0, 0, 1};
-		m_cubeModel[3]->position = { 1, 0, -1};
-		m_cubeModel[4]->position = { 1, 0, 0};
-		m_cubeModel[5]->position = { 1, 0, 1 };
-		m_cubeModel[6]->position = { -1, 0, -1};
-		m_cubeModel[7]->position = { -1, 0, 0};
-		m_cubeModel[8]->position = { -1, 0, 1};
+		m_cubeModel[0]->position = { 0, -1, -2};
+		m_cubeModel[1]->position = { 0, -1, -1};
+		m_cubeModel[2]->position = { 0, -1, 0};
+		m_cubeModel[3]->position = { 0, -1, 1};
+		m_cubeModel[4]->position = { 0, -1, 2};
 
-		m_cubeModel[9]->position = { 0, 2, -1 };
-		m_cubeModel[10]->position = { 0, 2, 0 };
-		m_cubeModel[11]->position = { 0, 2, 1 };
-		m_cubeModel[12]->position = { 1, 2, -1 };
-		m_cubeModel[13]->position = { 1, 2, 0 };
-		m_cubeModel[14]->position = { 1, 2, 1 };
-		m_cubeModel[15]->position = { -1, 2, 0 };
-		m_cubeModel[16]->position = { -1, 2, 1 };
+		m_cubeModel[5]->position = { -2, 1, 0 };
+		m_cubeModel[6]->position = { -1, 1, 0 };
+		m_cubeModel[7]->position = { 0, 1, 0 };
+		m_cubeModel[8]->position = { 1, 1, 0};
+		m_cubeModel[9]->position = { 2, 1, 0};
 
-		m_cubeModel[17]->position = { 1,  1,  0 };
-		m_cubeModel[18]->position = { 1,  1,  -1 };
+		m_cubeModel[10]->position = { 1,  0,  0 };
+		m_cubeModel[11]->position = { 1,  0,  -1 };
 	}
 
 	void SetWallCubesTransform()
