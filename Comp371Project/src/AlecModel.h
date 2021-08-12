@@ -18,8 +18,10 @@ public:
 			transform->SetParent(GetWallTransform());
 		}
 
+		//the wireframe glow effect is partially achieved by ignoring lighting
 		m_wireframe_glow_material = Material(true);
 
+		//light should follow world movement
 		m_lightTransform.SetParent(worldTransform);
 	}
 
@@ -42,11 +44,6 @@ public:
 		m_cubeArr[12]->position = { 0,  1, -1 };
 		m_cubeArr[13]->position = { 2, -1, -1 };
 
-		/*//then move them all up above the xz plane
-		for (auto& transform : m_cubeArr)
-		{
-			transform->position.y += 3;
-		}*/
 
 		//Wall
 		//left side
@@ -84,12 +81,7 @@ public:
 		m_wallArr[23]->position = { 0, -1, -4 };
 		m_wallArr[24]->position = { 1, -1, -4 };
 
-		/*
-		//then move them all up above the xz plane
-		for (auto& transform : m_wallArr)
-		{
-			transform->position.y += 3;
-		}*/
+
 	}
 
 	void OnRender()
@@ -107,13 +99,13 @@ public:
 		// Light should only appear and cast light/shadows if this model is selected
 		if (IsSelected())
 		{
-			//
 			glm::mat4 tr_matrix = m_lightTransform.GetTransformMatrix();
 			Renderer3D::AddPointLight(glm::vec3(tr_matrix[3][0], tr_matrix[3][1], tr_matrix[3][2]));
 		}
 	}
 
-	//Light position is set only once, at beginning
+	//Set light to be above model
+	//This happens only at the beginning of the program, so the light does move with the world but not with the model
 	void SetLightPos()
 	{
 		m_lightTransform.position = (glm::vec3)(GetModelTransform()->GetTransformMatrix())[3] + glm::vec3{ 0, 30, 0 };
@@ -159,7 +151,6 @@ private:
 
 	glm::vec4 color = { 0.1, 0.9, 0.1, 1 };
 
-	//glm::vec3 m_lightPos;
 	Transform m_lightTransform;
 
 	Material m_wireframe_glow_material;
