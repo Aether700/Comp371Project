@@ -113,8 +113,6 @@ public:
 				rotationInputTimer = 0.0f;
 				//std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
-			
-
 		}
 		else
 		{
@@ -130,6 +128,33 @@ public:
 			cube_move_speed_per_second = 1.0f;
 		}
 
+		if (m_currDebugToggleTimer >= m_debugToggleTimer)
+		{
+			//press shift+C to toggle debug mode
+			if (Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT) || Input::IsKeyPressed(GLFW_KEY_RIGHT_SHIFT))
+			{
+				if (Input::IsKeyPressed(GLFW_KEY_C))
+				{
+					if (m_state == GameState::Debug)
+					{
+						m_state = m_lastState;
+						Application::GetCameraController()->setLookIsOn(false);
+						Application::GetCameraController()->setMovementIsOn(false);
+					}
+					else
+					{
+						m_lastState = m_state;
+						m_state = GameState::Debug;
+					}
+					m_currDebugToggleTimer = 0.0f;
+				}
+			}
+			
+		}
+		else
+		{
+			m_currDebugToggleTimer += Time::GetDeltaTime();
+		}
 	}
 
 
@@ -254,7 +279,7 @@ private:
 	float cube_move_speed_per_second = 1.0;
 
 	float rotationInputTimer = 0.0f;
-	float rotationInputCooldown = 0.3f; //limit rotations per second
+	float rotationInputCooldown = 0.2f; //limit rotations per second
 
 	float wall_thickness = 1.0;
 
@@ -279,6 +304,10 @@ private:
 
 	enum class GameState { Spawn, Rotations, Advance, Fit, Drop, Debug };
 	GameState m_state = GameState::Spawn;
+	GameState m_lastState; //used when toggling debugmode
+
+	const float m_debugToggleTimer = 0.2f;
+	float m_currDebugToggleTimer = 0.0f;
 
 
 	//return a random orientation in radians

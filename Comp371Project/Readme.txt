@@ -35,6 +35,7 @@ world
 General:
 - Toggle Texture with X
 - n to toggle shadows
+- Shift + C to toggle debug mode which allows free camera movement
 
 Features:
 
