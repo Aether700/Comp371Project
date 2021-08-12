@@ -7,6 +7,8 @@
 #include "Debug.h"
 #include "Random.h"
 #include "../Model.h"
+#include "../GameModel/GameModel.h"
+#include "SoundManager.h"
 
 #include <iostream>
 
@@ -59,6 +61,8 @@ void Application::Run()
 	Application& app = GetApplication();
 	app.m_isRunning = true;
 
+	auto* imguiManager = app.m_imguiManager;
+
 	app.CallOnStartScripts();
 
 	int scr_width, scr_height;
@@ -84,7 +88,12 @@ void Application::Run()
 
 			Renderer3D::EndScene();
 
-			std::cout << "num draw calls: " << Renderer3D::GetStats().numDrawCalls << "\n";
+			// :) std::cout << "num draw calls: " << Renderer3D::GetStats().numDrawCalls << "\n";
+
+			//render Imgui frame
+			imguiManager->StartFrame();
+			app.CallOnImGuiRenderScripts();
+			imguiManager->Render();
 
 			glfwPollEvents();
 			glfwSwapBuffers(app.m_window);
@@ -170,14 +179,16 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 
 	Debug::CheckOpenGLError();
 
+	m_imguiManager = new ImGuiManager(m_window);
+
 	//we set a virtual camera in the world which will render 
 	//the world using perspective view as required by the assignment
 	m_camera = std::make_shared<Camera>();
 	Renderer3D::Init();
 	Random::Init();
-	Debug::CheckOpenGLError();
 	Model::Init();
-	Debug::CheckOpenGLError();
+	SoundManager::Init();
+	GameModel::Init();
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_DEPTH_TEST);
@@ -194,7 +205,10 @@ Application::Application(const std::string& windowName, unsigned int width, unsi
 Application::~Application()
 {
 	Renderer3D::Shutdown();
+	SoundManager::Shutdown();
 
+  delete m_imguiManager;
+	glfwDestroyWindow(m_window);
 	glfwTerminate();
 
 	for (Script* s : m_scripts)
@@ -226,6 +240,16 @@ void Application::CallOnRenderScripts()
 		s->OnRender();
 	}
 }
+
+//helper function which calls OnImGuiRender on every script in the application
+void Application::CallOnImGuiRenderScripts()
+{
+	for (Script* s : m_scripts)
+	{
+		s->OnImGuiRender();
+	}
+}
+
 
 //helper function which calls OnUpdate on every script in the application
 void Application::CallOnUpdateScripts()

@@ -1,9 +1,9 @@
 #pragma once
 #include "Axes.h"
+#include "Model.h"
 #include "Core/Application.h"
 #include "Core/Script.h"
 #include "Core/Input.h"
-#include "Model.h"
 #include "Core/Time.h"
 
 #include "JamilHModel.h"
@@ -78,7 +78,7 @@ public:
 
 		if (m_currModelToggle >= m_toggleModelCooldown && Input::IsKeyPressed(GLFW_KEY_M))
 		{
-			isOn = !isOn;
+			movementIsOn = !movementIsOn;
 
 			m_currModelToggle = 0.0f;
 		}
@@ -87,7 +87,7 @@ public:
 			m_currModelToggle += Time::GetDeltaTime();
 		}
 
-		if (isOn)
+		if (movementIsOn)
 		{
 			//rotate the current model depending on the arrow key pressed
 			if (Input::IsKeyPressed(GLFW_KEY_S))
@@ -407,8 +407,6 @@ private:
 			m_models[i]->GetWallTransform()->position = positions[i];
 			m_models[i]->GetWallTransform()->rotation = rotations[i];
 		}
-
-
 	}
 
 	std::vector<Model*> m_models;
@@ -441,7 +439,7 @@ private:
 	float m_currShadowToggle = 0.0f;
 
 	Movement m_currMovementMode = Movement::Rotation;
-	bool isOn = false;
+	bool movementIsOn = false;
 	bool isContinuos = false;
 	bool isWorldMovement = false;
 	bool m_usesShadows = false;
