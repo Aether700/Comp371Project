@@ -9,25 +9,35 @@ class MeshTest : public Script
 public:
 	void OnStart()
 	{
-		m_mesh = Mesh::LoadFromFile("Resources/Models/Lowest_poly_thinker.obj");
-		//m_mesh = Mesh::LoadFromFile("Resources/Models/heracles.obj");
+		m_mesh = Mesh::LoadFromFile("Resources/Models/LowpolyIonicColumn.obj");
+		//m_mesh = Mesh::LoadFromFile("Resources/Models/Lowest_poly_thinker.obj");
+		//m_mesh = Mesh::LoadFromFile("Resources/Models/Lowpoly_Ionic_Column.obj");
 		//m_mesh = Mesh::LoadFromFile("Resources/Models/cube.obj");
 
 		if (m_mesh == nullptr)
 		{
 			assert(false);
 		}
+		Renderer3D::UseShadows(true);
+	}
+
+	void OnUpdate()
+	{
+		m_meshTransform.rotation.y += m_rotSpeed * Time::GetDeltaTime();
 	}
 
 	void OnRender()
 	{
-		Renderer3D::DrawMesh(m_meshTransform.GetTransformMatrix(), m_mesh, Renderer3D::GetDefaultWhiteTexture(), 1, {0, 0, 1, 1});
+		Renderer3D::DrawMesh(m_meshTransform.GetTransformMatrix(), m_mesh, Renderer3D::GetDefaultWhiteTexture(), 1, {1, 1, 1, 1});
 		Renderer3D::DrawVoxel(m_cube.GetTransformMatrix(), glm::vec4{1, 0, 0, 1});
+		Renderer3D::AddPointLight(m_meshTransform.position + glm::vec3{0, 15, 20});
 	}
 
 private:
 	std::shared_ptr<Mesh> m_mesh;
-	Transform m_meshTransform = Transform({ 0, 0, -10 }, { -glm::radians(90.0f), 0, 0 }, {0.1f, 0.1f, 0.1f});
+	Transform m_meshTransform = Transform({ 0, 0, -10 }, { 0, 0, 0 }, {0.1f, 0.1f, 0.1f});
+	//Transform m_meshTransform = Transform({ 0, 0, -10 }, { -glm::radians(90.0f), 0, 0 }, {0.1f, 0.1f, 0.1f});
 	Transform m_cube = Transform({ 0, -10, -10 }, { 0, 0, 0 }, { 30, 0.5f, 30 });
+	float m_rotSpeed = 0.3f;
 };
 

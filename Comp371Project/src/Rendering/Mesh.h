@@ -149,13 +149,21 @@ private:
 					if (result != 6)
 					{
 						//try format pos/tex
-						int result = sscanf_s(buffer, "f %d/%d %d/%d %d/%d\n", &posIndex[0], &textureCoordsIndex[0],
+						result = sscanf_s(buffer, "f %d/%d %d/%d %d/%d\n", &posIndex[0], &textureCoordsIndex[0],
 							&posIndex[1], &textureCoordsIndex[1], &posIndex[2], &textureCoordsIndex[2]);
 
 						if (result != 6)
 						{
-							std::cout << "format not supported\n";
-							return nullptr;
+							//try format pos//
+							result = sscanf_s(buffer, "f %d// %d// %d//\n", &posIndex[0], &posIndex[1], &posIndex[2]);
+
+							if (result != 3)
+							{
+								std::cout << "face format not supported\n";
+								return nullptr;
+							}
+							
+							hasTexCoords = false;
 						}
 
 						hasNormals = false;
@@ -207,10 +215,19 @@ private:
 			}
 
 			glm::vec3 normal;
-			if (normals.size() != 0 && normalIndices[normalIndex].first == i)
+			if (normals.size() != 0/* && normalIndices[normalIndex].first == i*/)
 			{
 				normal = normals[normalIndices[normalIndex].second];
 				normalIndex++;
+			}
+			else
+			{
+				//generate normals from positions of the triangles
+				int mod = i % 3;
+				glm::vec3 v1 = positions[posIndices[i - mod]] - positions[posIndices[i - mod + 1]];
+				glm::vec3 v2 = positions[posIndices[i - mod + 2]] - positions[posIndices[i - mod + 1]];
+				
+				normal = glm::normalize(glm::cross(glm::normalize(v1), glm::normalize(v2)));
 			}
 
 			int currIndex = FindVertexData(outPositions, outTextureCoords, outNormals, 

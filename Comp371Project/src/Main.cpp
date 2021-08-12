@@ -26,6 +26,11 @@
 * 
 */
 
+/* models:
+* Lowest_poly_thinker.obj: https://www.thingiverse.com/thing:2164071
+* Lowpoly_Ionic_Column.obj: https://www.thingiverse.com/thing:4578336
+*/
+
 /*all textures can be been found on the following webpages:
 * - bricks: https://traditionalbrickandstone.co.uk/product/aldeburgh-blend/
 * - tiles: https://creativemarket.com/ThreeDiCube/2753544-Paving-tiles-seamless-texture

@@ -1181,7 +1181,7 @@ void Renderer3D::UploadMesh(const glm::mat4& transform, const Material& mat, std
 		currVertex.position = (glm::vec3)(transform * glm::vec4(mesh->GetPositions()[i], 1));
 		currVertex.textureCoords = glm::vec3(mesh->GetTextureCoords()[i], 0);
 		currVertex.color = tintColor;
-		currVertex.normal = mesh->GetNormals()[i];
+		currVertex.normal = (glm::vec3)(transform * glm::vec4(mesh->GetNormals()[i], 0));
 		currVertex.textureIndex = textureIndex;
 		currVertex.tillingFactor = tileFactor;
 		currVertex.uses3DTexture = 0;
