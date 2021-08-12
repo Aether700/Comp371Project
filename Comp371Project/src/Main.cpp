@@ -2,11 +2,8 @@
 #include "ModelManager.h"
 
 #include "Core/Application.h"
-#include "Core/Script.h"
 
 #include "Game/HyperCubeGame.h"
-
-#include "Tests/MeshTest.h"
 
 /*Task seperation
 * 
@@ -50,8 +47,7 @@ int main()
 
 	//Add Scripts here   
 
-	//Application::AddScript(new HyperCubeGame());
-	Application::AddScript(new MeshTest());
+	Application::AddScript(new HyperCubeGame());
 
 	///////////////////
 

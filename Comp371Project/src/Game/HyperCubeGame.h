@@ -11,6 +11,7 @@
 
 #include "../Core/SoundManager.h"
 #include "../Rendering/CameraController.h"
+#include "../Rendering/Mesh.h"
 
 
 #include "../GameModel/GameModel.h"
@@ -39,6 +40,8 @@ public:
 		AddModel(new ModelThree(m_worldTransform));
 		AddModel(new ModelFour(m_worldTransform));
 		AddModel(new ModelFive(m_worldTransform));
+
+		m_thinkerMesh = Mesh::LoadFromFile("Resources/Models/Lowest_poly_thinker.obj");
 	}
 
 	void OnStart()
@@ -165,6 +168,8 @@ public:
 
 		//background
 		Renderer3D::DrawQuad(backgroundTransform->GetTransformMatrix(), backgroundTexture);
+		Renderer3D::DrawMesh(m_thinkerTransform1.GetTransformMatrix(), m_thinkerMesh, Renderer3D::GetDefaultWhiteTexture());
+		Renderer3D::DrawMesh(m_thinkerTransform2.GetTransformMatrix(), m_thinkerMesh, Renderer3D::GetDefaultWhiteTexture());
 
 		//update lighting every frame for now
 		Renderer3D::AddPointLight(light_tr.position);
@@ -311,6 +316,9 @@ private:
 	const float m_debugToggleTimer = 0.2f;
 	float m_currDebugToggleTimer = 0.0f;
 
+	std::shared_ptr<Mesh> m_thinkerMesh;
+	Transform m_thinkerTransform1 = Transform({ -20, 0, -20 }, { -glm::radians(90.0f), 0, -glm::radians(30.0f) }, { 0.1f, 0.1f, 0.1f });
+	Transform m_thinkerTransform2 = Transform({ 20, 0, -20 }, { -glm::radians(90.0f), 0, glm::radians(30.0f) }, { 0.1f, 0.1f, 0.1f });
 
 	//return a random orientation in radians
 	//https://stackoverflow.com/a/7560564/9421977
