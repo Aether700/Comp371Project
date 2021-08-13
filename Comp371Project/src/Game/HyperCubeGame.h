@@ -150,6 +150,7 @@ public:
 					{
 						m_lastState = m_state;
 						m_state = GameState::Debug;
+						start_time = Time::GetTime();
 					}
 					m_currDebugToggleTimer = 0.0f;
 				}
@@ -300,6 +301,7 @@ private:
 	float score = 0.0;
 
 	float start_time = 0.0;
+	float pause_time = 0.0;
 
 	float cube_move_speed_per_second = 1.0;
 
@@ -335,8 +337,8 @@ private:
 	float m_currDebugToggleTimer = 0.0f;
 
 	std::shared_ptr<Mesh> m_thinkerMesh;
-	Transform m_thinkerTransform1 = Transform({ -20, 0, -20 }, { -glm::radians(90.0f), 0, -glm::radians(30.0f) }, { 0.1f, 0.1f, 0.1f });
-	Transform m_thinkerTransform2 = Transform({ 20, 0, -20 }, { -glm::radians(90.0f), 0, glm::radians(30.0f) }, { 0.1f, 0.1f, 0.1f });
+	Transform m_thinkerTransform1 = Transform({ -20, -0.5f, -20 }, { -glm::radians(90.0f), 0, -glm::radians(30.0f) }, { 0.1f, 0.1f, 0.1f });
+	Transform m_thinkerTransform2 = Transform({ 20, -0.5f, -20 }, { -glm::radians(90.0f), 0, -glm::radians(180.0f) }, { 0.1f, 0.1f, 0.1f });
 
 	//return a random orientation in radians
 	//https://stackoverflow.com/a/7560564/9421977
@@ -445,6 +447,11 @@ private:
 
 	float getTimeSinceStart()
 	{
-		return (Time::GetTime() - start_time);
+		if (m_state == GameState::Debug)
+		{
+			pause_time = Time::GetTime();
+		}
+
+		return (Time::GetTime() + start_time - pause_time);
 	}
 };
