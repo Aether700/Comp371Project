@@ -59,35 +59,11 @@ public:
 			{
 				glm::vec2 displacement = currMousePos - m_lastMousePos;
 
-				//REQ: While right button is pressed -> use mouse movement in x direction to pan
-				if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
-				{
-					displacement.y = 0.0;
-				}
-				//REQ: While middle button is pressed -> use mouse movement in y direction to tilt. 
-				if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE))
-				{
-					displacement.x = 0.0;
-				}
 
 				ApplyLookDisplacement(displacement);
 				m_lastMousePos = currMousePos;
 			}
 		}
-
-		//Don't move if M is held down, that's when ModelManager is using WASD to control model rotation/movement
-		//movementIsOn = !Input::IsKeyPressed(GLFW_KEY_M);
-		if (m_currCameraToggle >= m_toggleCameraCooldown && Input::IsKeyPressed(GLFW_KEY_M))
-		{
-			movementIsOn = !movementIsOn;
-
-			m_currCameraToggle = 0.0f;
-		}
-		else if (m_currCameraToggle < m_toggleCameraCooldown)
-		{
-			m_currCameraToggle += Time::GetDeltaTime();
-		}
-
 
 		if(movementIsOn)
 		{
@@ -132,15 +108,6 @@ public:
 			
 		}
 
-		//pressing the R key resets the transform of the camera 
-		//and it's vertical FOV as required
-		if (Input::IsKeyPressed(GLFW_KEY_R))
-		{
-			ResetCamera();
-		}
-		
-		
-
 		//update camera transform
 		camTransform = glm::lookAt(m_camPos, m_camPos + m_lookDir, m_camUp);
 	}
@@ -153,6 +120,12 @@ public:
 	*/
 	virtual bool HandleScrollEvent(double xScroll, double yScroll) override
 	{
+		//only process scroll events when the camera can look around and move
+		if (!lookIsOn || !movementIsOn)
+		{
+			return false;
+		}
+
 		auto cam = Application::GetCamera();
 		//only change the FOV if currently using perspective projection (for the assignment 
 		//the camera will always remain in perspective projection)
@@ -218,14 +191,6 @@ public:
 	}
 
 private:
-	void ResetCamera()
-	{
-		Application::GetCamera()->SetPerspectiveVerticalFOV(m_defaultVerticalFOV);
-		m_camPos = { 0, 0, 0 };
-		m_yRotation = 90.0f;
-		m_upRotation = 0.0f;
-		m_lookDir = { 0, 0, -1 };
-	}
 
 	//common function for mouse and keyboard (single axis) to change look direction
 	void ApplyLookDisplacement(glm::vec2 displacement)
@@ -288,7 +253,4 @@ private:
 
 	bool movementIsOn = true;
 	bool lookIsOn = true;
-
-	float m_toggleCameraCooldown = 0.2f;
-	float m_currCameraToggle = 0.0f;
 };

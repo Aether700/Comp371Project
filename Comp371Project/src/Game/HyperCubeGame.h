@@ -29,18 +29,17 @@ class HyperCubeGame : public Script
 public:
 	HyperCubeGame()
 	{
-		m_worldTransform = std::make_shared<Transform>();
-
+	
 		backgroundTransform = std::make_shared<Transform>(glm::vec3(0, 25, -100), glm::vec3(0, 0, 0), glm::vec3(200, 100, 1));
 		//cubeTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg"); NOT BEING USE?
 		backgroundTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/palmTree.jpg");
 		sandTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/sand.jpg");
 
-		AddModel(new ModelOne(m_worldTransform));
-		AddModel(new ModelTwo(m_worldTransform));
-		AddModel(new ModelThree(m_worldTransform));
-		AddModel(new ModelFour(m_worldTransform));
-		AddModel(new ModelFive(m_worldTransform));
+		AddModel(new ModelOne());
+		AddModel(new ModelTwo());
+		AddModel(new ModelThree());
+		AddModel(new ModelFour());
+		AddModel(new ModelFive());
 
 		m_thinkerMesh = Mesh::LoadFromFile("Resources/Models/Lowest_poly_thinker.obj");
 	}
@@ -72,9 +71,6 @@ public:
 
 		//start looping background music
 		SoundManager::Play("Resources/Audio/breakout.mp3", true);
-
-		//set starting time
-		start_time = Time::GetTime();
 
 		//We do want shadows in this game
 		Renderer3D::UseShadows(true);
@@ -151,7 +147,6 @@ public:
 					{
 						m_lastState = m_state;
 						m_state = GameState::Debug;
-						start_time = Time::GetTime();
 					}
 					m_currDebugToggleTimer = 0.0f;
 				}
@@ -278,11 +273,14 @@ public:
 			break;
 
 		}
+
+		if (m_state != GameState::Debug)
+		{
+			UpdateGameTime();
+		}
 	}
 
 	void OnImGuiRender() override{
-
-
 
 		ImGui::Begin("Score");
 		ImGuiStyle* style = &ImGui::GetStyle();
@@ -293,7 +291,7 @@ public:
 		ImGui::End();
 
 		ImGui::Begin("Time");
-		ImGui::Text("Time : %.2f", getTimeSinceStart());
+		ImGui::Text("Time : %.2f", m_gameTime);
 		ImGui::End();
 
 	}
@@ -306,8 +304,7 @@ private:
 
 	float score = 0.0;
 
-	float start_time = 0.0;
-	float pause_time = 0.0;
+	float m_gameTime = 0.0f;
 
 	float cube_move_speed_per_second = 1.0;
 
@@ -453,13 +450,8 @@ private:
 		score += m_models[m_currModel]->getScore();
 	}
 
-	float getTimeSinceStart()
+	void UpdateGameTime()
 	{
-		if (m_state == GameState::Debug)
-		{
-			pause_time = Time::GetTime();
-		}
-
-		return (Time::GetTime() + start_time - pause_time);
+		m_gameTime += Time::GetDeltaTime();
 	}
 };

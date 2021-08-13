@@ -7,7 +7,7 @@ class ModelFour : public GameModel
 {
 public:
 
-	ModelFour(std::shared_ptr<Transform> worldTransform) : GameModel(worldTransform)
+	ModelFour()
 	{
 		for (auto& transform : m_cubeModel)
 		{
