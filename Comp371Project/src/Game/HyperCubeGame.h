@@ -198,6 +198,7 @@ public:
 					//std::cout << "Fit!" << std::endl;
 					SoundManager::Play("Resources/Audio/109663__grunz__success-low.wav", false);
 					m_state = GameState::Fit;
+					AddModelScore();
 				}
 				//otherwise to drop state
 				else
@@ -226,7 +227,7 @@ public:
 
 			//Cube model fits into wall (correct orientation), so bring it through
 		case GameState::Fit:
-			AddModelScore();
+			
 			if (animation_frame_time < animation_frame_time_limit)
 			{
 				glm::vec3 model_pos = getCurrentModelPosition();
@@ -334,8 +335,8 @@ private:
 	float m_currDebugToggleTimer = 0.0f;
 
 	std::shared_ptr<Mesh> m_thinkerMesh;
-	Transform m_thinkerTransform1 = Transform({ -20, 0, -20 }, { -glm::radians(90.0f), 0, -glm::radians(30.0f) }, { 0.1f, 0.1f, 0.1f });
-	Transform m_thinkerTransform2 = Transform({ 20, 0, -20 }, { -glm::radians(90.0f), 0, glm::radians(30.0f) }, { 0.1f, 0.1f, 0.1f });
+	Transform m_thinkerTransform1 = Transform({ -20, -0.5f, -20 }, { -glm::radians(90.0f), 0, -glm::radians(30.0f) }, { 0.1f, 0.1f, 0.1f });
+	Transform m_thinkerTransform2 = Transform({ 20, -0.5f, -20 }, { -glm::radians(90.0f), 0, -glm::radians(180.0f) }, { 0.1f, 0.1f, 0.1f });
 
 	//return a random orientation in radians
 	//https://stackoverflow.com/a/7560564/9421977
