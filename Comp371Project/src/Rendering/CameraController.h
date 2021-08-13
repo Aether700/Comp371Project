@@ -120,6 +120,12 @@ public:
 	*/
 	virtual bool HandleScrollEvent(double xScroll, double yScroll) override
 	{
+		//only process scroll events when the camera can look around and move
+		if (!lookIsOn || !movementIsOn)
+		{
+			return false;
+		}
+
 		auto cam = Application::GetCamera();
 		//only change the FOV if currently using perspective projection (for the assignment 
 		//the camera will always remain in perspective projection)
