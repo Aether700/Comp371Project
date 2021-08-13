@@ -203,6 +203,7 @@ public:
 					//std::cout << "Fit!" << std::endl;
 					SoundManager::Play("Resources/Audio/109663__grunz__success-low.wav", false);
 					m_state = GameState::Fit;
+					AddModelScore();
 				}
 				//otherwise to drop state
 				else
@@ -231,7 +232,7 @@ public:
 
 			//Cube model fits into wall (correct orientation), so bring it through
 		case GameState::Fit:
-			AddModelScore();
+			
 			if (animation_frame_time < animation_frame_time_limit)
 			{
 				glm::vec3 model_pos = getCurrentModelPosition();
