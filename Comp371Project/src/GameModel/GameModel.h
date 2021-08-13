@@ -19,7 +19,6 @@ public:
 	void Select() { m_isSelected = true; }
 	void Unselect() { m_isSelected = false; }
 
-	//virtual float getScore() = 0;
 	virtual float getScore() { return 0.0f;  }
 
 protected:
@@ -29,15 +28,6 @@ protected:
 	{
 		m_modelTransform->SetParent(m_transform);
 		m_wallTransform->SetParent(m_transform);
-	}
-
-	GameModel(std::shared_ptr<Transform> worldTransform) : m_modelTransform(std::make_shared<Transform>()),
-		m_wallTransform(std::make_shared<Transform>()), m_transform(std::make_shared<Transform>())
-	{
-		m_modelTransform->SetParent(m_transform);
-		m_wallTransform->SetParent(m_transform);
-		m_transform->SetParent(worldTransform);
-
 	}
 
 	void RenderCube(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 })
