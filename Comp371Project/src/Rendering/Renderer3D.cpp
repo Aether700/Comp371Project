@@ -774,6 +774,7 @@ void Renderer3D::UploadVoxel(const glm::mat4& transform, const Material& mat, st
 {
 	unsigned int renderTarget = GL_TRIANGLES;
 	int textureIndex = s_renderingBatches[renderTarget].AddCubemap(texture, renderTarget);
+	
 
 	glm::vec3 posAndNormals[] = {
 		//back face

@@ -34,6 +34,7 @@ public:
 		backgroundTransform = std::make_shared<Transform>(glm::vec3(0, 25, -100), glm::vec3(0, 0, 0), glm::vec3(200, 100, 1));
 		//cubeTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg"); NOT BEING USE?
 		backgroundTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/palmTree.jpg");
+		sandTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/sand.jpg");
 
 		AddModel(new ModelOne(m_worldTransform));
 		AddModel(new ModelTwo(m_worldTransform));
@@ -169,11 +170,15 @@ public:
 
 		//background
 		Renderer3D::DrawQuad(backgroundTransform->GetTransformMatrix(), backgroundTexture);
-		Renderer3D::DrawMesh(m_thinkerTransform1.GetTransformMatrix(), m_thinkerMesh, Renderer3D::GetDefaultWhiteTexture());
-		Renderer3D::DrawMesh(m_thinkerTransform2.GetTransformMatrix(), m_thinkerMesh, Renderer3D::GetDefaultWhiteTexture());
+		Renderer3D::DrawMesh(m_thinkerTransform1.GetTransformMatrix(), m_thinkerMesh, sandTexture);
+		Renderer3D::DrawMesh(m_thinkerTransform2.GetTransformMatrix(), m_thinkerMesh, sandTexture);
 
 		//update lighting every frame for now
-		Renderer3D::AddPointLight(light_tr.position);
+		Renderer3D::AddPointLight(light_tr.position, { 0,0,1,1 });
+		Renderer3D::AddDirectionalLight({ 0,0,-50 }, { 0,30,-15 }, { 1,14.0f/255.0f,246.0f/255.0f,1 });
+		//Renderer3D::AddDirectionalLight({ 0,20,-10 }, { 0,5,0 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
+		//Renderer3D::AddDirectionalLight({ 50,0,0 }, { 0,5,0 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
+		Renderer3D::AddDirectionalLight({ 0,0,10 }, { 0,30,-15 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
 		Renderer3D::UpdateLights();
 
 		switch (m_state)
@@ -323,6 +328,8 @@ private:
 
 	std::shared_ptr<OpenGLTexture2D> backgroundTexture;
 
+	std::shared_ptr<OpenGLTexture2D> sandTexture;
+
 	std::shared_ptr<Transform>  backgroundTransform;
 
 	std::shared_ptr<Transform> m_worldTransform;
@@ -338,8 +345,8 @@ private:
 	float m_currDebugToggleTimer = 0.0f;
 
 	std::shared_ptr<Mesh> m_thinkerMesh;
-	Transform m_thinkerTransform1 = Transform({ -20, -0.5f, -20 }, { -glm::radians(90.0f), 0, -glm::radians(30.0f) }, { 0.1f, 0.1f, 0.1f });
-	Transform m_thinkerTransform2 = Transform({ 20, -0.5f, -20 }, { -glm::radians(90.0f), 0, -glm::radians(180.0f) }, { 0.1f, 0.1f, 0.1f });
+	Transform m_thinkerTransform1 = Transform({ -6, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.05f, 0.05f, 0.05f });
+	Transform m_thinkerTransform2 = Transform({ 10, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(145.0f) }, { 0.05f, 0.05f, 0.05f });
 
 	//return a random orientation in radians
 	//https://stackoverflow.com/a/7560564/9421977

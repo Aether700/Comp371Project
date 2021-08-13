@@ -77,6 +77,11 @@ OpenGLCubeMap::OpenGLCubeMap(const std::array<std::string, 6>& faceTextures) : m
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	//glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	//glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	//glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+
+	std::cout << "test 1 \n";
 }
 
 //will apply the same texture to every face
@@ -116,7 +121,7 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 		std::cout << "The Format provided for the texture '" << faceTexture << "' is not supported\n";
 		assert(false);
 	}
-
+	
 	for (size_t i = 0; i < 6; i++)
 	{
 		m_internalFormat[i] = m_internalFormat[0];
@@ -124,15 +129,23 @@ OpenGLCubeMap::OpenGLCubeMap(const std::string& faceTexture)
 
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_size, m_size,
 			0, m_dataFormat[i], GL_UNSIGNED_BYTE, data);
-	}
-
+	} 
+	
+	
+	//test
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_R, GL_REPEAT);
 	
+	
+	//glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	//glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	//glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+
 	stbi_image_free(data);
+	std::cout << "test 2 \n";
 }
 
 //applies the texture data provided to all sides of the cube
@@ -146,6 +159,8 @@ OpenGLCubeMap::OpenGLCubeMap(unsigned int size, void* data)
 	m_dataFormat[0] = GL_RGB;
 
 	Bind();
+	
+
 
 	for (size_t i = 0; i < 6; i++)
 	{
@@ -155,6 +170,7 @@ OpenGLCubeMap::OpenGLCubeMap(unsigned int size, void* data)
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_internalFormat[i], m_size, m_size,
 			0, m_dataFormat[i], GL_UNSIGNED_BYTE, data);
 	}
+	
 	/* //to remove
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -162,12 +178,14 @@ OpenGLCubeMap::OpenGLCubeMap(unsigned int size, void* data)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_REPEAT);
 	*/
-
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	
+	
+	std::cout << "test 3 \n";
 }
 
 //creates an empty cubemap of the provided width and height with the specified internalDataFormat
@@ -196,6 +214,10 @@ OpenGLCubeMap::OpenGLCubeMap(unsigned int size, unsigned int internalDataFormat,
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	//glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	//glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	//glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+	std::cout << "test 4 \n";
 }
 
 OpenGLCubeMap::OpenGLCubeMap(unsigned int rendererID) 
