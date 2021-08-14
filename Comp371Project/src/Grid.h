@@ -11,9 +11,10 @@ public:
 
 	Grid(std::shared_ptr<Transform> worldTransform)
 	{
-		m_texture = std::make_shared<OpenGLTexture2D>("Resources/Textures/sand.jpg");
+		m_texture = std::make_shared<OpenGLTexture2D>("Resources/Textures/night.jpg");
+		//m_texture = std::make_shared<OpenGLTexture2D>("Resources/Textures/palmTree.jpg");
 		m_transformMesh = std::make_shared<Transform>(glm::vec3( 0, 0, 0 ), glm::vec3( 0, 0, 0 ), glm::vec3(1, 1, 1 ));
-		m_transformQuad = std::make_shared<Transform>(glm::vec3(0, -0.5f, 0 ), glm::vec3(-glm::radians(90.0f), 0, 0 ), glm::vec3(100, 100, 1 ));
+		m_transformQuad = std::make_shared<Transform>(glm::vec3(0, -9.0f, 0 ), glm::vec3(-glm::radians(90.0f), 0, 0 ), glm::vec3(100, 100, 1 ));
 		m_transformQuad->SetParent(worldTransform);
 		m_transformMesh->SetParent(worldTransform);
 	}

@@ -28,18 +28,21 @@ protected:
 	{
 		m_modelTransform->SetParent(m_transform);
 		m_wallTransform->SetParent(m_transform);
+		//m_borderTransform->SetParent(m_transform);
 	}
 
-	void RenderCube(const glm::mat4& transform, const glm::vec4& color = { 1, 1, 1, 1 })
+	//void RenderCube(const glm::mat4& transform, const glm::vec4& color = { 1, 15.0f/255.0f, 192.0f/255.0f, 1 })
+
+	void RenderCube(const glm::mat4& transform, const glm::vec4& color = glm::vec4(110.0f / 255.0f, 255.0f / 255.0f, 1, 1))
 	{
 		Renderer3D::DrawVoxel(transform, modelTexture, 1.0f, color);
 
 		glm::mat4 WireTransform = transform;
-		WireTransform[0][0] = WireTransform[0][0] * 1.05f;//x
-		WireTransform[1][1] = WireTransform[1][1] * 1.05f;//y
-		WireTransform[2][2] = WireTransform[2][2] * 1.05f;//z
+		WireTransform[0][0] = WireTransform[0][0] * 1.0005f;//x
+		WireTransform[1][1] = WireTransform[1][1] * 1.0005f;//y
+		WireTransform[2][2] = WireTransform[2][2] * 1.0005f;//z
 		//Renderer3D::DrawWireCube(WireTransform, m_wireMaterial, glm::vec4(1 - color.x, 1 - color.y, 1 - color.z, color.w));// opposite color
-		//Renderer3D::DrawWireCube(WireTransform, m_wireMaterial, glm::vec4(35.0f/255.0f, 20.0f/255.0f, 1, 1));
+		Renderer3D::DrawWireCube(WireTransform, m_wireMaterial, glm::vec4(110.0f/255.0f, 255.0f/255.0f, 1, 1));
 	}
 
 	void RenderWall(const glm::mat4& transform, const glm::vec4& color = { 1, 0, 0, 1 })
@@ -51,7 +54,11 @@ protected:
 		WireTransform[1][1] = WireTransform[1][1] * 1.0005f;//y
 		WireTransform[2][2] = WireTransform[2][2] * 1.0005f;//z
 		//Renderer3D::DrawWireCube(WireTransform, m_wireMaterial, glm::vec4(1 - color.x, 1 - color.y, 1 - color.z, color.w));// opposite color
+		Renderer3D::DrawWireCube(WireTransform, m_wireMaterial, glm::vec4(110.0f / 255.0f, 255.0f / 255.0f, 1, 1));
 	}
+	//void RenderBorder(const glm::mat4& transform, const glm::vec4& color = { 0,0,1,1 }) {
+		//Renderer3D::DrawVoxel(transform, color);
+	//}
 
 	static std::shared_ptr<OpenGLCubeMap> wallTexture;
 	static std::shared_ptr<OpenGLCubeMap> modelTexture;
@@ -64,7 +71,7 @@ private:
 	std::shared_ptr<Transform> m_transform;
 	std::shared_ptr<Transform> m_modelTransform;
 	std::shared_ptr<Transform> m_wallTransform;
-	
+	//std::shared_ptr<Transform> m_borderTransform;
 
 	Material m_wireMaterial = Material(true);
 	Material m_modelMaterial = Material(true);// not in use for now

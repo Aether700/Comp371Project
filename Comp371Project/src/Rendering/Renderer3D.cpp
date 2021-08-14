@@ -718,6 +718,7 @@ void Renderer3D::DrawMesh(const glm::mat4& transform, std::shared_ptr<Mesh>& mes
 	UploadMesh(transform, s_defaultMaterial, mesh, texture, tileFactor, tintColor);
 }
 
+
 void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& lightColor)
 {
 	assert(s_directionalLightIndex < RenderingBatch::s_maxTexture2DShadowMapSlots);

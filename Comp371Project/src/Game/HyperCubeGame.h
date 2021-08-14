@@ -34,7 +34,9 @@ public:
 		//cubeTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg"); NOT BEING USE?
 		backgroundTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/palmTree.jpg");
 		sandTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/sand.jpg");
+		nightTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/night.jpg");
 
+		
 		AddModel(new ModelOne());
 		AddModel(new ModelTwo());
 		AddModel(new ModelThree());
@@ -47,7 +49,8 @@ public:
 	void OnStart()
 	{
 		//World transform
-		Application::AddScript(new Axes(m_worldTransform));
+		//Application::AddScript(new Axes(m_worldTransform));
+		//Application::SetBackgroundColor({ 1,1,1,1 });
 
 		//Grid
 		m_grid = new Grid(m_worldTransform);
@@ -165,8 +168,11 @@ public:
 
 		//background
 		Renderer3D::DrawQuad(backgroundTransform->GetTransformMatrix(), backgroundTexture);
-		Renderer3D::DrawMesh(m_thinkerTransform1.GetTransformMatrix(), m_thinkerMesh, sandTexture);
-		Renderer3D::DrawMesh(m_thinkerTransform2.GetTransformMatrix(), m_thinkerMesh, sandTexture);
+		Renderer3D::DrawMesh(m_thinkerTransform1.GetTransformMatrix(), m_thinkerMesh, nightTexture);
+		Renderer3D::DrawMesh(m_thinkerTransform2.GetTransformMatrix(), m_thinkerMesh, nightTexture);
+		//Renderer3D::DrawMesh(m_thinkerTransform3.GetTransformMatrix(), m_thinkerMesh, Renderer3D::GetDefaultWhiteTexture(), 1.0f, {0.0f,1.0f,0.0f,0.00002f });
+	
+		Renderer3D::AddDirectionalLight({ 0,0,-50 }, { 0,30,-15 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
 
 		//update lighting every frame for now
 		Renderer3D::AddPointLight(light_tr.position, { 0,0,1,1 });
@@ -326,8 +332,10 @@ private:
 	std::shared_ptr<OpenGLTexture2D> backgroundTexture;
 
 	std::shared_ptr<OpenGLTexture2D> sandTexture;
-
+	
 	std::shared_ptr<Transform>  backgroundTransform;
+
+	std::shared_ptr<OpenGLTexture2D> nightTexture;
 
 	std::shared_ptr<Transform> m_worldTransform;
 
@@ -345,6 +353,7 @@ private:
 	Transform m_thinkerTransform1 = Transform({ -6, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.05f, 0.05f, 0.05f });
 	Transform m_thinkerTransform2 = Transform({ 10, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(145.0f) }, { 0.05f, 0.05f, 0.05f });
 
+	//Transform m_thinkerTransform3 = Transform({ -6, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.055f, 0.055f, 0.055f });
 	//return a random orientation in radians
 	//https://stackoverflow.com/a/7560564/9421977
 	float GetRandomRotation()
