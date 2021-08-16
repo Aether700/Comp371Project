@@ -174,7 +174,7 @@ public:
 		Renderer3D::DrawMesh(m_thinkerTransform1.GetTransformMatrix(), m_thinkerMesh, nightTexture);
 		Renderer3D::DrawMesh(m_thinkerTransform2.GetTransformMatrix(), m_thinkerMesh, nightTexture);
 		Renderer3D::DrawMesh(m_colTransform1.GetTransformMatrix(), m_ColMesh, nightTexture);
-		//Renderer3D::DrawMesh(m_colTransform2.GetTransformMatrix(), m_ColMesh, nightTexture);
+		Renderer3D::DrawMesh(m_colTransform2.GetTransformMatrix(), m_ColMesh, nightTexture);
 
 		Renderer3D::AddDirectionalLight({ 0,0,-50 }, { 0,30,-15 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
 
@@ -358,7 +358,7 @@ private:
 	Transform m_thinkerTransform1 = Transform({ -6, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.05f, 0.05f, 0.05f });
 	Transform m_thinkerTransform2 = Transform({ 10, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(145.0f) }, { 0.05f, 0.05f, 0.05f });
 	Transform m_colTransform1 = Transform({0, -0.5f, 8}, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.05f, 0.05f, 0.05f });
-	//Transform m_colTransform2 = Transform({ 10, -0.5f, -10 }, { -glm::radians(90.0f), 0, -glm::radians(145.0f) }, { 0.05f, 0.05f, 0.05f });
+	Transform m_colTransform2 = Transform({ 10, -0.5f, -10 }, { -glm::radians(90.0f), 0, -glm::radians(145.0f) }, { 0.05f, 0.05f, 0.05f });
 
 	//Transform m_thinkerTransform3 = Transform({ -6, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.055f, 0.055f, 0.055f });
 	//return a random orientation in radians
