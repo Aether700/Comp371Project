@@ -88,7 +88,7 @@ void Application::Run()
 
 			Renderer3D::EndScene();
 
-			// :) std::cout << "num draw calls: " << Renderer3D::GetStats().numDrawCalls << "\n";
+			std::cout << "num draw calls: " << Renderer3D::GetStats().numDrawCalls << "\n";
 
 			//render Imgui frame
 			imguiManager->StartFrame();
