@@ -5,24 +5,6 @@
 
 #include "Game/HyperCubeGame.h"
 
-/*Task seperation
-* 
-* Lighting and Shadows (Jamil Hanachian, Alec, Madelaine, Jean)
-* 
-* Textures framework (Jamil Hanachian, Madelaine)
-* 
-* Grid Tiles (Jean)
-* 
-* World Transform (Jean)
-* 
-* Camera Tilt, model reset (Alec)
-* 
-* Translation and rotations of the model (Jean)
-* 
-* Window resize (Jamil Hanachian)
-* 
-*/
-
 /* models:
 * Lowest_poly_thinker.obj: https://www.thingiverse.com/thing:2164071
 * Lowpoly_Ionic_Column.obj: https://www.thingiverse.com/thing:4578336

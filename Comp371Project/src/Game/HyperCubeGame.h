@@ -31,7 +31,6 @@ public:
 	{
 	
 		backgroundTransform = std::make_shared<Transform>(glm::vec3(0, 25, -100), glm::vec3(0, 0, 0), glm::vec3(200, 100, 1));
-		//cubeTexture = std::make_shared<OpenGLCubeMap>("Resources/Textures/ShinyMetal.jpg"); NOT BEING USE?
 		backgroundTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/palmTree.jpg");
 		sandTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/sand.jpg");
 		nightTexture = std::make_shared<OpenGLTexture2D>("Resources/Textures/night.jpg");
@@ -49,10 +48,6 @@ public:
 
 	void OnStart()
 	{
-		//World transform
-		//Application::AddScript(new Axes(m_worldTransform));
-		//Application::SetBackgroundColor({ 1,1,1,1 });
-
 		//Grid
 		m_grid = new Grid(m_worldTransform);
 		m_grid->ToggleTexture();
@@ -92,7 +87,6 @@ public:
 				model_rotation.x -= glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				//std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_S))
@@ -100,7 +94,6 @@ public:
 				model_rotation.x += glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				//std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
 
 			//rotation about y axis (left/right)
@@ -109,7 +102,6 @@ public:
 				model_rotation.y -= glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				//std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
 
 			if (Input::IsKeyPressed(GLFW_KEY_D))
@@ -117,7 +109,6 @@ public:
 				model_rotation.y += glm::radians(90.0f);
 				setCurrentModelRotation(model_rotation);
 				rotationInputTimer = 0.0f;
-				//std::cout << "Cube orientation is " << model_rotation.x << ", " << model_rotation.y << ", " << model_rotation.z << std::endl;
 			}
 		}
 		else
@@ -213,7 +204,6 @@ public:
 				//go to fit state if cube fits
 				if (IsRotationCorrect())
 				{
-					//std::cout << "Fit!" << std::endl;
 					SoundManager::Play("Resources/Audio/109663__grunz__success-low.wav", false);
 					m_state = GameState::Fit;
 					AddModelScore();
@@ -221,7 +211,6 @@ public:
 				//otherwise to drop state
 				else
 				{
-					//std::cout << "Drop!" << std::endl;
 					SoundManager::Play("Resources/Audio/31126__calethos__bump.wav", false);
 					score = 0.0f; //failure->score reset
 					m_state = GameState::Drop;
@@ -334,12 +323,9 @@ private:
 	glm::vec4 cube_color = { 0.1, 0.9, 0.1, 1 };
 	glm::vec4 wall_color = { 0.1, 0.2, 0.87, 1 };
 
-	//std::shared_ptr<OpenGLCubeMap> cubeTexture;
-
 	std::shared_ptr<OpenGLTexture2D> backgroundTexture;
-
 	std::shared_ptr<OpenGLTexture2D> sandTexture;
-	
+
 	std::shared_ptr<Transform>  backgroundTransform;
 
 	std::shared_ptr<OpenGLTexture2D> nightTexture;
@@ -367,7 +353,6 @@ private:
 	Transform m_colTransform4 = Transform({ 50, -8.5f, 20 }, { -glm::radians(90.0f), 0, glm::radians(90.0f) }, { 0.3f, 0.3f, 0.3f });
 
 	
-	//Transform m_thinkerTransform3 = Transform({ -6, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.055f, 0.055f, 0.055f });
 	//return a random orientation in radians
 	//https://stackoverflow.com/a/7560564/9421977
 	float GetRandomRotation()
@@ -454,7 +439,6 @@ private:
 	bool IsRotationCorrect()
 	{
 		glm::vec3 cube_rot = getCurrentModelRotation();
-		//std::cout << "Cube orientation is " << cube_rot.x << ", " << cube_rot.y << ", " << cube_rot.z << std::endl;
 		glm::vec3 cube_rotation_sin = glm::vec3{ glm::sin(cube_rot.x/2.0), glm::sin(cube_rot.y/2.0), cube_rot.z };
 
 		if ( glm::abs(cube_rotation_sin.x - 0.0) < 0.001 && glm::abs(cube_rotation_sin.y - 0.0) < 0.001)

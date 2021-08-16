@@ -49,12 +49,7 @@ public:
 		return 7.0;
 	}
 
-
-protected:
-
-
 private:
-
 	std::shared_ptr<Transform> m_cubeModel[14];
 	std::shared_ptr<Transform>  m_wallCubes[100];
 

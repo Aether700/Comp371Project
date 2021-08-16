@@ -49,15 +49,9 @@ public:
 		return 5.0;
 	}
 
-
-protected:
-
-
 private:
-
 	std::shared_ptr<Transform> m_cubeModel[12];
 	std::shared_ptr<Transform> m_wallCubes[100];
-
 
 	void SetModelCubesTransform()
 	{

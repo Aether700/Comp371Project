@@ -21,17 +21,12 @@ public:
 			transform = std::make_shared<Transform>();
 			transform->SetParent(GetWallTransform());
 		}
-		//for (auto& transform : m_borderCubes) {
-			//transform = std::make_shared<Transform>();
-			//transform->SetParent(GetWallTransform());
-		//}
 	}
 
 	void OnStart()
 	{
 		SetModelCubesTransform();
 		SetWallCubesTransform();
-		//SetBorderCubesTransform();
 	}
 
 	void OnRender()
@@ -47,9 +42,6 @@ public:
 			{
 				RenderWall(m_wallCubes[count]->GetTransformMatrix());
 			}
-			//for (int i = 0; i < borderCount; i++) {
-			//	RenderBorder(m_borderCubes[i]->GetTransformMatrix());
-			//}
 		}
 	}
 
@@ -66,7 +58,6 @@ private:
 
 	std::shared_ptr<Transform> m_cubeModel[16];
 	std::shared_ptr<Transform>  m_wallCubes[100];
-	//std::shared_ptr<Transform> m_borderCubes[60];
 
 
 	void SetModelCubesTransform()
@@ -105,37 +96,6 @@ private:
 			}
 		}
 	}
-
-	//int borderCount = 0; 
-	
-	/*
-	void SetBorderCubesTransform() {
-		int count = 0;
-		for (auto& transform : m_wallCubes) {
-			int x = (int)transform->position.x;
-			int y = (int)transform->position.y;
-			int z = (int)transform->position.z;
-			
-			if(!inWall(x + 1, y)) {
-				m_borderCubes[count]->position = {x+1, y, z};
-				m_borderCubes[count]->scale = {0.1,1,1};
-			}
-			if (!inWall(x - 1, y)) {
-				m_borderCubes[count]->position = { x -1, y, z };
-				m_borderCubes[count]->scale = { 0.1,1,1 };
-			}
-			if (!inWall(x, y+1)) {
-				m_borderCubes[count]->position = { x, y+1, z };
-				m_borderCubes[count]->scale = { 1,0.1,1 };
-			}
-			if (!inWall(x, y-1)) {
-				m_borderCubes[count]->position = { x, y-1, z };
-				m_borderCubes[count]->scale = { 1,0.1,1 };
-			}
-		}
-		borderCount = count;
-	}
-	*/
 
 	bool checkWallHolePlacement(int axis1, int axis2)
 	{
