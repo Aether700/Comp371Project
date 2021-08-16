@@ -166,7 +166,6 @@ public:
 
 	void OnRender()
 	{
-
 		//background
 		Renderer3D::DrawQuad(backgroundTransform->GetTransformMatrix(), backgroundTexture);
 		
@@ -175,6 +174,10 @@ public:
 		Renderer3D::DrawMesh(m_thinkerTransform2.GetTransformMatrix(), m_thinkerMesh, nightTexture);
 		Renderer3D::DrawMesh(m_colTransform1.GetTransformMatrix(), m_ColMesh, nightTexture);
 		Renderer3D::DrawMesh(m_colTransform2.GetTransformMatrix(), m_ColMesh, nightTexture);
+		Renderer3D::DrawMesh(m_colTransform3.GetTransformMatrix(), m_ColMesh, nightTexture);
+		Renderer3D::DrawMesh(m_colTransform4.GetTransformMatrix(), m_ColMesh, nightTexture);
+		Renderer3D::DrawMesh(m_colTransform5.GetTransformMatrix(), m_ColMesh, nightTexture);
+		Renderer3D::DrawMesh(m_colTransform6.GetTransformMatrix(), m_ColMesh, nightTexture);
 
 		Renderer3D::AddDirectionalLight({ 0,0,-50 }, { 0,30,-15 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
 
@@ -357,8 +360,12 @@ private:
 	std::shared_ptr<Mesh> m_ColMesh;
 	Transform m_thinkerTransform1 = Transform({ -6, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.05f, 0.05f, 0.05f });
 	Transform m_thinkerTransform2 = Transform({ 10, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(145.0f) }, { 0.05f, 0.05f, 0.05f });
-	Transform m_colTransform1 = Transform({0, -0.5f, 8}, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.05f, 0.05f, 0.05f });
-	Transform m_colTransform2 = Transform({ 10, -0.5f, -10 }, { -glm::radians(90.0f), 0, -glm::radians(145.0f) }, { 0.05f, 0.05f, 0.05f });
+	Transform m_colTransform1 = Transform({-50, -8.5f, 0}, { -glm::radians(90.0f), 0, glm::radians(90.0f) }, { 0.3f, 0.3f, 0.3f });
+	Transform m_colTransform2 = Transform({ 50, -8.5f, 0}, { -glm::radians(90.0f), 0, glm::radians(90.0f) }, { 0.3f, 0.3f, 0.3f });
+	Transform m_colTransform3 = Transform({-50, -8.5f, 30}, { -glm::radians(90.0f), 0, glm::radians(90.0f) }, { 0.3f, 0.3f, 0.3f });
+	Transform m_colTransform4 = Transform({ 50, -8.5f, 30}, { -glm::radians(90.0f), 0, glm::radians(90.0f) }, { 0.3f, 0.3f, 0.3f });
+	Transform m_colTransform5 = Transform({-50, -8.5f,-30}, { -glm::radians(90.0f), 0, glm::radians(90.0f) }, { 0.3f, 0.3f, 0.3f });
+	Transform m_colTransform6 = Transform({ 50, -8.5f,-30}, { -glm::radians(90.0f), 0, glm::radians(90.0f) }, { 0.3f, 0.3f, 0.3f });
 
 	//Transform m_thinkerTransform3 = Transform({ -6, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.055f, 0.055f, 0.055f });
 	//return a random orientation in radians

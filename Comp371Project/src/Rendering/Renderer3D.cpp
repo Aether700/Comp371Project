@@ -26,7 +26,7 @@ PointLight* Renderer3D::s_pointLightArr;
 unsigned int Renderer3D::s_pointLightIndex;
 bool Renderer3D::s_updateLights;
 
-unsigned int RenderingBatch::s_maxVertices = 32000;
+unsigned int RenderingBatch::s_maxVertices = 64000;
 unsigned int RenderingBatch::s_maxIndices = 72000;
 unsigned int RenderingBatch::s_maxTextureSlots = 32;
 unsigned int RenderingBatch::s_maxTexture2DShadowMapSlots = RenderingBatch::s_maxTextureSlots / 4;
