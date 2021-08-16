@@ -44,6 +44,7 @@ public:
 		AddModel(new ModelFive());
 
 		m_thinkerMesh = Mesh::LoadFromFile("Resources/Models/Lowest_poly_thinker.obj");
+		m_ColMesh = Mesh::LoadFromFile("Resources/Models/Lowpoly_Ionic_Column.obj");
 	}
 
 	void OnStart()
@@ -168,17 +169,20 @@ public:
 
 		//background
 		Renderer3D::DrawQuad(backgroundTransform->GetTransformMatrix(), backgroundTexture);
+		
+		//objects
 		Renderer3D::DrawMesh(m_thinkerTransform1.GetTransformMatrix(), m_thinkerMesh, nightTexture);
 		Renderer3D::DrawMesh(m_thinkerTransform2.GetTransformMatrix(), m_thinkerMesh, nightTexture);
-		//Renderer3D::DrawMesh(m_thinkerTransform3.GetTransformMatrix(), m_thinkerMesh, Renderer3D::GetDefaultWhiteTexture(), 1.0f, {0.0f,1.0f,0.0f,0.00002f });
-	
+		Renderer3D::DrawMesh(m_colTransform1.GetTransformMatrix(), m_ColMesh, nightTexture);
+		//Renderer3D::DrawMesh(m_colTransform2.GetTransformMatrix(), m_ColMesh, nightTexture);
+
 		Renderer3D::AddDirectionalLight({ 0,0,-50 }, { 0,30,-15 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
 
 		//update lighting every frame for now
 		Renderer3D::AddPointLight(light_tr.position, { 0,0,1,1 });
 		Renderer3D::AddDirectionalLight({ 0,0,-50 }, { 0,30,-15 }, { 1,14.0f/255.0f,246.0f/255.0f,1 });
-		//Renderer3D::AddDirectionalLight({ 0,20,-10 }, { 0,5,0 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
-		//Renderer3D::AddDirectionalLight({ 50,0,0 }, { 0,5,0 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
+		Renderer3D::AddDirectionalLight({ 0,50,50 }, { 50,0,50 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
+		Renderer3D::AddDirectionalLight({ 0,50,50 }, { -50,0,50 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
 		Renderer3D::AddDirectionalLight({ 0,0,10 }, { 0,30,-15 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
 		Renderer3D::UpdateLights();
 
@@ -350,8 +354,11 @@ private:
 	float m_currDebugToggleTimer = 0.0f;
 
 	std::shared_ptr<Mesh> m_thinkerMesh;
+	std::shared_ptr<Mesh> m_ColMesh;
 	Transform m_thinkerTransform1 = Transform({ -6, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.05f, 0.05f, 0.05f });
 	Transform m_thinkerTransform2 = Transform({ 10, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(145.0f) }, { 0.05f, 0.05f, 0.05f });
+	Transform m_colTransform1 = Transform({0, -0.5f, 8}, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.05f, 0.05f, 0.05f });
+	//Transform m_colTransform2 = Transform({ 10, -0.5f, -10 }, { -glm::radians(90.0f), 0, -glm::radians(145.0f) }, { 0.05f, 0.05f, 0.05f });
 
 	//Transform m_thinkerTransform3 = Transform({ -6, -0.5f, -15 }, { -glm::radians(90.0f), 0, -glm::radians(75.0f) }, { 0.055f, 0.055f, 0.055f });
 	//return a random orientation in radians
