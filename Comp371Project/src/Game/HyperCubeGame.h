@@ -1,18 +1,19 @@
 #pragma once
 #include "../Dependencies/glew-2.1.0/include/GL/glew.h"
 #include "../Rendering/CameraController.h"
-#include "Axes.h"
-#include "Core/Application.h"
-#include "Core/Script.h"
-#include "Core/Input.h"
-#include "Model.h"
-#include "Core/Time.h"
+#include "../Axes.h"
+#include "../Core/Application.h"
+#include "../Core/Script.h"
+#include "../Core/Input.h"
+#include "../Model.h"
+#include "../Core/Time.h"
 #include "../Core/Debug.h"
+#include "../Core/Random.h"
+#include "../Grid.h"
 
 #include "../Core/SoundManager.h"
 #include "../Rendering/CameraController.h"
 #include "../Rendering/Mesh.h"
-
 
 #include "../GameModel/GameModel.h"
 #include "../GameModel/ModelOne.h"
@@ -49,15 +50,12 @@ public:
 
 		//increase font size
 		ImGui::GetIO().FontGlobalScale = 1.5f;
-	}
-
-	void OnStart()
-	{
+		
 		//Grid
 		m_grid = new Grid(m_worldTransform);
 		m_grid->ToggleTexture();
 		Application::AddScript(m_grid);
-
+		
 		//Cube object initial position
 		setCurrentModelPosition(glm::vec3{ 0,1,-1 });
 
@@ -72,12 +70,17 @@ public:
 
 		//light position
 		light_tr.position = { -3, 20, 5 };
+		
+		//We do want shadows in this game
+		Renderer3D::UseShadows(true);
 
 		//start looping background music
 		SoundManager::Play("Resources/Audio/breakout.mp3", true);
+	}
 
-		//We do want shadows in this game
-		Renderer3D::UseShadows(true);
+	void OnStart()
+	{
+		LoadMenu();
 	}
 
 	void OnUpdate()
@@ -162,24 +165,26 @@ public:
 
 	void OnRender()
 	{
-		//background
-		Renderer3D::DrawQuad(backgroundTransform->GetTransformMatrix(), backgroundTexture);
-		
-		//objects
-		Renderer3D::DrawMesh(m_thinkerTransform1.GetTransformMatrix(), m_thinkerMesh, nightTexture);
-		Renderer3D::DrawMesh(m_thinkerTransform2.GetTransformMatrix(), m_thinkerMesh, nightTexture);
-		Renderer3D::DrawMesh(m_colTransform1.GetTransformMatrix(), m_ColMesh, nightTexture);
-		Renderer3D::DrawMesh(m_colTransform2.GetTransformMatrix(), m_ColMesh, nightTexture);
-		Renderer3D::DrawMesh(m_colTransform3.GetTransformMatrix(), m_ColMesh, nightTexture);
-		Renderer3D::DrawMesh(m_colTransform4.GetTransformMatrix(), m_ColMesh, nightTexture);
+		if (m_state != GameState::MainMenu)
+		{
+			//background
+			Renderer3D::DrawQuad(backgroundTransform->GetTransformMatrix(), backgroundTexture);
+
+			//objects
+			Renderer3D::DrawMesh(m_thinkerTransform1.GetTransformMatrix(), m_thinkerMesh, nightTexture);
+			Renderer3D::DrawMesh(m_thinkerTransform2.GetTransformMatrix(), m_thinkerMesh, nightTexture);
+			Renderer3D::DrawMesh(m_colTransform1.GetTransformMatrix(), m_ColMesh, nightTexture);
+			Renderer3D::DrawMesh(m_colTransform2.GetTransformMatrix(), m_ColMesh, nightTexture);
+			Renderer3D::DrawMesh(m_colTransform3.GetTransformMatrix(), m_ColMesh, nightTexture);
+			Renderer3D::DrawMesh(m_colTransform4.GetTransformMatrix(), m_ColMesh, nightTexture);
 
 
-		Renderer3D::AddDirectionalLight({ 0,0,-50 }, { 0,30,-15 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 }, 
-			m_state == GameState::Debug);
-		Renderer3D::AddPointLight(light_tr.position, { 0,0,1,1 }, m_state == GameState::Debug);
-		Renderer3D::AddDirectionalLight(glm::vec3{ 0,50,50 }, glm::vec3{ 50,0,50 },
-			glm::vec4{ 1,14.0f / 255.0f,246.0f / 255.0f,1 }, m_state == GameState::Debug);
-		
+			Renderer3D::AddDirectionalLight({ 0,0,-50 }, { 0,30,-15 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 },
+				m_state == GameState::Debug);
+			Renderer3D::AddPointLight(light_tr.position, { 0,0,1,1 }, m_state == GameState::Debug);
+			Renderer3D::AddDirectionalLight(glm::vec3{ 0,50,50 }, glm::vec3{ 50,0,50 },
+				glm::vec4{ 1,14.0f / 255.0f,246.0f / 255.0f,1 }, m_state == GameState::Debug);
+		}
 
 		//do not update light in debug mode
 		if (m_state != GameState::Debug)
@@ -306,41 +311,14 @@ public:
 
 	void OnImGuiRender() override
 	{
-		int numExtraLines = 0;
-
-		if (m_streakNum >= UPDATE_STREAK_FACTOR)
+		if (m_state == GameState::MainMenu)
 		{
-			numExtraLines = 2;
+			RenderMainMenu();
 		}
-
-		ImGui::SetNextWindowPos(ImVec2{0, 0});
-		ImGui::SetNextWindowSize(ImVec2{ 150.0f + 20.0f * numExtraLines, 60.0f + 30.0f * numExtraLines});
-		ImGui::Begin("Score");
-		ImGuiStyle* style = &ImGui::GetStyle();
-		style->Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-		style->Colors[ImGuiCol_WindowBg] = ImVec4(173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f);
-
-		ImGui::Text("Score %d",(int) score);
-
-		if (numExtraLines > 0)
+		else 
 		{
-			ImGui::Text("Combo %d",m_streakNum);
-			ImGui::Text("Multiplier %dx", (int)m_multiplicator);
+			RenderGameUI();
 		}
-
-		ImGui::End();
-
-		GLFWwindow* w = Application::GetWindow();
-		int width, height;
-		glfwGetWindowSize(w, &width, &height);
-
-
-		ImGui::SetNextWindowPos(ImVec2{ (float)width - 170, 0 });
-		ImGui::SetNextWindowSize(ImVec2{170, 60 });
-		ImGui::Begin("Time");
-		ImGui::Text("Time %.2f", m_gameTime);
-		ImGui::End();
-
 	}
 
 private:
@@ -383,7 +361,7 @@ private:
 	std::vector<GameModel*> m_models;
 	int m_currModel;
 
-	enum class GameState { Spawn, Rotations, Advance, Fit, Drop, Debug };
+	enum class GameState { Spawn, Rotations, Advance, Fit, Drop, Debug, MainMenu };
 	GameState m_state = GameState::Spawn;
 	GameState m_lastState; //used when toggling debugmode
 
@@ -551,5 +529,92 @@ private:
 	void UpdateGameTime()
 	{
 		m_gameTime += Time::GetDeltaTime();
+	}
+
+	void LoadGame()
+	{
+		//set font size
+		ImGui::GetIO().FontGlobalScale = 1.5f;
+		
+		auto* controller = Application::GetCameraController();
+		controller->setLookIsOn(false);
+		controller->setMovementIsOn(false);
+		controller->SetCursorControl(true);
+		m_state = GameState::Spawn;
+		Input::SetLockCursor(true);
+	}
+
+	void LoadMenu()
+	{
+		//set font size
+		ImGui::GetIO().FontGlobalScale = 1.5f;
+
+		auto* controller = Application::GetCameraController();
+		controller->setLookIsOn(false);
+		controller->setMovementIsOn(false);
+		controller->SetCursorControl(false);
+		m_state = GameState::MainMenu;
+		Input::SetLockCursor(false);
+	}
+
+	void RenderGameUI()
+	{
+		int numExtraLines = 0;
+
+		if (m_streakNum >= UPDATE_STREAK_FACTOR)
+		{
+			numExtraLines = 2;
+		}
+
+		ImGui::SetNextWindowPos(ImVec2{ 0, 0 });
+		ImGui::SetNextWindowSize(ImVec2{ 150.0f + 20.0f * numExtraLines, 60.0f + 30.0f * numExtraLines });
+		ImGui::Begin("Score");
+		ImGuiStyle* style = &ImGui::GetStyle();
+		style->Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+		style->Colors[ImGuiCol_WindowBg] = ImVec4(173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f);
+
+		ImGui::Text("Score %d", (int)score);
+
+		if (numExtraLines > 0)
+		{
+			ImGui::Text("Combo %d", m_streakNum);
+			ImGui::Text("Multiplier %dx", (int)m_multiplicator);
+		}
+
+		ImGui::End();
+
+		GLFWwindow* w = Application::GetWindow();
+		int width, height;
+		glfwGetWindowSize(w, &width, &height);
+
+
+		ImGui::SetNextWindowPos(ImVec2{ (float)width - 170, 0 });
+		ImGui::SetNextWindowSize(ImVec2{ 170, 60 });
+		ImGui::Begin("Time");
+		ImGui::Text("Time %.2f", m_gameTime);
+		ImGui::End();
+	}
+
+	void RenderMainMenu()
+	{
+		int width, height;
+		glfwGetWindowSize(Application::GetWindow(), &width, &height);
+
+		ImGui::SetWindowPos(ImVec2(0, 0));
+		ImGui::SetWindowSize(ImVec2(width, height));
+		ImGui::Begin("Main Menu");
+
+		
+		if (ImGui::Button("Play"))
+		{
+			LoadGame();
+		}
+
+		if (ImGui::Button("Exit"))
+		{
+			Application::Exit();
+		}
+
+		ImGui::End();
 	}
 };

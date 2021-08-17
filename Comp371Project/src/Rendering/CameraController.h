@@ -31,22 +31,24 @@ public:
 		glm::mat4& camTransform = Application::GetCamera()->GetTransform();
 
 
-		//manage the logic to lock and free the cursor
-		if (Input::IsKeyPressed(GLFW_KEY_ESCAPE))
+		if (m_hasCursorControl)
 		{
-			Input::SetLockCursor(false);
-			m_mouseIsLocked = false;
+			//manage the logic to lock and free the cursor
+			if (Input::IsKeyPressed(GLFW_KEY_ESCAPE))
+			{
+				Input::SetLockCursor(false);
+				m_mouseIsLocked = false;
+			}
+
+			if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+			{
+				Input::SetLockCursor(true);
+				m_mouseIsLocked = true;
+
+				//reset last mouse pos to avoid gittery movement
+				m_lastMousePos = Input::GetMousePosition();
+			}
 		}
-
-		if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
-		{
-			Input::SetLockCursor(true);
-			m_mouseIsLocked = true;
-
-			//reset last mouse pos to avoid gittery movement
-			m_lastMousePos = Input::GetMousePosition();
-		}
-
 		//handle the camera orientation
 
 		//only try to rotate the camera if the mouse is locked and looking around is enabled
@@ -190,6 +192,8 @@ public:
 		lookIsOn = s;
 	}
 
+	void SetCursorControl(bool value) { m_hasCursorControl = value; }
+
 private:
 
 	//common function for mouse and keyboard (single axis) to change look direction
@@ -253,4 +257,5 @@ private:
 
 	bool movementIsOn = true;
 	bool lookIsOn = true;
+	bool m_hasCursorControl = true; //tell the controller whether to control the freeing and locking of the cursor
 };
