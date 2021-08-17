@@ -39,7 +39,7 @@ protected:
 		WireTransform[0][0] = WireTransform[0][0] * 1.0005f;//x
 		WireTransform[1][1] = WireTransform[1][1] * 1.0005f;//y
 		WireTransform[2][2] = WireTransform[2][2] * 1.0005f;//z
-		Renderer3D::DrawWireCube(WireTransform, m_wireMaterial, glm::vec4(110.0f/255.0f, 255.0f/255.0f, 1, 1));
+		Renderer3D::DrawWireCube(WireTransform, m_wireMaterial, { 1,1,1,1 });
 	}
 
 	void RenderWall(const glm::mat4& transform, const glm::vec4& color = { 1, 0, 0, 1 })
@@ -48,7 +48,7 @@ protected:
 		glm::mat4 WireTransform = transform;
 		glm::vec3 position = glm::vec3(WireTransform[3][0], WireTransform[3][1], WireTransform[3][2]);
 
-		Renderer3D::DrawWireCube(position, { 0, 0, 0 }, { m_wireScale, m_wireScale, m_wireScale, }, 
+		Renderer3D::DrawWireCube(position, { 0, 0, 0 }, { m_wireScale, m_wireScale, m_wireScale}, 
 			m_wireMaterial, glm::vec4(110.0f / 255.0f, 255.0f / 255.0f, 1, 1));
 	}
 
