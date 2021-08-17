@@ -33,18 +33,27 @@ protected:
 	
 	void RenderCube(const glm::mat4& transform, const glm::vec4& color = glm::vec4(110.0f / 255.0f, 255.0f / 255.0f, 1, 1))
 	{
-		Renderer3D::DrawVoxel(transform, modelTexture, 1.0f, color);
+		glm::mat4 ModelTransform = transform;
+		ModelTransform[0][0] = ModelTransform[0][0] * 0.98f;//x
+		ModelTransform[1][1] = ModelTransform[1][1] * 0.98f;//y
+		ModelTransform[2][2] = ModelTransform[2][2] * 0.98f;//z
+		Renderer3D::DrawVoxel(ModelTransform, modelTexture, 1.0f, color);
 
 		glm::mat4 WireTransform = transform;
-		WireTransform[0][0] = WireTransform[0][0] * 1.0005f;//x
-		WireTransform[1][1] = WireTransform[1][1] * 1.0005f;//y
-		WireTransform[2][2] = WireTransform[2][2] * 1.0005f;//z
+		WireTransform[0][0] = WireTransform[0][0] * 1.008f;//x
+		WireTransform[1][1] = WireTransform[1][1] * 1.008f;//y
+		WireTransform[2][2] = WireTransform[2][2] * 1.008f;//z
 		Renderer3D::DrawWireCube(WireTransform, m_wireMaterial, { 1,1,1,1 });
 	}
 
 	void RenderWall(const glm::mat4& transform, const glm::vec4& color = { 1, 0, 0, 1 })
 	{
-		Renderer3D::DrawVoxel(transform, wallTexture, 1.0f, {1,1,1,1});
+		glm::mat4 ModelTransform = transform;
+		ModelTransform[0][0] = ModelTransform[0][0] * 0.98f;//x
+		ModelTransform[1][1] = ModelTransform[1][1] * 0.98f;//y
+		ModelTransform[2][2] = ModelTransform[2][2] * 0.98f;//z
+		Renderer3D::DrawVoxel(ModelTransform, modelTexture, 1.0f, {1,1,1,1});
+
 		glm::mat4 WireTransform = transform;
 		glm::vec3 position = glm::vec3(WireTransform[3][0], WireTransform[3][1], WireTransform[3][2]);
 
