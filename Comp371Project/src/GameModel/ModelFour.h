@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GameModel.h"
-#include "Core/Random.h"
 
 class ModelFour : public GameModel
 {

@@ -1,6 +1,7 @@
 #pragma once
 #include "../Core/Script.h"
 #include "../Rendering/Renderer3D.h"
+#include "../Core/Random.h"
 
 
 //base class for every model
