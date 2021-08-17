@@ -600,20 +600,23 @@ private:
 		int width, height;
 		glfwGetWindowSize(Application::GetWindow(), &width, &height);
 
-		ImGui::SetWindowPos(ImVec2(0, 0));
-		ImGui::SetWindowSize(ImVec2(width, height));
-		ImGui::Begin("Main Menu");
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(ImVec2(width, height));
+		ImGui::Begin("Super Hyper Cube");
 
-		
-		if (ImGui::Button("Play"))
+		if (ImGui::Button("Play", ImVec2(100, 50)))
 		{
 			LoadGame();
 		}
 
-		if (ImGui::Button("Exit"))
+		ImGui::SameLine();
+		if (ImGui::Button("Exit", ImVec2(100, 50)))
 		{
 			Application::Exit();
 		}
+
+		ImGui::Image((void*)backgroundTexture->GetRendererID(), ImVec2(width, height - 150), 
+			ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		ImGui::End();
 	}
