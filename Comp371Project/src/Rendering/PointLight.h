@@ -116,6 +116,7 @@ public:
 		m_farPlane = other.m_farPlane;
 		m_position = other.m_position;
 		m_color = other.m_color;
+		m_drawLightCube = other.m_drawLightCube;
 
 		other.m_shadowMapID = 0;
 		other.m_framebuffer = 0;

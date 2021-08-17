@@ -24,6 +24,8 @@
 #include <vector>
 #include <random>
 
+#define UPDATE_STREAK_FACTOR 3
+
 class HyperCubeGame : public Script
 {
 public:
@@ -44,6 +46,9 @@ public:
 
 		m_thinkerMesh = Mesh::LoadFromFile("Resources/Models/Lowest_poly_thinker.obj");
 		m_ColMesh = Mesh::LoadFromFile("Resources/Models/Lowpoly_Ionic_Column.obj");
+
+		//increase font size
+		ImGui::GetIO().FontGlobalScale = 1.5f;
 	}
 
 	void OnStart()
@@ -168,13 +173,14 @@ public:
 		Renderer3D::DrawMesh(m_colTransform3.GetTransformMatrix(), m_ColMesh, nightTexture);
 		Renderer3D::DrawMesh(m_colTransform4.GetTransformMatrix(), m_ColMesh, nightTexture);
 
-		Renderer3D::AddDirectionalLight({ 0,0,-50 }, { 0,30,-15 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
 
-		//update lighting every frame for now
-		Renderer3D::AddPointLight(light_tr.position, { 0,0,1,1 }, m_state == GameState::Debug);
-		Renderer3D::AddDirectionalLight({ 0,50,50 }, { 50,0,50 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 }, 
+		Renderer3D::AddDirectionalLight({ 0,0,-50 }, { 0,30,-15 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 }, 
 			m_state == GameState::Debug);
+		Renderer3D::AddPointLight(light_tr.position, { 0,0,1,1 }, m_state == GameState::Debug);
+		Renderer3D::AddDirectionalLight(glm::vec3{ 0,50,50 }, glm::vec3{ 50,0,50 },
+			glm::vec4{ 1,14.0f / 255.0f,246.0f / 255.0f,1 }, m_state == GameState::Debug);
 		
+
 		//do not update light in debug mode
 		if (m_state != GameState::Debug)
 		{
@@ -213,7 +219,6 @@ public:
 				else
 				{
 					SoundManager::Play("Resources/Audio/31126__calethos__bump.wav", false);
-					score = 0.0f; //failure->score reset
 					m_state = GameState::Drop;
 				}
 
@@ -221,7 +226,7 @@ public:
 			else
 			{
 				glm::vec3 model_pos = getCurrentModelPosition();
-				model_pos.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
+				model_pos.z -= Time::GetDeltaTime() * cube_move_speed_per_second * m_speedUpFactor;
 				setCurrentModelPosition(model_pos);
 			}
 
@@ -242,26 +247,42 @@ public:
 				model_pos.z -= Time::GetDeltaTime() * m_fitSpeed;
 				setCurrentModelPosition(model_pos);
 				animation_frame_time += Time::GetDeltaTime();
+				if (!m_uiUpdated)
+				{
+					m_streakNum++;
+					UpdateSpeed();
+					UpdateMultiplicator();
+					m_uiUpdated = true;
+				}
 			}
 			else
 			{
 				m_state = GameState::Spawn;
+				m_uiUpdated = false; //reset ui bool
 			}
 
 			break;
 
 			//Cube model doesn't fit into wall (incorrect orientation), so drop it down
 		case GameState::Drop:
-   			if (animation_frame_time < drop_animation_frame_time_limit)
+			if (animation_frame_time < drop_animation_frame_time_limit)
 			{
 				glm::vec3 model_pos = getCurrentModelPosition();
 				model_pos.y -= Time::GetDeltaTime() * m_dropSpeed;
 				setCurrentModelPosition(model_pos);
 				animation_frame_time += Time::GetDeltaTime();
+
+				if (!m_uiUpdated)
+				{
+					m_streakNum = 0;
+					ResetSpeedAndMultiplicator();
+					m_uiUpdated = true;
+				}
 			}
 			else
 			{
 				m_state = GameState::Spawn;
+				m_uiUpdated = false; //reset ui bool
 			}
 
 			break;
@@ -285,27 +306,39 @@ public:
 
 	void OnImGuiRender() override
 	{
-		float fontScale = 1.5f;
-		ImGui::GetIO().FontGlobalScale = fontScale;
+		int numExtraLines = 0;
+
+		if (m_streakNum >= UPDATE_STREAK_FACTOR)
+		{
+			numExtraLines = 2;
+		}
 
 		ImGui::SetNextWindowPos(ImVec2{0, 0});
-		ImGui::SetNextWindowSize(ImVec2{150, 60 });
+		ImGui::SetNextWindowSize(ImVec2{ 150.0f + 20.0f * numExtraLines, 60.0f + 30.0f * numExtraLines});
 		ImGui::Begin("Score");
 		ImGuiStyle* style = &ImGui::GetStyle();
 		style->Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
 		style->Colors[ImGuiCol_WindowBg] = ImVec4(173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f);
 
-		ImGui::Text("Score : %d",(int) score);
+		ImGui::Text("Score %d",(int) score);
+
+		if (numExtraLines > 0)
+		{
+			ImGui::Text("Combo %d",m_streakNum);
+			ImGui::Text("Multiplier %dx", (int)m_multiplicator);
+		}
+
 		ImGui::End();
 
 		GLFWwindow* w = Application::GetWindow();
 		int width, height;
 		glfwGetWindowSize(w, &width, &height);
 
-		ImGui::SetNextWindowPos(ImVec2{ (float)width - 150, 0 });
-		ImGui::SetNextWindowSize(ImVec2{150, 60 });
+
+		ImGui::SetNextWindowPos(ImVec2{ (float)width - 170, 0 });
+		ImGui::SetNextWindowSize(ImVec2{170, 60 });
 		ImGui::Begin("Time");
-		ImGui::Text("Time : %.2f", m_gameTime);
+		ImGui::Text("Time %.2f", m_gameTime);
 		ImGui::End();
 
 	}
@@ -367,7 +400,50 @@ private:
 	Transform m_colTransform3 = Transform({-50, -8.5f, 20 }, { -glm::radians(90.0f), 0, glm::radians(90.0f) }, { 0.3f, 0.3f, 0.3f });
 	Transform m_colTransform4 = Transform({ 50, -8.5f, 20 }, { -glm::radians(90.0f), 0, glm::radians(90.0f) }, { 0.3f, 0.3f, 0.3f });
 
+
+	int m_streakNum = 0;
+	float m_multiplicator = 1.0f;
+	float m_speedUpFactor = 1.0f;
+	float m_maxSpeedUpFactor = 6.5f;
+	float m_maxMultiplicator = 8.0f;
+	bool m_uiUpdated = false;
 	
+	void ResetSpeedAndMultiplicator()
+	{
+		m_multiplicator = 1.0f;
+		m_speedUpFactor = 1.0f;
+	}
+
+	void UpdateSpeed()
+	{
+		if (m_speedUpFactor == m_maxSpeedUpFactor)
+		{
+			return;
+		}
+
+		m_speedUpFactor = 1.0f + 0.75f * (float)((int)m_streakNum / UPDATE_STREAK_FACTOR);
+
+		if (m_speedUpFactor > m_maxSpeedUpFactor)
+		{
+			m_speedUpFactor = m_maxSpeedUpFactor;
+		}
+	}
+
+	void UpdateMultiplicator()
+	{
+		if (m_multiplicator == m_maxMultiplicator)
+		{
+			return;
+		}
+
+		m_multiplicator = 1.0f + ((int)m_streakNum / UPDATE_STREAK_FACTOR);
+
+		if (m_multiplicator > m_maxMultiplicator)
+		{
+			m_multiplicator = m_maxMultiplicator;
+		}
+	}
+
 	//return a random orientation in radians
 	//https://stackoverflow.com/a/7560564/9421977
 	float GetRandomRotation()
@@ -469,7 +545,7 @@ private:
 	//Add the score from the current model
 	void AddModelScore()
 	{
-		score += m_models[m_currModel]->getScore();
+		score += m_models[m_currModel]->getScore() * m_multiplicator;
 	}
 
 	void UpdateGameTime()
