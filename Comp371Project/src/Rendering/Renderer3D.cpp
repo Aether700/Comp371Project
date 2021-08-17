@@ -719,11 +719,11 @@ void Renderer3D::DrawMesh(const glm::mat4& transform, std::shared_ptr<Mesh>& mes
 }
 
 
-void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& lightColor)
+void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& lightColor, bool drawCubes)
 {
 	assert(s_directionalLightIndex < RenderingBatch::s_maxTexture2DShadowMapSlots);
 
-	DirectionalLight currLight(position, direction, lightColor);
+	DirectionalLight currLight(position, direction, lightColor, 512, drawCubes);
 
 	s_shader->Bind();
 	s_shader->SetFloat4("u_dirLightColors[" + std::to_string(s_directionalLightIndex) + "]", currLight.GetColor());
@@ -741,11 +741,11 @@ void Renderer3D::AddDirectionalLight(const glm::vec3& position, const glm::vec3&
 	s_directionalLightIndex++;
 }
 
-void Renderer3D::AddPointLight(const glm::vec3& position, const glm::vec4& lightColor)
+void Renderer3D::AddPointLight(const glm::vec3& position, const glm::vec4& lightColor, bool drawCubes)
 {
 	assert(s_pointLightIndex < RenderingBatch::s_maxCubemapShadowMapSlots);
 
-	PointLight currLight(position, lightColor);
+	PointLight currLight(position, lightColor, 512, drawCubes);
 
 	s_shader->Bind();
 	s_shader->SetFloat4("u_pointLightColors[" + std::to_string(s_pointLightIndex) + "]", currLight.GetColor());

@@ -171,8 +171,9 @@ public:
 		Renderer3D::AddDirectionalLight({ 0,0,-50 }, { 0,30,-15 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
 
 		//update lighting every frame for now
-		Renderer3D::AddPointLight(light_tr.position, { 0,0,1,1 });
-		Renderer3D::AddDirectionalLight({ 0,50,50 }, { 50,0,50 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 });
+		Renderer3D::AddPointLight(light_tr.position, { 0,0,1,1 }, m_state == GameState::Debug);
+		Renderer3D::AddDirectionalLight({ 0,50,50 }, { 50,0,50 }, { 1,14.0f / 255.0f,246.0f / 255.0f,1 }, 
+			m_state == GameState::Debug);
 		
 		//do not update light in debug mode
 		if (m_state != GameState::Debug)
@@ -224,7 +225,7 @@ public:
 				setCurrentModelPosition(model_pos);
 			}
 
-			Application::GetCameraController()->SetCamera(getCurrentModelPosition() + glm::vec3{ -1, 3, 9 }, getCurrentModelPosition() + glm::vec3{ 0, 0, 0 }, 15.0f, -40.0f);
+			Application::GetCameraController()->SetCamera(getCurrentModelPosition() + m_camOffset, getCurrentModelPosition(), 15.0f, -40.0f);
 
 			break;
 
@@ -235,10 +236,10 @@ public:
 			//Cube model fits into wall (correct orientation), so bring it through
 		case GameState::Fit:
 			
-			if (animation_frame_time < animation_frame_time_limit)
+			if (animation_frame_time < fit_animation_frame_time_limit)
 			{
 				glm::vec3 model_pos = getCurrentModelPosition();
-				model_pos.z -= Time::GetDeltaTime() * cube_move_speed_per_second;
+				model_pos.z -= Time::GetDeltaTime() * m_fitSpeed;
 				setCurrentModelPosition(model_pos);
 				animation_frame_time += Time::GetDeltaTime();
 			}
@@ -251,10 +252,10 @@ public:
 
 			//Cube model doesn't fit into wall (incorrect orientation), so drop it down
 		case GameState::Drop:
-   			if (animation_frame_time < animation_frame_time_limit / 2)
+   			if (animation_frame_time < drop_animation_frame_time_limit)
 			{
 				glm::vec3 model_pos = getCurrentModelPosition();
-				model_pos.y -= Time::GetDeltaTime() * cube_move_speed_per_second;
+				model_pos.y -= Time::GetDeltaTime() * m_dropSpeed;
 				setCurrentModelPosition(model_pos);
 				animation_frame_time += Time::GetDeltaTime();
 			}
@@ -282,8 +283,13 @@ public:
 		}
 	}
 
-	void OnImGuiRender() override{
+	void OnImGuiRender() override
+	{
+		float fontScale = 1.5f;
+		ImGui::GetIO().FontGlobalScale = fontScale;
 
+		ImGui::SetNextWindowPos(ImVec2{0, 0});
+		ImGui::SetNextWindowSize(ImVec2{150, 60 });
 		ImGui::Begin("Score");
 		ImGuiStyle* style = &ImGui::GetStyle();
 		style->Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -292,14 +298,17 @@ public:
 		ImGui::Text("Score : %d",(int) score);
 		ImGui::End();
 
+		GLFWwindow* w = Application::GetWindow();
+		int width, height;
+		glfwGetWindowSize(w, &width, &height);
+
+		ImGui::SetNextWindowPos(ImVec2{ (float)width - 150, 0 });
+		ImGui::SetNextWindowSize(ImVec2{150, 60 });
 		ImGui::Begin("Time");
 		ImGui::Text("Time : %.2f", m_gameTime);
 		ImGui::End();
 
 	}
-
-protected:
-
 
 private:
 	Grid* m_grid;
@@ -316,12 +325,18 @@ private:
 	float wall_thickness = 1.0;
 
 	float animation_frame_time = 0; //used when doing drop or fit animations
-	float animation_frame_time_limit = 1.5; //number of seconds to do animation for
+	float fit_animation_frame_time_limit = 1.75f; //number of seconds to do the fit animation for
+	float drop_animation_frame_time_limit = 1.5f; //number of seconds to do the drop animation for
+
+	float m_fitSpeed = 3.0f;
+	float m_dropSpeed = 6.0f;
 
 	Transform light_tr;
 
 	glm::vec4 cube_color = { 0.1, 0.9, 0.1, 1 };
 	glm::vec4 wall_color = { 0.1, 0.2, 0.87, 1 };
+
+	glm::vec3 m_camOffset = {-1, 4, 20};
 
 	std::shared_ptr<OpenGLTexture2D> backgroundTexture;
 	std::shared_ptr<OpenGLTexture2D> sandTexture;

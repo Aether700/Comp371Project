@@ -46,11 +46,10 @@ protected:
 	{
 		Renderer3D::DrawVoxel(transform, wallTexture, 1.0f, {1,1,1,1});
 		glm::mat4 WireTransform = transform;
+		glm::vec3 position = glm::vec3(WireTransform[3][0], WireTransform[3][1], WireTransform[3][2]);
 
-		WireTransform[0][0] = WireTransform[0][0] * 1.0005f;//x
-		WireTransform[1][1] = WireTransform[1][1] * 1.0005f;//y
-		WireTransform[2][2] = WireTransform[2][2] * 1.0005f;//z
-		Renderer3D::DrawWireCube(WireTransform, m_wireMaterial, glm::vec4(110.0f / 255.0f, 255.0f / 255.0f, 1, 1));
+		Renderer3D::DrawWireCube(position, { 0, 0, 0 }, { m_wireScale, m_wireScale, m_wireScale, }, 
+			m_wireMaterial, glm::vec4(110.0f / 255.0f, 255.0f / 255.0f, 1, 1));
 	}
 
 	static std::shared_ptr<OpenGLCubeMap> wallTexture;
@@ -66,5 +65,5 @@ private:
 	std::shared_ptr<Transform> m_wallTransform;
 
 	Material m_wireMaterial = Material(true);
-
+	float m_wireScale = 1.008f;
 };

@@ -283,9 +283,9 @@ public:
 
 	//lighting functions
 	static void AddDirectionalLight(const glm::vec3& position, const glm::vec3& direction, 
-		const glm::vec4& lightColor = { 1, 1, 1, 1 });
+		const glm::vec4& lightColor = { 1, 1, 1, 1 }, bool drawCubes = true);
 
-	static void AddPointLight(const glm::vec3& position, const glm::vec4& lightColor = { 1, 1, 1, 1 });
+	static void AddPointLight(const glm::vec3& position, const glm::vec4& lightColor = { 1, 1, 1, 1 }, bool drawCubes = true);
 
 private:
 	//draw to data passed to the renderer to the screen

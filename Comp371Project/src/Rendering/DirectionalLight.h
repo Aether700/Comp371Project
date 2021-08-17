@@ -54,7 +54,7 @@ public:
 	{
 		if (m_drawLightCube)
 		{
-			Renderer3D::DrawVoxel(m_position, { 0, 0, 0 }, { 2.0f, 2.0f, 2.0f }, s_glowMat);
+			Renderer3D::DrawVoxel(m_position, { 0, 0, 0 }, { 2.0f, 2.0f, 2.0f }, s_glowMat, m_color);
 		}
 	}
 	
