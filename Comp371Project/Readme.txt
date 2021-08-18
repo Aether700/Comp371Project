@@ -11,7 +11,6 @@ Camera (only works when in debug mode)
 - wasd to move the camera around
 - space to move the camera up and left Ctrl to move it down
 - mouse movement to rotate the camera and look around 
-- ESC to free the cursor
 - left click the window to lock the cursor and rotate the camera again
 - Scroll down to zoom in and scroll up to zoom out
 
