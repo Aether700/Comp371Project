@@ -30,27 +30,7 @@ public:
 	{
 		glm::mat4& camTransform = Application::GetCamera()->GetTransform();
 
-
-		if (m_hasCursorControl)
-		{
-			//manage the logic to lock and free the cursor
-			if (Input::IsKeyPressed(GLFW_KEY_ESCAPE))
-			{
-				Input::SetLockCursor(false);
-				m_mouseIsLocked = false;
-			}
-
-			if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
-			{
-				Input::SetLockCursor(true);
-				m_mouseIsLocked = true;
-
-				//reset last mouse pos to avoid gittery movement
-				m_lastMousePos = Input::GetMousePosition();
-			}
-		}
 		//handle the camera orientation
-
 		//only try to rotate the camera if the mouse is locked and looking around is enabled
 		if (m_mouseIsLocked && lookIsOn)
 		{
@@ -175,9 +155,6 @@ public:
 		// up rotation: based on change in y and xz from camera position to lookat position
 		m_upRotation = -90.0f + glm::degrees(glm::acos(glm::dot(norm_look, glm::vec3({ 0,-1,0 }))));
 
-		//std::cout << "yRot: " << m_yRotation << std::endl;
-		//std::cout << "upRot: " << m_upRotation << std::endl;
-
 		OnUpdate();
 
 	}
@@ -192,7 +169,15 @@ public:
 		lookIsOn = s;
 	}
 
-	void SetCursorControl(bool value) { m_hasCursorControl = value; }
+	void SetCursorControl(bool value)
+	{
+		m_mouseIsLocked = value;
+		Input::SetLockCursor(value);
+		if (m_mouseIsLocked)
+		{
+			m_lastMousePos = Input::GetMousePosition();
+		}
+	}
 
 private:
 
@@ -257,5 +242,4 @@ private:
 
 	bool movementIsOn = true;
 	bool lookIsOn = true;
-	bool m_hasCursorControl = true; //tell the controller whether to control the freeing and locking of the cursor
 };

@@ -80,11 +80,37 @@ public:
 
 	void OnStart()
 	{
+		//set font size
+		ImGui::GetIO().FontGlobalScale = 1.5f;
 		LoadMenu();
 	}
 
 	void OnUpdate()
 	{
+		if (m_currPauseMenuCooldownTimer >= m_pauseMenuCooldownTimer && Input::IsKeyPressed(GLFW_KEY_ESCAPE))
+		{
+			m_currPauseMenuCooldownTimer = 0.0f;
+
+			if (m_state == GameState::PauseMenu)
+			{
+				ResumeFromPause();
+			}
+			else
+			{
+				if (m_state != GameState::Debug)
+				{
+					m_lastState = m_state;
+				}
+				m_state = GameState::PauseMenu;
+				LoadPauseMenu();
+				return; //don't process any game input this frame;
+			}
+		}
+		else if (m_currPauseMenuCooldownTimer < m_pauseMenuCooldownTimer)
+		{
+			m_currPauseMenuCooldownTimer += Time::GetDeltaTime();
+		}
+
 		//Cooldown for cube rotations, also only do rotations during the rotations state
 		if ((rotationInputTimer >= rotationInputCooldown) && (m_state == GameState::Rotations))
 		{
@@ -148,8 +174,12 @@ public:
 					}
 					else
 					{
-						m_lastState = m_state;
+						if (m_state != GameState::PauseMenu)
+						{
+							m_lastState = m_state;
+						}
 						m_state = GameState::Debug;
+						Application::GetCameraController()->SetCursorControl(true);
 					}
 					m_currDebugToggleTimer = 0.0f;
 				}
@@ -311,14 +341,21 @@ public:
 
 	void OnImGuiRender() override
 	{
-		if (m_state == GameState::MainMenu)
+		switch(m_state)
 		{
+		case GameState::MainMenu:
 			RenderMainMenu();
-		}
-		else 
-		{
+			break;
+
+		case GameState::PauseMenu:
+			RenderPauseMenu();
+			break;
+
+		default:
 			RenderGameUI();
+			break;
 		}
+
 	}
 
 private:
@@ -361,7 +398,7 @@ private:
 	std::vector<GameModel*> m_models;
 	int m_currModel;
 
-	enum class GameState { Spawn, Rotations, Advance, Fit, Drop, Debug, MainMenu };
+	enum class GameState { Spawn, Rotations, Advance, Fit, Drop, Debug, MainMenu, PauseMenu };
 	GameState m_state = GameState::Spawn;
 	GameState m_lastState; //used when toggling debugmode
 
@@ -385,6 +422,9 @@ private:
 	float m_maxSpeedUpFactor = 6.5f;
 	float m_maxMultiplicator = 8.0f;
 	bool m_uiUpdated = false;
+
+	float m_pauseMenuCooldownTimer = 0.2f;
+	float m_currPauseMenuCooldownTimer = 0.0f;
 	
 	void ResetSpeedAndMultiplicator()
 	{
@@ -532,29 +572,30 @@ private:
 	}
 
 	void LoadGame()
-	{
-		//set font size
-		ImGui::GetIO().FontGlobalScale = 1.5f;
-		
+	{	
 		auto* controller = Application::GetCameraController();
 		controller->setLookIsOn(false);
 		controller->setMovementIsOn(false);
 		controller->SetCursorControl(true);
 		m_state = GameState::Spawn;
-		Input::SetLockCursor(true);
+	}
+
+	void LoadPauseMenu()
+	{
+		auto* controller = Application::GetCameraController();
+		controller->setLookIsOn(false);
+		controller->setMovementIsOn(false);
+		controller->SetCursorControl(false);
+		m_state = GameState::PauseMenu;
 	}
 
 	void LoadMenu()
 	{
-		//set font size
-		ImGui::GetIO().FontGlobalScale = 1.5f;
-
 		auto* controller = Application::GetCameraController();
 		controller->setLookIsOn(false);
 		controller->setMovementIsOn(false);
 		controller->SetCursorControl(false);
 		m_state = GameState::MainMenu;
-		Input::SetLockCursor(false);
 	}
 
 	void RenderGameUI()
@@ -565,13 +606,20 @@ private:
 		{
 			numExtraLines = 2;
 		}
+		//update the style of the UI
+		ImGuiStyle* style = &ImGui::GetStyle();
+		
+		ImVec4 prevColText = style->Colors[ImGuiCol_Text];
+		ImVec4 prevColWindowBackground = style->Colors[ImGuiCol_WindowBg];
+
+		style->Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+		style->Colors[ImGuiCol_WindowBg] = ImVec4(173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f);
+
 
 		ImGui::SetNextWindowPos(ImVec2{ 0, 0 });
 		ImGui::SetNextWindowSize(ImVec2{ 150.0f + 20.0f * numExtraLines, 60.0f + 30.0f * numExtraLines });
-		ImGui::Begin("Score");
-		ImGuiStyle* style = &ImGui::GetStyle();
-		style->Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-		style->Colors[ImGuiCol_WindowBg] = ImVec4(173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f);
+		ImGui::Begin("Score", (bool*)0, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+		
 
 		ImGui::Text("Score %d", (int)score);
 
@@ -590,9 +638,13 @@ private:
 
 		ImGui::SetNextWindowPos(ImVec2{ (float)width - 170, 0 });
 		ImGui::SetNextWindowSize(ImVec2{ 170, 60 });
-		ImGui::Begin("Time");
+		ImGui::Begin("Time", (bool*)0, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 		ImGui::Text("Time %.2f", m_gameTime);
 		ImGui::End();
+
+		//reset the style of the UI for the other menus
+		style->Colors[ImGuiCol_Text] = prevColText;
+		style->Colors[ImGuiCol_WindowBg] = prevColWindowBackground;
 	}
 
 	void RenderMainMenu()
@@ -602,7 +654,7 @@ private:
 
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
 		ImGui::SetNextWindowSize(ImVec2(width, height));
-		ImGui::Begin("Super Hyper Cube");
+		ImGui::Begin("Super Hyper Cube", (bool*)0, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
 		if (ImGui::Button("Play", ImVec2(100, 50)))
 		{
@@ -618,6 +670,39 @@ private:
 		ImGui::Image((void*)backgroundTexture->GetRendererID(), ImVec2(width, height - 150), 
 			ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
+		ImGui::End();
+	}
+
+	void ResumeFromPause()
+	{
+		m_state = m_lastState;
+		Application::GetCameraController()->SetCursorControl(true);
+		if (m_state == GameState::Debug)
+		{
+			Application::GetCameraController()->setLookIsOn(true);
+			Application::GetCameraController()->setMovementIsOn(true);
+		}
+	}
+
+	void RenderPauseMenu()
+	{
+		ImGui::SetNextWindowPos(ImVec2(100, 100));
+		ImGui::SetNextWindowSize(ImVec2(150, 150));
+		ImGui::Begin("Pause", (bool*)0, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+		if (ImGui::Button("Resume"))
+		{
+			ResumeFromPause();
+		}
+		
+		if(ImGui::Button("Exit to Menu"))
+		{
+			LoadMenu();
+		}
+		
+		if (ImGui::Button("Exit Game"))
+		{
+			Application::Exit();
+		}
 		ImGui::End();
 	}
 };
