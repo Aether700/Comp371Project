@@ -87,28 +87,63 @@ public:
 
 	void OnUpdate()
 	{
-		if (m_currPauseMenuCooldownTimer >= m_pauseMenuCooldownTimer && Input::IsKeyPressed(GLFW_KEY_ESCAPE))
+		if (m_state != GameState::MainMenu)
 		{
-			m_currPauseMenuCooldownTimer = 0.0f;
-
-			if (m_state == GameState::PauseMenu)
+			if (m_currPauseMenuCooldownTimer >= m_pauseMenuCooldownTimer && Input::IsKeyPressed(GLFW_KEY_ESCAPE))
 			{
-				ResumeFromPause();
+				m_currPauseMenuCooldownTimer = 0.0f;
+
+				if (m_state == GameState::PauseMenu)
+				{
+					ResumeFromPause();
+				}
+				else
+				{
+					if (m_state != GameState::Debug)
+					{
+						m_lastState = m_state;
+					}
+					m_state = GameState::PauseMenu;
+					LoadPauseMenu();
+					return; //don't process any game input this frame;
+				}
+			}
+			else if (m_currPauseMenuCooldownTimer < m_pauseMenuCooldownTimer)
+			{
+				m_currPauseMenuCooldownTimer += Time::GetDeltaTime();
+			}
+
+			if (m_currDebugToggleTimer >= m_debugToggleTimer)
+			{
+				//press shift+C to toggle debug mode
+				if (Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT) || Input::IsKeyPressed(GLFW_KEY_RIGHT_SHIFT))
+				{
+					if (Input::IsKeyPressed(GLFW_KEY_C))
+					{
+						if (m_state == GameState::Debug)
+						{
+							m_state = m_lastState;
+							Application::GetCameraController()->setLookIsOn(false);
+							Application::GetCameraController()->setMovementIsOn(false);
+						}
+						else
+						{
+							if (m_state != GameState::PauseMenu)
+							{
+								m_lastState = m_state;
+							}
+							m_state = GameState::Debug;
+							Application::GetCameraController()->SetCursorControl(true);
+						}
+						m_currDebugToggleTimer = 0.0f;
+					}
+				}
+
 			}
 			else
 			{
-				if (m_state != GameState::Debug)
-				{
-					m_lastState = m_state;
-				}
-				m_state = GameState::PauseMenu;
-				LoadPauseMenu();
-				return; //don't process any game input this frame;
+				m_currDebugToggleTimer += Time::GetDeltaTime();
 			}
-		}
-		else if (m_currPauseMenuCooldownTimer < m_pauseMenuCooldownTimer)
-		{
-			m_currPauseMenuCooldownTimer += Time::GetDeltaTime();
 		}
 
 		//Cooldown for cube rotations, also only do rotations during the rotations state
@@ -159,37 +194,6 @@ public:
 			cube_move_speed_per_second = 1.0f;
 		}
 
-		if (m_currDebugToggleTimer >= m_debugToggleTimer)
-		{
-			//press shift+C to toggle debug mode
-			if (Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT) || Input::IsKeyPressed(GLFW_KEY_RIGHT_SHIFT))
-			{
-				if (Input::IsKeyPressed(GLFW_KEY_C))
-				{
-					if (m_state == GameState::Debug)
-					{
-						m_state = m_lastState;
-						Application::GetCameraController()->setLookIsOn(false);
-						Application::GetCameraController()->setMovementIsOn(false);
-					}
-					else
-					{
-						if (m_state != GameState::PauseMenu)
-						{
-							m_lastState = m_state;
-						}
-						m_state = GameState::Debug;
-						Application::GetCameraController()->SetCursorControl(true);
-					}
-					m_currDebugToggleTimer = 0.0f;
-				}
-			}
-			
-		}
-		else
-		{
-			m_currDebugToggleTimer += Time::GetDeltaTime();
-		}
 	}
 
 
