@@ -578,6 +578,9 @@ private:
 		controller->setMovementIsOn(false);
 		controller->SetCursorControl(true);
 		m_state = GameState::Spawn;
+		m_gameTime = 0.0f;
+		score = 0;
+		m_streakNum = 0;
 	}
 
 	void LoadPauseMenu()
